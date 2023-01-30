@@ -1,4 +1,4 @@
 # Trevor Gerald's Portfolio
 
 ## Welcome!
-Welcome to my portfolio! This is a React application that features more about me. It can be viewed with this [link](https://latch-a5d70.web.app/). 
+Welcome to my portfolio! This is a React application that features more about me. It can be viewed with this [link](https://trevorgerald.web.app/). 
