@@ -1,0 +1,224 @@
+::-webkit-scrollbar {
+    width: 10px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+html  {
+    background-color: #778DA9;
+    color: #E0E1DD;
+    font-family: 'HM-Sans';
+    scroll-behavior: smooth;
+}
+.landingContain  {
+    height: 100vh;
+    background-image: url('./static/landingBackground.png');
+    background-size: cover;
+    background-repeat: round;
+    position: relative;
+}
+.header  {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 45px;
+}
+.navContain  {
+    display: flex;
+    justify-content: space-between;
+    width: 35%;
+}
+.icon  {
+    width: 50px;
+} 
+.navItem  {
+    text-decoration: none;
+    color: #E0E1DD;
+    font-family: 'HM-Sans';
+    font-family: 20px;
+    transition: 0.15s ease-in-out all;
+}
+.landingContentContain  {
+    padding: 70px 50px 70px 90px;
+    width: 40%;
+}
+.landingHeader  {
+    font-family: 'Retroica';
+    font-size: 55px;
+}
+.landingBackgroundHeader  {
+    background-color: #1B263B;
+    padding-top: 5px;
+}
+.landingSubHeader  {
+    font-family: 'HM-Sans';
+    font-size: 16px;
+    opacity: .75;
+}
+.landingButton  {
+    padding: 10px 45px;
+    text-decoration: none;
+    color: #E0E1DD;
+    font-family: 'HM-Sans';
+    border-radius: 10px;
+    margin-top: 60px;
+    background-color: #1B263B;
+    display: table;
+    transition: 0.15s ease-in-out all;
+}
+.socialsContain  {
+    padding: 45px;
+    display: flex;
+    justify-content: flex-end;
+}
+.socialIcon  {
+    width: 45px;
+    transition: 0.15s ease-in-out all;
+    padding-left: 10px;
+}
+.landingButton:hover, .navItem:hover, .socialIcon:hover  {
+    opacity: .6;
+    scale: 1.05;
+}
+.aboutContain  {
+    height: 100vh;
+    background-image: url('./static/aboutBackground.png');
+    background-color: #415A77;
+    background-size: cover;
+    background-repeat: round;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    padding: 0px 90px;
+    justify-content: space-between;
+    align-items: center;
+}
+.aboutContentContain  {
+    width: 45%;
+}
+.aboutHeader, .projectHeader  {
+    font-family: 'Retroica';
+    font-size: 55px;
+}
+.aboutImage  {
+    width: 400px;
+    height: 400px;
+    margin-left: 2em;
+}
+.aboutSubHeader  {
+    font-family: 'HM-Sans';
+    font-size: 16px;
+    opacity: .75;
+    margin-top: 3em;
+}
+.skillIcon  {
+    width: 35px;
+    transition: 0.15s ease-in-out all;
+}
+.skillIcon:hover  {
+    scale: 1.05;
+    opacity: .6;
+}
+.skillsContain  {
+    margin-top: 3em;
+    display: flex;
+    justify-content: space-between;
+}
+.projectsContain  {
+    height: 200vh;
+    background-image: url('./static/projectsBackground.png');
+    background-color: #1B263B;
+    background-size: contain;
+    background-repeat: round;
+    position: relative;
+    justify-content: center;
+}
+.projectRow  {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0px 90px 50px 90px;
+}
+.projectItem  {
+    border: 7.5px solid #0D1B2A;
+    border-radius: 15px;
+    width: 35%;
+    height: fit-content;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+}
+.itemRight  {
+    margin-top: 100px;
+}
+.projectTitle  {
+    font-family: 'Retroica';
+    font-size: 20px;
+    margin-top: 2em;
+}
+.projectDesc  {
+    font-family: 'HM-Sans';
+    opacity: .75;
+}
+.projectHeader  {
+    display: table;
+    margin: auto;
+    padding: 50px 0px;
+}
+.projectButtonContain  {
+    padding: 10px 0px 0px 0px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+.projectButton  {
+    color: #E0E1DD;
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 10px;
+    background-color: #0D1B2A;
+    font-family: 'HM-Sans';
+    font-size: 16px;
+    transition: 0.15s ease-in-out all;
+}
+.projectImg  {
+    transition: 0.15s ease-in-out all;
+}
+.projectImg:hover  {
+    scale: 1.05;
+    opacity: .85;
+}
+.projectButton:hover  {
+    scale: 1.05;
+    opacity: .6;
+}
+.projectSkillsContain  {
+    padding: 5px 0px 35px 0px;
+    display: flex;
+    justify-content: space-between;
+}
+.sitemapContain  {
+    background-color: #0D1B2A;
+    padding: 45px;
+}
+.sitemapText  {
+    font-family: 'HM-Sans';
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    padding: 10px 0px;
+}
+.resumeContainer  {
+    display: table;
+    margin: 45px auto;
+    border: none;
+    outline: none;
+}

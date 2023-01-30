@@ -11,3 +11,17 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+@font-face {
+  font-family: "Retroica";
+  src: local("Retroica"),
+   url("./fonts/Retroica.ttf") format("truetype");
+  font-weight: medium;
+}
+
+@font-face {
+  font-family: "HM-Sans";
+  src: local("Inter-Med"),
+   url("./fonts/HM\ Sans\ Latin\ Regular.ttf") format("truetype");
+  font-weight: medium;
+}
