@@ -42,7 +42,7 @@ html  {
     text-decoration: none;
     color: #E0E1DD;
     font-family: 'HM-Sans';
-    font-family: 20px;
+    font-size: 16px;
     transition: 0.15s ease-in-out all;
 }
 .landingContentContain  {
@@ -57,10 +57,18 @@ html  {
     background-color: #1B263B;
     padding-top: 5px;
 }
-.landingSubHeader  {
+.landingSubHeader, .contactText  {
     font-family: 'HM-Sans';
     font-size: 16px;
     opacity: .75;
+}
+.contactText  {
+    margin-top: 1em;
+    font-size: 20px;
+    padding: 15px 25px 0px 25px;
+    display: flex;
+    text-align: center;
+    justify-content: center;
 }
 .landingButton  {
     padding: 10px 45px;
@@ -103,9 +111,17 @@ html  {
 .aboutContentContain  {
     width: 45%;
 }
-.aboutHeader, .projectHeader  {
+.aboutHeader, .projectHeader, .contactHeader, .resumeHeader  {
     font-family: 'Retroica';
     font-size: 55px;
+}
+.contactHeader, .resumeHeader  {
+    display: table;
+    margin: auto;
+    padding-bottom: 0px;
+}
+.contactHeader  {
+    margin-top: 1.5em;
 }
 .aboutImage  {
     width: 400px;
@@ -205,20 +221,226 @@ html  {
     display: flex;
     justify-content: space-between;
 }
-.sitemapContain  {
+.resumeContain  {
     background-color: #0D1B2A;
     padding: 45px;
+    background-image: url('./static/resumeBackground.png');
+    background-size: cover;
+    background-repeat: round;
+    position: relative;
 }
-.sitemapText  {
+.creditText  {
     font-family: 'HM-Sans';
     font-size: 12px;
     display: flex;
     justify-content: center;
     padding: 10px 0px;
+    opacity: .75;
+    margin-top: 2em;
 }
 .resumeContainer  {
     display: table;
     margin: 45px auto;
     border: none;
     outline: none;
+    width: 90%;
+    height: 750px;
+}
+.contactButtonContain  {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 15px 0px;
+    margin-top: 1em;
+}
+.contactButton  {
+    padding: 10px 15px;
+    background-color: #0D1B2A;
+    color: #f1f1f1;
+    font-size: 20px;
+    font-family: 'HM-Sans';
+    text-decoration: none;
+    margin: 0px 15px;
+    border-radius: 10px;
+    transition: 0.15s ease-in-out all;
+}
+.contactButton:hover  {
+    opacity: .75;
+    scale: 1.05;
+}
+@media only screen and (max-width: 1150px) {
+    .landingHeader, .projectHeader, .aboutHeader, .contactHeader, .resumeHeader  {
+        font-size: 45px;
+    }
+    .skillsContain {
+        display: grid;
+        grid-column-start: 1;
+        grid-column-end: 9;
+        grid-template-columns: auto auto auto auto auto auto;
+        gap: 10px;
+    }
+    .projectsContain  {
+        height: 180vh;
+    }
+}
+@media only screen and (max-width: 1050px) {
+    .aboutContain  {
+        padding: 0px 25px;
+    }
+    .landingContain  {
+        height: 110vh;
+    }
+}
+@media only screen and (max-width: 900px) {
+    .navContain  {
+        width: 55%;
+    }
+    .aboutImage  {
+        width: 300px;
+        height: 300px;
+    }
+    .projectItem  {
+        width: 55%;
+    }
+    .projectRow  {
+        flex-direction: column;
+        align-items: center;
+    }
+    .projectsContain  {
+        height: 260vh;
+    }
+    .resumeContainer  {
+        height: 600px;
+    }
+}
+@media only screen and (max-width: 775px) {
+    .aboutImage  {
+        width: 200px;
+        height: 200px;
+    }
+    .aboutContentContain  {
+        width: 55%;
+    }
+    .landingHeader, .projectHeader, .aboutHeader, .contactHeader, .resumeHeader  {
+        font-size: 30px;
+    }
+    .landingContentContain  {
+        width: 65%;
+        padding: 70px 50px 0px 50px;
+    }
+    .landingContain {
+        height: 70vh;
+    }
+    .aboutContain  {
+        height: 80vh;
+    }
+    .aboutSubHeader  {
+        margin-top: 1em;
+    }
+    .aboutSubHeader, .landingSubHeader, .contactText  {
+        font-size: 14px;
+    }
+    .socialIcon  {
+        width: 35px;
+    }
+    .resumeContainer  {
+        width: 95%;
+        height: 500px;
+    }
+}
+@media only screen and (max-width: 625px) {
+    .landingHeader, .projectHeader, .aboutHeader, .contactHeader, .resumeHeader  {
+        font-size: 20px;
+    }
+    .aboutSubHeader, .landingSubHeader, .contactText  {
+        font-size: 12px;
+    }
+    .aboutImage  {
+        margin-left: 0px;
+    }
+    .skillIcon  {
+        width: 25px;
+    }
+    .projectTitle  {
+        font-size: 15px;
+    }
+    .projectDesc  {
+        font-size: 12px;
+    }
+    .projectButton, .contactButton  {
+        font-size: 14px;
+    }
+    .icon  {
+        width: 35px;
+    }
+    .navContain  {
+        width: 75%;
+    }
+}
+@media only screen and (max-width: 525px) {
+    .landingContain {
+        height: 65vh;
+    }
+    .aboutImage  {
+        width: 150px;
+        height: 150px;
+    }
+    .projectItem  {
+        width: 75%;
+    }
+    .landingButton  {
+        padding: 7.5px 25px;
+        font-size: 14px;
+    }
+    .navItem  {
+        font-size: 14px;
+    }
+    .projectButton,.contactButton  {
+        padding: 5px 10px;
+        font-size: 12px;
+        border-radius: 5px;
+    }
+    .skillsContain {
+        margin-top: 1.5em;
+    }
+}
+@media only screen and (max-width: 400px) {
+    .landingContain, .aboutContain, .projectsContain, .resumeContain  {
+        background-image: none;
+    }
+    .projectRow  {
+        padding: 0px 40px 50px 40px;
+    }
+    .projectItem  {
+        width: 90%;
+    }
+    .icon  {
+        width: 25px;
+    }
+    .navItem  {
+        font-size: 12px;
+    }
+    .header  {
+        padding: 25px;
+    }
+    .landingContentContain  {
+        padding: 70px 25px 0px 25px;
+    }
+    .socialsContain  {
+        padding: 45px 25px;
+    }
+    .aboutImage  {
+        width: 100px;
+        height: 100px;
+    }
+    .aboutSubHeader, .landingSubHeader, .contactText  {
+        font-size: 11px;
+    }
+    .skillsContain {
+        display: grid;
+        grid-column-start: 1;
+        grid-column-end: 6;
+        grid-template-columns: auto auto auto auto;
+        gap: 5px;
+    }
 }

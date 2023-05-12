@@ -16,9 +16,11 @@ import Flutter from './static/flutter.png'
 import Python from './static/python.png'
 import Django from './static/django.png'
 import MATLAB from './static/matlab.png'
+import Firebase from './static/firebase.png'
 import tree from './static/treeStudios.png'
 import amplio from './static/amplioPrep.png'
-import latch from './static/latchFinds.png'
+// import latch from './static/latchFinds.png'
+import chives from './static/chives.png'
 import resume from './static/resume.pdf'
 
 export default class Home extends React.Component {
@@ -32,12 +34,12 @@ export default class Home extends React.Component {
                         <div className='navContain'>
                             <a className='navItem' href="#aboutContain">about</a>
                             <a className='navItem' href="#projectsContain">projects</a>
-                            <a className='navItem' href="#portfolioContain">portfolio</a>
+                            <a className='navItem' href="#resumeContain">resume</a>
                             <a className='navItem' href="#contactContain">contact</a>
                         </div>
                     </div>
                     <div className='landingContentContain'>
-                        <span className='landingHeader'>Hello, I'm <span className='landingBackgroundHeader'>Trevor Gerald!</span> I'm a front-end developer and designer.</span>
+                        <span className='landingHeader'>Hello, I'm <span className='landingBackgroundHeader'>Trevor Gerald!</span> I'm a software developer and designer.</span>
                         <p className='landingSubHeader'>I design and develop modern web and mobile applications with an emphasis on accessibility. I'm currently a honors student at The Ohio State University.</p>
                         <a className='landingButton' href='#aboutContain'>see more</a>
                     </div>
@@ -75,6 +77,38 @@ export default class Home extends React.Component {
                 <span className='projectHeader'>Projects</span>
                 <div className='projectRow'>
                     <div className='projectItem'>
+                        <img src={amplio} class="projectImg" alt=''></img>
+                        <span className='projectTitle'>Amplio Prep</span>
+                        <p className='projectDesc'>Amplio Prep is a modern ACT preparation organization whose goal is to provide quality, inexpensive tutoring.</p>
+                        <div className='projectSkillsContain'>
+                            <img src={HTML} className='skillIcon' alt=''></img>
+                            <img src={CSS} className='skillIcon' alt=''></img>
+                            <img src={Python} className='skillIcon' alt=''></img>
+                            <img src={Django} className='skillIcon' alt=''></img>
+                            <img src={Figma} className='skillIcon' alt=''></img>
+                        </div>    
+                        <div className='projectButtonContain'>
+                            <a className='projectButton' href='https://github.com/trev-org04/amplio'>view code</a>
+                        </div>
+                    </div>
+                    <div className='projectItem itemRight'>
+                        <img src={chives} class='projectImg' alt=''></img>
+                        <span className='projectTitle'>Chives</span>
+                        <p className='projectDesc'>Chives is a mobile application that allows you to find the perfect recipe whenever you need it.</p>
+                        <div className='projectSkillsContain'>
+                            <img src={Dart} className='skillIcon' alt=''></img>
+                            <img src={Flutter} className='skillIcon' alt=''></img>
+                            <img src={Firebase} className='skillIcon' alt=''></img>
+                            <img src={Figma} className='skillIcon' alt=''></img>
+                        </div>    
+                        <div className='projectButtonContain'>
+                            <a className='projectButton' href='https://www.youtube.com/watch?v=YCc_zXKfrmo'>view project</a>
+                            <a className='projectButton' href='https://github.com/trev-org04/chives'>view code</a>
+                        </div>
+                    </div>
+                </div>
+                <div className='projectRow'>
+                    <div className='projectItem'>
                         <img src={tree} class="projectImg" alt=''></img>
                         <span className='projectTitle'>tree studios</span>
                         <p className='projectDesc'>tree studios is a brand focused on creating high-quality, affordable posters for the masses.</p>    
@@ -90,7 +124,7 @@ export default class Home extends React.Component {
                             <a className='projectButton' href='https://github.com/trev-org04/tree-studios'>view code</a>
                         </div>
                     </div>
-                    <div className='projectItem itemRight'>
+                    {/* <div className='projectItem itemRight'>
                         <img src={latch} class="projectImg" alt=''></img>
                         <span className='projectTitle'>latch finds</span>
                         <p className='projectDesc'>latch finds is a clothing company dedicated to providing high-quality clothing at an affordable price.</p>
@@ -105,45 +139,29 @@ export default class Home extends React.Component {
                             <a className='projectButton' href='https://latchfinds.com/'>view project</a>
                             <a className='projectButton' href='https://github.com/trev-org04/latch-finds'>view code</a>
                         </div>
-                    </div>
-                </div>
-                <div className='projectRow'>
-                    <div className='projectItem'>
-                        <img src={amplio} class="projectImg" alt=''></img>
-                        <span className='projectTitle'>Amplio Prep</span>
-                        <p className='projectDesc'>Amplio Prep is a modern ACT preparation organization whose goal is to provide quality, inexpensive tutoring.</p>
-                        <div className='projectSkillsContain'>
-                            <img src={HTML} className='skillIcon' alt=''></img>
-                            <img src={CSS} className='skillIcon' alt=''></img>
-                            <img src={Python} className='skillIcon' alt=''></img>
-                            <img src={Django} className='skillIcon' alt=''></img>
-                            <img src={Figma} className='skillIcon' alt=''></img>
-                        </div>    
-                        <div className='projectButtonContain'>
-                            <a className='projectButton' href='https://github.com/trev-org04/amplio'>view code</a>
-                        </div>
-                    </div>
-                    {/* <div className='projectItem itemRight'>
-                        <img alt=''></img>
-                        <span className='projectTitle'>project title</span>
-                        <p className='projectDesc'>project caption</p>
-                        <div className='projectButtonContain'>
-                            <a className='projectButton' href='/'>view project</a>
-                            <a className='projectButton' href='/'>view code</a>
-                        </div>
                     </div> */}
                 </div>
             </div>
 
             {/* Design Portfolio Section */}
-            <div id='designPortfolioContain' className='designPortfolioContain'>
-            </div>
+            {/* <div id='designPortfolioContain' className='designPortfolioContain'>
+            </div> */}
             
-            {/* Sitemap Section */}
-            <div id='sitemapContain' className='sitemapContain'>
-                <span className='projectHeader'>Resume</span>
-                <iframe src={resume} className="resumeContainer" title="Resume - Trevor Gerald" width="90%" height="750px"></iframe>
-                <span className='sitemapText'>Designed and Developed by Trevor Gerald</span>
+            {/* Resume Section */}
+            <div id='resumeContain' className='resumeContain'>
+                <span className='resumeHeader'>Resume</span>
+                <iframe src={resume} className="resumeContainer" title="Resume - Trevor Gerald"></iframe>
+            </div>
+
+            {/* Contact Section */}
+            <div id='contactContain' className='contactContain'>
+                <span className='contactHeader'>Contact Me</span>
+                <span className='contactText'>Thank you for viewing my portfolio! My inbox is always open, so please feel free to contact me using one of the methods below: </span>
+                <div className='contactButtonContain'>
+                    <a className='contactButton' href='mailto:tmgerald04@gmail.com'>Email</a>
+                    <a className='contactButton' href='https://www.linkedin.com/in/trevorgerald/'>LinkedIn</a>
+                </div>
+                <span className='creditText'>Designed and Developed by Trevor Gerald</span>
             </div>
             </>
         )
