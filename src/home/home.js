@@ -22,8 +22,21 @@ import amplio from './static/amplioPrep.png'
 // import latch from './static/latchFinds.png'
 import chives from './static/chives.png'
 import resume from './static/resume.pdf'
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCpqt9t_jmNNw8Z_WtHBNZZJAjtjZgvsQM",
+  authDomain: "trevorgerald.firebaseapp.com",
+  projectId: "trevorgerald",
+  storageBucket: "trevorgerald.appspot.com",
+  messagingSenderId: "945469754892",
+  appId: "1:945469754892:web:fa40cd07826ac4021d2829",
+  measurementId: "G-PWVK4REX1D"
+};
 
 export default class Home extends React.Component {
+    analytics = getAnalytics(initializeApp(firebaseConfig));
     render() {
         return (
             <>
