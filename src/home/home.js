@@ -19,7 +19,7 @@ import MATLAB from './static/matlab.png'
 import Firebase from './static/firebase.png'
 import tree from './static/treeStudios.png'
 import amplio from './static/amplioPrep.png'
-// import latch from './static/latchFinds.png'
+import Java from './static/java.png'
 import chives from './static/chives.png'
 import resume from './static/resume.pdf'
 import { initializeApp } from "firebase/app";
@@ -67,7 +67,7 @@ export default class Home extends React.Component {
                 <img src={AboutPic} className='aboutImage' alt=''></img>
                 <div className='aboutContentContain'>
                     <span className='aboutHeader'>About Me</span>
-                    <p className='aboutSubHeader'>I am a graduate of Olentangy High School and am currently a honors student at The Ohio State University. I am working towards a Bachelor's degree in Computer Science and Engineering and I expect to graduate in 2026. My background in software engineering originated back in seventh grade, and I've been developing my skills since then. I've worked on several projects, ranging from informal ones like tree studios to pull requests at Aware.<br></br><br></br>Outside of coding, I play tennis, make posters, try my hand at cooking, and obsess over the latest news in technology and automobiles.</p>
+                    <p className='aboutSubHeader'>I am a graduate of Olentangy High School and am currently a honors student at The Ohio State University. I am working towards a Bachelor's degree in Computer Science and Engineering and I expect to graduate in 2025. My background in software engineering originated back in seventh grade, and I've been developing my skills since then. I've worked on several projects, ranging from informal ones like tree studios to pull requests at Aware.<br></br><br></br>Outside of coding, I play tennis, make posters, try my hand at cooking, and obsess over the latest news in technology and automobiles.</p>
                     <div className='skillsContain'>
                         <img src={HTML} className='skillIcon' alt=''></img>
                         <img src={CSS} className='skillIcon' alt=''></img>
@@ -79,7 +79,7 @@ export default class Home extends React.Component {
                         <img src={Flutter} className='skillIcon' alt=''></img>
                         <img src={Python} className='skillIcon' alt=''></img>
                         <img src={Django} className='skillIcon' alt=''></img>
-                        <img src={Figma} className='skillIcon' alt=''></img>
+                        <img src={Java} className='skillIcon' alt=''></img>
                         <img src={MATLAB} className='skillIcon' alt=''></img>
                     </div>
                 </div>
@@ -123,8 +123,8 @@ export default class Home extends React.Component {
                 <div className='projectRow'>
                     <div className='projectItem'>
                         <img src={tree} class="projectImg" alt=''></img>
-                        <span className='projectTitle'>tree studios</span>
-                        <p className='projectDesc'>tree studios is a brand focused on creating high-quality, affordable posters for the masses.</p>    
+                        <span className='projectTitle'>Honeycomb Studios</span>
+                        <p className='projectDesc'>Honeycomb Studios is a brand focused on creating high-quality, affordable posters for the masses.</p>    
                         <div className='projectSkillsContain'>
                             <img src={HTML} className='skillIcon' alt=''></img>
                             <img src={CSS} className='skillIcon' alt=''></img>
@@ -162,7 +162,7 @@ export default class Home extends React.Component {
             
             {/* Resume Section */}
             <div id='resumeContain' className='resumeContain'>
-                <span className='resumeHeader'>Resume</span>
+                <span className='resumeHeader'>Experience</span>
                 <iframe src={resume} className="resumeContainer" title="Resume - Trevor Gerald"></iframe>
             </div>
 
