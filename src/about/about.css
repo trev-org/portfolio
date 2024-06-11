@@ -1,0 +1,229 @@
+/* Branding Styling */
+.pre-name  {
+    font-family: 'Druk';
+    font-size: 25px;
+    letter-spacing: 0.25px;
+    color: #FFF5EA;
+}
+
+/* General Styling */
+.about-scroll-item-contain  {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 95vh;
+    scroll-snap-align: start;
+    justify-content: center;
+    overflow-x: hidden;
+}
+.about-me-image  {
+    width: 300px;
+    animation: moveImage 3s infinite;
+    margin-bottom: 1em;
+    border-radius: 300px;
+    align-self: center;
+}
+.about-feature-contain  {
+    display: flex;
+    flex-direction: column;
+}
+.about-feature-card  {
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.55);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 2em;
+    width: 200px;
+    z-index: 500;
+    position: relative;
+}
+.card-title  {
+    text-transform: uppercase;
+    font-size: 12px;
+    font-family: 'Poppins';
+    margin-bottom: 1em;
+    opacity: 0.75;
+}
+.card-text  {
+    font-size: 15px;
+    font-family: 'Poppins';
+    font-weight: 500;
+    transition: transform 0.5s cubic-bezier(.075,.82,.165,1);
+}
+.topLeft  {
+    right: 25%;
+}
+.bottomLeft  {
+    top: 50px;
+    left: 10%;
+}
+.bottomRight  {
+    top: 10em;
+    right: 35%;
+}
+.topRight  {
+    top: 2em;
+    left: 10%;
+}
+.text-highlight  {
+    background-color: #2C7761;
+    padding: 1px 3px;
+    border-radius: 5px;
+    color: #FFF5EA;
+    text-decoration: none;
+    position: relative;
+    transition: transform 0.5s cubic-bezier(.075,.82,.165,1);
+    position: absolute;
+    margin-left: 5px;
+    animation: moveHighlight 2.5s infinite;
+}
+.text-highlight:hover  {
+    opacity: 0.75;
+}
+
+/* Animations */
+@keyframes moveImage {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+@keyframes moveHighlight {
+    10% {
+        transform: translateX(5px);
+    }
+    30% {
+        transform: translateX(0px);
+    }
+    50% {
+        transform: translateX(5px);
+    }
+    70% {
+        transform: translateX(0px);
+    }
+}
+
+/* Responsive Styling */
+@media screen and (max-width: 950px) {
+    .about-me-image  {
+        width: 250px;
+    }
+}
+@media screen and (max-width: 850px) {
+    .pre-name  {
+        font-size: 20px;
+    }
+    .about-me-image  {
+        width: 200px;
+    }
+    .about-feature-card  {
+        width: 175px;
+    }
+    .card-text  {
+        font-size: 13px;
+    }
+    .card-title  {
+        font-size: 12px;
+    }
+    .bottomRight  {
+        top: 6em;
+    }
+}
+@media screen and (max-width: 750px) {
+    .topLeft  {
+        right: 0px;
+    }
+    .bottomLeft  {
+        left: 30%;
+    }
+    .topRight  {
+        left: -5%;
+    }
+}
+@media screen and (max-width: 650px) {
+    .card-text  {
+        font-size: 11px;
+    }
+    .card-title  {
+        font-size: 10px;
+    }
+    .about-me-image  {
+        width: 150px;
+    }
+    .about-feature-card  {
+        width: 150px;
+    }
+}
+@media screen and (max-width: 550px) {
+    .topLeft  {
+        left: 20%;
+        width: 100px !important;
+    }
+    .topRight  {
+        width: 100px !important;
+    }
+    .bottomLeft  {
+        top: 25px;
+        width: 100px !important;
+    }
+    .bottomRight  {
+        top: 3em;
+    }
+    .card-text  {
+        font-size: 9px;
+    }
+    .card-title  {
+        font-size: 8px;
+    }
+    .about-me-image  {
+        width: 125px;
+    }
+    .about-feature-card  {
+        width: 125px;
+    }
+}
+@media screen and (max-width: 500px) {
+    .pre-name  {
+        font-size: 17px;
+        border: none;
+        -webkit-text-stroke: 0.5px #FFF5EA;
+    }
+}
+@media screen and (max-width: 425px) {
+    .pre-name  {
+        font-size: 15px;
+    }
+    .topRight  {
+        width: 75px !important;
+        top: -1em;
+        left: -15%;
+    }
+    .bottomLeft  {
+        left: 40%;
+        width: 85px !important;
+    }
+    .topLeft  {
+        left: 50%;
+        bottom: 2em;
+        width: 90px !important;
+    }
+    .bottomRight  {
+        width: 110px !important;
+    }
+    .card-text  {
+        font-size: 8px;
+    }
+    .card-title  {
+        font-size: 7px;
+    }
+}
+@media screen and (max-width: 345px) {
+    .name  {
+        font-size: 11px;
+    }
+}
+
+

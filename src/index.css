@@ -13,15 +13,7 @@ code {
 }
 
 @font-face {
-  font-family: "Retroica";
-  src: local("Retroica"),
-   url("./fonts/Retroica.ttf") format("truetype");
-  font-weight: medium;
-}
-
-@font-face {
-  font-family: "HM-Sans";
-  src: local("Inter-Med"),
-   url("./fonts/HM\ Sans\ Latin\ Regular.ttf") format("truetype");
-  font-weight: medium;
+  font-family: "Druk";
+  src: url(./fonts/DrukWide-Medium-Web.woff2) format('woff2'), url(./fonts/DrukWide-Medium-Web.woff) format('woff'), url(./fonts/DrukWide-Medium-Web.ttf) format('truetype');
+  font-style: normal;
 }
