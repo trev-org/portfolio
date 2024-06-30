@@ -7,7 +7,6 @@ import Honeycomb from './static/HoneycombStudios.png';
 import Sift from './static/Sift.png';
 import Eventify from './static/Eventify.png';
 import Brutus from './static/Brutus.png';
-import Kavi from './static/Kavi.png';
 import Crawler from './static/Crawler.png';
 import { Helmet } from 'react-helmet-async';
 import { Slideshow, SlideshowItem } from '../components/slideshow';
@@ -31,34 +30,9 @@ export default class Experience extends React.Component {
                     <div className='landing-image'></div>
                 </div>
 
-                <div className='scroll-item-contain' id='kavi'>
-                    <div className='experience-contain'>
-                        <a href="https://google.com"><img src={Kavi} className='project-image' alt='logo'></img></a>
-                        <span className='experience-company'>Kavi</span>
-                        <span className='experience-position'>Figma</span>
-                        <span className='experience-duration'>May 2024 - Present</span>
-                    </div>
-                    <div className='slideshow-contain'>
-                        <Slideshow>
-                            <SlideshowItem>
-                                <div className='project-slide kavi'>
-                                    <span className='project-slide-title'>Purpose</span>
-                                    <p className='project-desc'>Kavi is the ultimate platform for facilitating seamless connections among premier brands, creators, agencies, and industry professionals</p>
-                                </div>
-                            </SlideshowItem>
-                            <SlideshowItem>
-                                <div className='experience-slide kavi'>
-                                    <span className='experience-slide-title'>Design Document</span>
-                                    <iframe src='https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Fdesign%2FKBNFOmXHPYPCaSqZp4kGYu%2FKavi-Designs%3Fnode-id%3D0%253A1%26t%3D9djXUqPIPk2Rn6dK-1' className="iframe-project" title="Kavi Design Doc - Trevor Gerald"></iframe>
-                                </div>
-                            </SlideshowItem>
-                        </Slideshow>
-                    </div>
-                </div>
-
                 <div className='scroll-item-contain' id='sift'>
                     <div className='experience-contain'>
-                        <a href="https://google.com"><img src={Sift} className='project-image' alt='logo'></img></a>
+                        <a href="https://github.com/trev-org04/sift"><img src={Sift} className='project-image' alt='logo'></img></a>
                         <span className='experience-company'>Sift</span>
                         <span className='experience-position'>React | Cloud Firestore | Tensorflow | Librosa</span>
                         <span className='experience-duration'>March 2024 - Present</span>
@@ -83,7 +57,7 @@ export default class Experience extends React.Component {
 
                 <div className='scroll-item-contain' id='eventify'>
                     <div className='experience-contain'>
-                        <a href="https://google.com"><img src={Eventify} className='project-image' alt='logo'></img></a>
+                        <a href="https://github.com/devosu/event-feed-project"><img src={Eventify} className='project-image' alt='logo'></img></a>
                         <span className='experience-company'>Eventify</span>
                         <span className='experience-position'>Next.js | Cloud Firestore | Figma</span>
                         <span className='experience-duration'>March 2024 - Present</span>
@@ -108,7 +82,7 @@ export default class Experience extends React.Component {
 
                 <div className='scroll-item-contain' id='brutus'>
                     <div className='experience-contain'>
-                        <a href="https://google.com"><img src={Brutus} className='project-image' alt='logo'></img></a>
+                        <a href="https://github.com/trev-org04/brutus-the-plumber"><img src={Brutus} className='project-image' alt='logo'></img></a>
                         <span className='experience-company'>Brutus The<br/>Plumber</span>
                         <span className='experience-position'>C | Make</span>
                         <span className='experience-duration'>February 2024</span>
@@ -170,7 +144,7 @@ export default class Experience extends React.Component {
 
                 <div className='scroll-item-contain' id='crawler'>
                     <div className='experience-contain'>
-                        <a href="https://honeycomb-studios.web.app/"><img src={Crawler} className='project-image' alt='logo'></img></a>
+                        <a href="https://github.com/trev-org04/webscraper"><img src={Crawler} className='project-image' alt='logo'></img></a>
                         <span className='experience-company'>Route<br/>Crawler</span>
                         <span className='experience-position'>Selenium | Python | Excel</span>
                         <span className='experience-duration'>July 2023</span>
@@ -234,7 +208,6 @@ export default class Experience extends React.Component {
             <script type="text/javascript">
                 {
                     `var landing = document.getElementById('landing');
-                    var kavi = document.getElementById('kavi');
                     var sift = document.getElementById('sift');
                     var eventify = document.getElementById('eventify');
                     var brutus = document.getElementById('brutus');
@@ -243,7 +216,7 @@ export default class Experience extends React.Component {
                     var chives = document.getElementById('chives');  
                     var children = document.getElementById('scroll-parent').children;
                     var sections = [];
-                    sections.push(landing), sections.push(kavi), sections.push(sift), sections.push(eventify), sections.push(brutus), sections.push(honeycomb), sections.push(crawler), sections.push(chives);    
+                    sections.push(landing), sections.push(sift), sections.push(eventify), sections.push(brutus), sections.push(honeycomb), sections.push(crawler), sections.push(chives);    
                     let slideIndex = 1;        
 
                     var observer = new window.IntersectionObserver((entries) => {
@@ -279,24 +252,21 @@ export default class Experience extends React.Component {
                                 document.documentElement.style.backgroundColor = '#C8A104';
                                 break;
                             case 1:
-                                document.documentElement.style.backgroundColor = '#5A96A6';
-                                break;
-                            case 2:
                                 document.documentElement.style.backgroundColor = '#1D2C2C';
+                                break;
+                            case 2: 
+                                document.documentElement.style.backgroundColor = '#BA0C2F';
                                 break;
                             case 3: 
                                 document.documentElement.style.backgroundColor = '#BA0C2F';
                                 break;
                             case 4: 
-                                document.documentElement.style.backgroundColor = '#BA0C2F';
-                                break;
-                            case 5: 
                                 document.documentElement.style.backgroundColor = '#141115';
                                 break;
-                            case 6: 
+                            case 5: 
                                 document.documentElement.style.backgroundColor = '#E62345';
                                 break;
-                            case 7: 
+                            case 6: 
                                 document.documentElement.style.backgroundColor = '#565C36';
                                 break;    
                         }

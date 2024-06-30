@@ -65,7 +65,7 @@
 }
 .experience-slide  {
     width: 100%;
-    height: 70%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -74,6 +74,7 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
 }
 .experience-slide-title  {
     text-transform: uppercase;
@@ -222,7 +223,6 @@
         align-items: center;
     }
     #slideshow  {
-        margin: 20px !important;
         width: 75% !important;
         height: 50% !important;
     }
@@ -241,6 +241,9 @@
     }   
     .experience-slide-card  {
         padding: 15px;
+    }
+    .experience-slide  {
+        height: 75%;
     }
 }
 @media screen and (max-width: 1100px) {
@@ -293,6 +296,9 @@
     .experience-desc  {
         margin-bottom: 0em;
         font-size: 14px;
+    }
+    .experience-contain  {
+        margin-left: 40px;
     }
 }
 @media screen and (max-width: 550px) {

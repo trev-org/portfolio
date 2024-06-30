@@ -6,6 +6,7 @@ import IC3D from './static/IC3D.png';
 import Aware from './static/Aware.png';
 import BobEvans from './static/BobEvans.png';
 import DuoDate from './static/DuoDate.png';
+import Kavi from './static/Kavi.png';
 import mentorEval from './static/Mentor Evaluation - Trevor Gerald.pdf';
 import { Helmet } from 'react-helmet-async';
 import { Slideshow, SlideshowItem } from '../components/experienceSlideshow';
@@ -34,7 +35,7 @@ export default class Experience extends React.Component {
 
                 <div className='scroll-item-contain' id='ic3d'>
                     <div className='experience-contain'>
-                        <img src={IC3D} className='experience-image' alt='logo'></img>
+                        <a href='https://www.ic3dprinters.com/'><img src={IC3D} className='experience-image' alt='logo'></img></a>
                         <span className='experience-company'>IC3D<br/>Printers</span>
                         <span className='experience-position'>Mechanical Engineering Intern</span>
                         <span className='experience-duration'>September 2021-December 2021</span>
@@ -46,7 +47,7 @@ export default class Experience extends React.Component {
                                     <span className='experience-slide-title'>Responsibilities</span>
                                     <div className='experience-slide-contain'>
                                         <div className='experience-slide-card'>
-                                            <span className='experience-desc'>Managed the maintenance and repair of a 3D print farm comprising over <span className='ic3d'>30 printers</span>, conducting routine inspections, troubleshooting technical issues, and performing repairs to ensure optimal functionality and minimize downtime by <span className='ic3d'>10%</span>.</span>
+                                            <span className='experience-desc'>Managed the maintenance of a 3D print farm of over <span className='ic3d'>30 printers</span> by performing repairs to ensure optimal functionality and minimize downtime by <span className='ic3d'>10%</span>.</span>
                                             <div className='experience-highlight-contain'>
                                                 <span className="material-symbols-rounded slide-icon">precision_manufacturing</span>
                                                 <span className='experience-main-title'>Enhanced overall uptime</span>
@@ -60,7 +61,7 @@ export default class Experience extends React.Component {
                                             </div>
                                         </div>
                                         <div className='experience-slide-card'>
-                                            <span className='experience-desc'>Developed and implemented efficient workflows for supports removal, resulting in a significant reduction in turnaround time and a notable enhancement in customer satisfaction levels.</span>
+                                            <span className='experience-desc'>Developed efficient workflows for supports removal, resulting in a significant reduction in turnaround time and a notable enhancement in customer satisfaction.</span>
                                             <div className='experience-highlight-contain'>
                                                 <span className="material-symbols-rounded slide-icon">trending_up</span>
                                                 <span className='experience-main-title'>Increased overall efficiency</span>
@@ -83,7 +84,7 @@ export default class Experience extends React.Component {
                                         <span className="material-symbols-rounded slide-icon">precision_manufacturing</span>
                                         <span className='experience-main-title'>Enhanced overall uptime</span>
                                     </div>
-                                    <span className='experience-desc'>Managed the maintenance and repair of a 3D print farm comprising over <span className='experience-slide-card'>30 printers</span>, conducting routine inspections, troubleshooting technical issues, and performing repairs to ensure optimal functionality and minimize downtime by <span className='experience-slide-card'>10%</span>.</span>
+                                    <span className='experience-desc'>Managed the maintenance of a 3D print farm of over <span className='experience-slide-card'>30 printers</span> by performing repairs to ensure optimal functionality and minimize downtime by <span className='experience-slide-card'>10%</span>.</span>
                                 </div>
                             </SlideshowItem>
                             <SlideshowItem>
@@ -101,7 +102,7 @@ export default class Experience extends React.Component {
                                         <span className="material-symbols-rounded slide-icon">trending_up</span>
                                         <span className='experience-main-title'>Increased overall efficiency</span>
                                     </div>
-                                    <span className='experience-desc'>Developed and implemented efficient workflows for supports removal, resulting in a significant reduction in turnaround time and a notable enhancement in customer satisfaction levels.</span>
+                                    <span className='experience-desc'>Developed efficient workflows for supports removal, resulting in a significant reduction in turnaround time and a notable enhancement in customer satisfaction.</span>
                                 </div>
                             </SlideshowItem></>}
 
@@ -111,7 +112,7 @@ export default class Experience extends React.Component {
 
                 <div className='scroll-item-contain' id='aware'>
                     <div className='experience-contain'>
-                        <img src={Aware} className='experience-image' alt='logo'></img>
+                        <a href='https://www.awarehq.com/'><img src={Aware} className='experience-image' alt='logo'></img></a>
                         <span className='experience-company'>Aware</span>
                         <span className='experience-position'>Software Engineering Intern</span>
                         <span className='experience-duration'>February 2022-April 2022</span>
@@ -182,7 +183,7 @@ export default class Experience extends React.Component {
 
                 <div className='scroll-item-contain' id='bobEvans'>
                     <div className='experience-contain'>
-                        <img src={BobEvans} className='experience-image' alt='logo'></img>
+                        <a href='https://www.bobevansgrocery.com/'><img src={BobEvans} className='experience-image' alt='logo'></img></a>
                         <span className='experience-company'>Bob<br/>Evans</span>
                         <span className='experience-position'>IT Developer Intern</span>
                         <span className='experience-duration'>May 2023-August 2023</span>
@@ -253,7 +254,7 @@ export default class Experience extends React.Component {
 
                 <div className='scroll-item-contain' id='duoDate'>
                     <div className='experience-contain'>
-                        <img src={DuoDate} className='experience-image' alt='logo'></img>
+                        <a href='https://duodate.co/'><img src={DuoDate} className='experience-image' alt='logo'></img></a>
                         <span className='experience-company'>DuoDate</span>
                         <span className='experience-position'>Founding Engineer</span>
                         <span className='experience-duration'>January 2024-Present</span>
@@ -318,9 +319,85 @@ export default class Experience extends React.Component {
                                 </div>
                             </SlideshowItem> </>}
 
+                            
+
                         </Slideshow>
                     </div>
                 </div>
+
+                <div className='scroll-item-contain' id='kavi'>
+                    <div className='experience-contain'>
+                        <a href='https://www.gokavi.com/'><img src={Kavi} className='experience-image' alt='logo'></img></a>
+                        <span className='experience-company'>Kavi</span>
+                        <span className='experience-position'>Fullstack Engineer</span>
+                        <span className='experience-duration'>May 2024-Present</span>
+                    </div>
+                    <div className='slideshow-contain'>
+                        <Slideshow>
+                            { !this.state.isExpanded && <SlideshowItem>
+                                <div className='experience-slide kavi'>
+                                    <span className='experience-slide-title'>Responsibilities</span>
+                                    <div className='experience-slide-contain'>
+                                        <div className='experience-slide-card'>
+                                            <span className='experience-desc'>Modernized and implemented the redesign of the website's landing page, enhancing visual appeal by <span className='kavi'>93%</span>.</span>
+                                            <div className='experience-highlight-contain'>
+                                                <span className="material-symbols-rounded slide-icon">palette</span>
+                                                <span className='experience-main-title'>Redefined design language</span>
+                                            </div>
+                                        </div>
+                                        <div className='experience-slide-card'>
+                                            <span className='experience-desc'>Developed and deployed core functionality that directly contributed to the successful release of the product's MVP.</span>
+                                            <div className='experience-highlight-contain'>
+                                                <span className="material-symbols-rounded slide-icon">new_releases</span>
+                                                <span className='experience-main-title'>Implemented essential features</span>
+                                            </div>
+                                        </div>
+                                        <div className='experience-slide-card'>
+                                            <span className='experience-desc'>Implemented comprehensive marketing strategies, resulting in an increase in brand engagement and user sign-ups.</span>
+                                            <div className='experience-highlight-contain'>
+                                                <span className="material-symbols-rounded slide-icon">trending_up</span>
+                                                <span className='experience-main-title'>Boosted brand awareness</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </SlideshowItem> }
+
+                            {/* Expanded Slides */}
+                            { this.state.isExpanded && <><SlideshowItem>
+                                <div className='experience-slide kavi'>
+                                    <div className='experience-highlight-contain'>
+                                        <span className="material-symbols-rounded slide-icon">palette</span>
+                                        <span className='experience-main-title'>Redefined design language</span>
+                                    </div>
+                                    <span className='experience-desc'>Modernized and implemented the redesign of the website's landing page, enhancing visual appeal by <span className='experience-slide-card'>93%</span>.</span>
+                                </div>
+                            </SlideshowItem>
+                            <SlideshowItem>
+                            <div className='experience-slide kavi'>
+                                <div className='experience-highlight-contain'>
+                                    <span className="material-symbols-rounded slide-icon">new_releases</span>
+                                    <span className='experience-main-title'>Implemented essential features</span>
+                                </div>
+                                <span className='experience-desc'>Developed and deployed core functionality that directly contributed to the successful release of the product's MVP.</span>
+                            </div>
+                            </SlideshowItem>
+                            <SlideshowItem>
+                                <div className='experience-slide kavi'>
+                                    <div className='experience-highlight-contain'>
+                                        <span className="material-symbols-rounded slide-icon">trending_up</span>
+                                        <span className='experience-main-title'>Boosted brand awareness</span>
+                                    </div>
+                                    <span className='experience-desc'>Implemented comprehensive marketing strategies, resulting in an increase in brand engagement and user sign-ups.</span>
+                                </div>
+                            </SlideshowItem> </>}
+
+                            
+
+                        </Slideshow>
+                    </div>
+                </div>
+
             </div>
 
             <Helmet>
@@ -330,10 +407,11 @@ export default class Experience extends React.Component {
                     var ic3d = document.getElementById('ic3d');
                     var aware = document.getElementById('aware');
                     var bobEvans = document.getElementById('bobEvans');
-                    var duoDate = document.getElementById('duoDate');   
+                    var duoDate = document.getElementById('duoDate');  
+                    var kavi = document.getElementById('kavi');   
                     var children = document.getElementById('scroll-parent').children;
                     var sections = [];
-                    sections.push(landing), sections.push(ic3d), sections.push(aware), sections.push(bobEvans), sections.push(duoDate);    
+                    sections.push(landing), sections.push(ic3d), sections.push(aware), sections.push(bobEvans), sections.push(duoDate), sections.push(kavi);    
                     let slideIndex = 1;        
 
                     var observer = new window.IntersectionObserver((entries) => {
@@ -380,6 +458,9 @@ export default class Experience extends React.Component {
                             case 4: 
                                 document.documentElement.style.backgroundColor = '#E62345';
                                 break;
+                            case 5: 
+                                document.documentElement.style.backgroundColor = '#5A96A6';
+                                break;    
                         }
                     }
                     
