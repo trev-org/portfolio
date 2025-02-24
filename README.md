@@ -3,4 +3,4 @@
 ## Welcome!
 Welcome to my portfolio! This is a React application that features more about me. It can be viewed with this [link](https://trevorgerald.web.app/). 
 
-V 3
+V3
