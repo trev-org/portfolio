@@ -1,0 +1,430 @@
+.landingContain {
+  box-sizing: border-box;
+  width: 50%;
+  justify-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+  margin: 0 auto;
+  transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+.brandingContain,
+.musicContain {
+  opacity: 0;
+}
+
+.musicContain {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+}
+@media (max-width: 1000px) {
+  .landingContain {
+    width: 65%;
+  }
+}
+@media (max-width: 850px) {
+  .landingContain {
+    width: 85%;
+  }
+}
+@media (max-width: 550px) {
+  .landingContain {
+    width: 100%;
+  }
+  .recentlyPlayedItemCompany,
+  .recentlyPlayedItemCompanyNonPresent,
+  .intro,
+  .projectsItemTitle {
+    font-size: 15px !important;
+  }
+}
+
+/* Branding Styling */
+.brandingContain {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 20px;
+  margin: 3vh 0;
+}
+.brandingHeader {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1em;
+  width: 100%;
+}
+.name {
+  text-decoration: none;
+  color: #fff5ea;
+  font-size: 25px;
+  letter-spacing: -0.03em;
+  font-family: "MarketSans-Bold";
+  user-select: none;
+}
+.intro {
+  font-family: "MarketSans-Regular";
+  text-decoration: none;
+  color: #807b75;
+  font-size: 16px;
+  user-select: none;
+}
+.menuContain {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: end;
+}
+.menu {
+  font-family: "MarketSans-Medium";
+  font-weight: 700;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #fff5ea;
+  font-size: 14px;
+  transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+  letter-spacing: -0.03em;
+  user-select: none;
+  opacity: 1 !important;
+}
+.menuItem {
+  font-family: "MarketSans-Medium";
+  font-weight: 700;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #fff5ea;
+  font-size: 14px;
+  transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+  opacity: 0;
+  display: none;
+}
+.menu:hover,
+.menuItem:hover {
+  opacity: 0.7 !important;
+  cursor: pointer !important;
+}
+.menu:active,
+.menuItem:active {
+  color: #ba0f2f;
+}
+.sectionTitle {
+  text-decoration: none;
+  color: #fff5ea;
+  opacity: 0.5;
+  font-size: 20px;
+  font-family: "MarketSans-Bold";
+  user-select: none;
+  margin-bottom: 2em;
+}
+.sectionSubtitle {
+  text-decoration: none;
+  color: #fff5ea;
+  opacity: 0.5;
+  font-size: 14px;
+  font-family: "MarketSans-Regular";
+  user-select: none;
+}
+.sectionTitleContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2em;
+  width: 100%;
+}
+.sectionTitleContainer .sectionTitle {
+  margin-bottom: 0;
+}
+.notPlaying {
+  color: #fff5ea;
+  opacity: 0.5;
+  font-family: "MarketSans-Regular";
+  font-size: 14px;
+  user-select: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+.notPlaying::before {
+  content: "";
+  display: inline-block;
+  background-color: #fff5ea;
+  opacity: 0.5;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+.currentlyPlayingContent {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 10px;
+  margin-right: 15px;
+  overflow: hidden;
+}
+.currentlyPlayingContainer {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 35%;
+  overflow: hidden;
+  padding-left: 15px;
+}
+.currentlyPlayingContent::before {
+  content: "";
+  display: block;
+  background-color: #39be82;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  position: absolute;
+  left: 0px;
+  top: 40%;
+  transform: translateY(-50%);
+}
+.paused::before {
+  content: "";
+  display: block;
+  background-color: #807b75;
+  width: 6px;
+  height: 6px;
+  border-radius: 0;
+  position: absolute;
+  left: 0px;
+  top: 40%;
+  transform: translateY(-50%);
+  box-shadow: 3px 0 0 #807b75;
+  width: 2px;
+  height: 8px;
+}
+.currentlyPlayingLogo {
+  width: 45px;
+  height: 45px;
+  border-radius: 7.5px;
+  margin-right: 15px;
+}
+.currentlyPlayingInfo {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0; /* Important for text truncation */
+  max-width: calc(100% - 10px); /* Leave some space for margins */
+}
+.currentlyPlayingSong {
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  display: block;
+  max-width: 100%;
+}
+.currentlyPlayingArtist {
+  font-family: "MarketSans-Regular";
+  color: #807b75;
+  font-size: 14px;
+  user-select: none;
+}
+.progressBarContainer {
+  width: 100%;
+  height: 4px;
+  background-color: rgba(255, 245, 234, 0.2);
+  overflow: hidden;
+}
+.progressBar {
+  height: 100%;
+  background-color: #fff5ea;
+  transition: width 0.3s ease;
+}
+
+/* Recently Played Styling */
+.recentlyPlayedContain {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 20px;
+  margin-bottom: 3vh;
+}
+.recentlyPlayedItem {
+  display: flex;
+  flex: row;
+  margin-bottom: 15px;
+}
+.recentlyPlayedItemContent {
+  display: flex;
+  flex-direction: column;
+}
+.recentlyPlayedItemHeader {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 5px;
+}
+.recentlyPlayedItemCompanyNonPresent {
+  margin-bottom: 5px;
+}
+.recentlyPlayedLogo {
+  width: 45px;
+  height: 45px;
+  margin-right: 15px;
+  border-radius: 7.5px;
+}
+.recentlyPlayedItemPosition {
+  font-family: "MarketSans-Regular";
+  color: #807b75;
+  font-size: 14px;
+  user-select: none;
+}
+
+/* Album Reviews Section */
+.albumReviewsContain {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 20px;
+  margin-bottom: 3vh;
+}
+.albumReviewItem {
+  display: flex;
+  flex: row;
+  margin-bottom: 15px;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+.albumReviewItemContent {
+  display: flex;
+  flex-direction: column;
+}
+.albumReviewItemInformation {
+  display: flex;
+  flex-direction: r;
+}
+.albumReviewItemHeader {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 5px;
+}
+.albumReviewItemCompany {
+  font-family: "MarketSans-Medium";
+  color: #fff5ea;
+  font-size: 16px;
+  user-select: none;
+}
+.albumReviewItemCompanyNonPresent {
+  margin-bottom: 5px;
+}
+.albumReviewLogo {
+  width: 45px;
+  height: 45px;
+  margin-right: 15px;
+  border-radius: 7.5px;
+}
+.albumReviewItemPosition {
+  font-family: "MarketSans-Regular";
+  color: #807b75;
+  font-size: 14px;
+  user-select: none;
+}
+.albumReviewItemRating {
+  padding: 5px;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .albumReviewItems {
+    grid-template-columns: 1fr;
+  }
+  .albumReviewItemCompany {
+    font-size: 15px;
+  }
+  .currentlyPlayingContainer {
+    width: 50%;
+  }
+}
+
+/* History Section */
+.historyGrid {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+  gap: 10px;
+  overscroll-behavior-x: contain;
+}
+
+.historyItem {
+  flex: 0 0 auto;
+  width: 140px;
+  scroll-snap-align: start;
+}
+
+.historyItem:last-child {
+  margin-right: 0;
+}
+
+/* Hide scrollbar but keep functionality */
+.historyGrid::-webkit-scrollbar {
+  display: none;
+}
+
+.historyGrid {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Adjust width on mobile */
+@media (max-width: 768px) {
+  .historyItem {
+    width: 160px;
+  }
+}
+
+.historyItem {
+  display: flex;
+  flex-direction: column;
+}
+
+.imageContainer {
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%; /* Creates a 1:1 aspect ratio */
+  margin-bottom: 10px;
+  border-radius: 7.5px;
+  overflow: hidden;
+}
+
+.historyLogo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 7.5px;
+  object-fit: cover;
+}
+.historyPlaceholder {
+  color: #807b75;
+  font-family: "MarketSans-Regular";
+  font-size: 14px;
+  user-select: none;
+}

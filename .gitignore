@@ -2,29 +2,45 @@
 
 # dependencies
 /node_modules
+node_modules/
+node_modules/*
 /.pnp
-.pnp.js
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
 
 # testing
 /coverage
 
+# firebase
+.firebase/
+
+# next.js
+.next/
+/out/
+
 # production
 /build
 
-# firebase
-.firebaserc
-/.firebase
-firebase.json
-
 # misc
 .DS_Store
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+*.pem
 
+# debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-debug.log
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts

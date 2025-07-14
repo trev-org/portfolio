@@ -1,11 +1,16 @@
-html  {
-  background-color: #000;
+:root {
+  --background: #000;
+  --foreground: #F7F7F7;
+}
+
+html {
+  background-color: var(--background);
   scroll-behavior: smooth;
 }
 
-html, body  {
+html, body {
   font-family: 'MarketSans-Medium';
-  color: #F7F7F7;
+  color: var(--foreground);
   height: 100%;
   width: 100%;
   margin: 0;
@@ -30,43 +35,60 @@ html, body  {
   background: #BA0F2F;
 }
 
-p  {
+p {
   margin-block-start: 0.5em;
   margin-block-end: 0.5em;
 }
 
 @font-face {
   font-family: "MarketSans-Bold";
-  src: url(./fonts/MarketSans-Bold.otf) format('opentype');
+  src: url(/fonts/MarketSans-Bold.otf) format('opentype');
   font-style: normal;
 }
 
 @font-face {
   font-family: "MarketSans-Light";
-  src: url(./fonts/MarketSans-Light.otf) format('opentype');
+  src: url(/fonts/MarketSans-Light.otf) format('opentype');
   font-style: normal;
 }
 
 @font-face {
   font-family: "MarketSans-Medium";
-  src: url(./fonts/MarketSans-Medium.otf) format('opentype');
+  src: url(/fonts/MarketSans-Medium.otf) format('opentype');
   font-style: normal;
 }
 
 @font-face {
   font-family: "MarketSans-Regular";
-  src: url(./fonts/MarketSans-Regular.otf) format('opentype');
+  src: url(/fonts/MarketSans-Regular.otf) format('opentype');
   font-style: normal;
 }
 
 @font-face {
   font-family: "MarketSans-SemiBold";
-  src: url(./fonts/MarketSans-SemiBold.otf) format('opentype');
+  src: url(/fonts/MarketSans-SemiBold.otf) format('opentype');
   font-style: normal;
 }
 
 @font-face {
   font-family: "MarketSans-Thin";
-  src: url(./fonts/MarketSans-Thin.otf) format('opentype');
+  src: url(/fonts/MarketSans-Thin.otf) format('opentype');
   font-style: normal;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
 }
