@@ -4,4 +4,4 @@
 
 Welcome to my portfolio! This is a React application that features more about me. It can be viewed with this [link](https://trevorgerald.web.app/).
 
-V3.5
+V3.6

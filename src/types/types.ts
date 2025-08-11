@@ -16,6 +16,16 @@ export interface History {
   played_at: string;
 }
 
+export interface Article {
+  id: number;
+  created_at: string;
+  title: string;
+  description: string;
+  favicon: string;
+  link: string;
+  has_read: boolean;
+}
+
 export interface CurrentlyPlaying {
   name: string;
   artist: string;

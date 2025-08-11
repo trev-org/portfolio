@@ -36,7 +36,7 @@ const Home: React.FC = () => {
   const introRef = useRef<HTMLDivElement>(null);
   const experienceRef = useRef<HTMLDivElement>(null);
   const educationRef = useRef<HTMLDivElement>(null);
-  const musicRef = useRef<HTMLDivElement>(null);
+  const extrasRef = useRef<HTMLDivElement>(null);
   const projectRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -121,20 +121,20 @@ const Home: React.FC = () => {
       }
     }, 3500);
 
-    const projectsFadeTimer = setTimeout(() => {
-      if (projectRef.current) {
+    const extrasFadeTimer = setTimeout(() => {
+      if (extrasRef.current) {
         gsap.fromTo(
-          projectRef.current,
+          extrasRef.current,
           { opacity: 0, y: 20 },
           { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
         );
       }
     }, 4000);
 
-    const musicFadeTimer = setTimeout(() => {
-      if (musicRef.current) {
+    const projectsFadeTimer = setTimeout(() => {
+      if (projectRef.current) {
         gsap.fromTo(
-          musicRef.current,
+          projectRef.current,
           { opacity: 0, y: 20 },
           { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
         );
@@ -147,8 +147,8 @@ const Home: React.FC = () => {
       clearTimeout(introFadeTimer);
       clearTimeout(experienceFadeTimer);
       clearTimeout(educationFadeTimer);
+      clearTimeout(extrasFadeTimer);
       clearTimeout(projectsFadeTimer);
-      clearTimeout(musicFadeTimer);
     };
   }, []);
 
@@ -212,6 +212,23 @@ const Home: React.FC = () => {
               </div>
               <span className={styles.experienceItemPosition}>
                 Engineering/GTM
+              </span>
+            </div>
+          </div>
+          <div className={styles.experienceItem}>
+            <Image
+              src="/static/perplexity.jpeg"
+              className={styles.experienceLogo}
+              alt="Perplexity"
+              width={40}
+              height={40}
+            />
+            <div className={styles.experienceItemContent}>
+              <div className={styles.experienceItemHeader}>
+                <span className={styles.experienceItemCompany}>Perplexity</span>
+              </div>
+              <span className={styles.experienceItemPosition}>
+                Fellow
               </span>
             </div>
           </div>
@@ -303,6 +320,44 @@ const Home: React.FC = () => {
                 Computer Science and Engineering, Bachelors
               </span>
             </div>
+          </div>
+        </section>
+
+        <section className={styles.educationContain} ref={extrasRef}>
+          <div className={styles.sectionTitleContainer}>
+            <span className={styles.sectionTitle} style={{ marginBottom: 0 }}>
+              Extras
+            </span>
+          </div>
+          <div className={styles.extrasGrid}>
+          <Link href="/music">
+            <div className={styles.projectsItem}>
+              <div className={styles.projectItemHoverTopLeft}></div>
+              <div className={styles.projectItemHoverBottomRight}></div>
+              <div className={styles.projectItemHoverLeft}></div>
+              <div className={styles.projectItemHoverBottom}></div>
+              <div className={styles.projectsItemContentContain}>
+                <span className={styles.projectsItemTitle}>Music</span>
+                <span className={styles.projectsItemDesc}>
+                A glimpse into my current listening habits and recent audio discoveries
+                </span>
+              </div>
+            </div>
+          </Link>
+          <Link href="/pocket">
+            <div className={styles.projectsItem}>
+              <div className={styles.projectItemHoverTopLeft}></div>
+              <div className={styles.projectItemHoverBottomRight}></div>
+              <div className={styles.projectItemHoverLeft}></div>
+              <div className={styles.projectItemHoverBottom}></div>
+              <div className={styles.projectsItemContentContain}>
+                <span className={styles.projectsItemTitle}>Pocket</span>
+                <span className={styles.projectsItemDesc}>
+                A handpicked collection of articles I'm drawn to and eager to explore
+                </span>
+              </div>
+            </div>
+          </Link>
           </div>
         </section>
 
@@ -398,17 +453,6 @@ const Home: React.FC = () => {
                 </span>
               </div>
             </div>
-          </div>
-        </section>
-
-        <section className={styles.educationContain} ref={musicRef}>
-          <div className={styles.sectionTitleContainer}>
-            <span className={styles.sectionTitle} style={{ marginBottom: 0 }}>
-              Music
-            </span>
-            <Link className={styles.sectionTitleLink} href="/music">
-              See More
-            </Link>
           </div>
         </section>
 

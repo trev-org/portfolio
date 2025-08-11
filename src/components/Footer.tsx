@@ -55,7 +55,7 @@ const Footer: React.FC = () => {
     <>
       <section style={styles.footer}>
         <span style={styles.clock}>{currentTime}</span>
-        <span style={styles.quote}>v3.5</span>
+        <span style={styles.quote}>v3.6</span>
       </section>
     </>
   );

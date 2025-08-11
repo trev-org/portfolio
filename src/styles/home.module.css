@@ -315,7 +315,7 @@
   margin: 3vh 0;
 }
 
-/* Music Styling */
+/* Extras Styling */
 .sectionTitleContainer {
   display: flex;
   flex-direction: row;
@@ -334,4 +334,10 @@
 }
 .sectionTitleLink:hover {
   opacity: 1;
+}
+.extrasGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  width: 100%;
 }
