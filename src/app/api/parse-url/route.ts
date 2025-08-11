@@ -52,13 +52,14 @@ export async function POST(request: NextRequest) {
     try {
       faviconUrl = new URL(favicon, url).href;
     } catch (e) {
+      console.error("Failed to parse favicon URL:", e);
       // If favicon URL is invalid, use a default
       faviconUrl = "/favicon.ico";
     }
 
     const supabase = createClient();
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("pocket")
       .insert({
         title,

@@ -121,17 +121,17 @@ const Pocket: React.FC = () => {
                   <div className={styles.modalHeader}>Articles</div>
                   {articles && articles.length > 0 && (
                     <div className={styles.modalArticlesGrid}>
-                      {articles.map((article: any, index: number) => (
+                      {articles.map((article: Article, index: number) => (
                         <div key={index} className={styles.modalArticlesItem}>
                             <div className={styles.modalArticlesItemTitle}>
                               {article.title}
                             </div>
                             <select
-                              value={article.has_read}
+                              value={article.has_read ? "true" : "false"}
                               onChange={(e) => {
                                 const updatedArticle = {
                                   ...article,
-                                  has_read: e.target.value,
+                                  has_read: e.target.value === "true",
                                 };
                                 const updatedArticles = articles.map((a) =>
                                   a.id === article.id ? updatedArticle : a
@@ -186,7 +186,7 @@ const Pocket: React.FC = () => {
             </div>
             {!isArticlesLoading && articles && articles.length > 0 && (
               <div className={styles.articlesGrid}>
-                {articles.map((item: any, index: number) => (
+                {articles.map((item: Article, index: number) => (
                   <Link href={`${item.link}`} target="_blank" key={index}>
                     <div className={styles.articleItem}>
                       <div className={styles.articleHoverTopLeft}></div>

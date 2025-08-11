@@ -353,7 +353,7 @@ const Home: React.FC = () => {
               <div className={styles.projectsItemContentContain}>
                 <span className={styles.projectsItemTitle}>Pocket</span>
                 <span className={styles.projectsItemDesc}>
-                A handpicked collection of articles I'm drawn to and eager to explore
+                A handpicked collection of articles I&apos;m drawn to and eager to explore
                 </span>
               </div>
             </div>
