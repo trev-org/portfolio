@@ -51,7 +51,6 @@
   width: 100%;
   box-sizing: border-box;
   padding: 20px;
-  margin: 3vh 0;
 }
 .brandingHeader {
   display: flex;
@@ -64,7 +63,7 @@
 .name {
   text-decoration: none;
   color: #fff5ea;
-  font-size: 25px;
+  font-size: 16px;
   letter-spacing: -0.03em;
   font-family: "MarketSans-Bold";
   user-select: none;
@@ -73,7 +72,7 @@
   font-family: "MarketSans-Regular";
   text-decoration: none;
   color: #807b75;
-  font-size: 16px;
+  font-size: 14px;
   user-select: none;
 }
 .menuContain {
@@ -112,13 +111,13 @@
 }
 .menu:active,
 .menuItem:active {
-  color: #ba0f2f;
+  color: var(--main-color);
 }
 .sectionTitle {
   text-decoration: none;
   color: #fff5ea;
   opacity: 0.5;
-  font-size: 20px;
+  font-size: 16px;
   font-family: "MarketSans-Bold";
   user-select: none;
   margin-bottom: 2em;
@@ -127,7 +126,7 @@
   text-decoration: none;
   color: #fff5ea;
   opacity: 0.5;
-  font-size: 14px;
+  font-size: 12px;
   font-family: "MarketSans-Regular";
   user-select: none;
 }
@@ -208,10 +207,10 @@
   height: 8px;
 }
 .currentlyPlayingLogo {
-  width: 45px;
-  height: 45px;
-  border-radius: 7.5px;
-  margin-right: 15px;
+  width: 35px;
+  height: 35px;
+  border-radius: 5px;
+  margin-right: 10px;
 }
 .currentlyPlayingInfo {
   display: flex;
@@ -232,7 +231,7 @@
 .currentlyPlayingArtist {
   font-family: "MarketSans-Regular";
   color: #807b75;
-  font-size: 14px;
+  font-size: 12px;
   user-select: none;
 }
 .progressBarContainer {
@@ -256,7 +255,6 @@
   width: 100%;
   box-sizing: border-box;
   padding: 20px;
-  margin-bottom: 3vh;
 }
 .recentlyPlayedItem {
   display: flex;
@@ -298,7 +296,6 @@
   width: 100%;
   box-sizing: border-box;
   padding: 20px;
-  margin-bottom: 3vh;
 }
 .albumReviewItem {
   display: flex;
@@ -325,7 +322,7 @@
 .albumReviewItemCompany {
   font-family: "MarketSans-Medium";
   color: #fff5ea;
-  font-size: 16px;
+  font-size: 14px;
   user-select: none;
 }
 .albumReviewItemCompanyNonPresent {
@@ -340,12 +337,12 @@
 .albumReviewItemPosition {
   font-family: "MarketSans-Regular";
   color: #807b75;
-  font-size: 14px;
+  font-size: 12px;
   user-select: none;
 }
 .albumReviewItemRating {
   padding: 5px;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 @media (max-width: 768px) {
@@ -374,7 +371,7 @@
 
 .historyItem {
   flex: 0 0 auto;
-  width: 140px;
+  width: 120px;
   scroll-snap-align: start;
 }
 

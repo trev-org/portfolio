@@ -3,14 +3,13 @@ import React, { CSSProperties, useState, useEffect } from "react";
 interface FooterStyles {
   footer: CSSProperties;
   clock: CSSProperties;
-  quote: CSSProperties;
+  toTop: CSSProperties;
 }
 
 const styles: FooterStyles = {
   footer: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
+    display: "grid",
+    gridTemplateColumns: "repeat(2, 1fr)",
     alignItems: "center",
     width: "100%",
     padding: "20px",
@@ -20,12 +19,13 @@ const styles: FooterStyles = {
     color: "#f7f7f7",
     opacity: 0.6,
     fontSize: "10px",
+    justifySelf: "start",
   },
-  quote: {
-    color: "#f7f7f7",
-    opacity: 0.6,
+  toTop: {
     fontSize: "10px",
     textTransform: "uppercase",
+    cursor: "pointer",
+    justifySelf: "end",
   },
 };
 
@@ -54,8 +54,15 @@ const Footer: React.FC = () => {
   return (
     <>
       <section style={styles.footer}>
-        <span style={styles.clock}>{currentTime}</span>
-        <span style={styles.quote}>v3.6.1</span>
+        <span style={styles.clock}> {currentTime}</span>
+        <span
+          style={styles.toTop}
+          onClick={() => {
+            window.scrollTo(0, 0);
+          }}
+        >
+          🟪
+        </span>
       </section>
     </>
   );

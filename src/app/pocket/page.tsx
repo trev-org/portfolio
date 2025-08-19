@@ -123,25 +123,25 @@ const Pocket: React.FC = () => {
                     <div className={styles.modalArticlesGrid}>
                       {articles.map((article: Article, index: number) => (
                         <div key={index} className={styles.modalArticlesItem}>
-                            <div className={styles.modalArticlesItemTitle}>
-                              {article.title}
-                            </div>
-                            <select
-                              value={article.has_read ? "true" : "false"}
-                              onChange={(e) => {
-                                const updatedArticle = {
-                                  ...article,
-                                  has_read: e.target.value === "true",
-                                };
-                                const updatedArticles = articles.map((a) =>
-                                  a.id === article.id ? updatedArticle : a
-                                );
-                                setArticles(updatedArticles);
-                              }}
-                            >
-                              <option value="true">Read</option>
-                              <option value="false">Not Read</option>
-                            </select>
+                          <div className={styles.modalArticlesItemTitle}>
+                            {article.title}
+                          </div>
+                          <select
+                            value={article.has_read ? "true" : "false"}
+                            onChange={(e) => {
+                              const updatedArticle = {
+                                ...article,
+                                has_read: e.target.value === "true",
+                              };
+                              const updatedArticles = articles.map((a) =>
+                                a.id === article.id ? updatedArticle : a
+                              );
+                              setArticles(updatedArticles);
+                            }}
+                          >
+                            <option value="true">Read</option>
+                            <option value="false">Not Read</option>
+                          </select>
                         </div>
                       ))}
                     </div>
@@ -154,7 +154,15 @@ const Pocket: React.FC = () => {
                       placeholder="URL"
                       className={styles.modalAddArticleInput}
                     />
-                    <button className={styles.modalAddArticleButton} onClick={() => parseURL((document.getElementById("url") as HTMLInputElement).value)}>
+                    <button
+                      className={styles.modalAddArticleButton}
+                      onClick={() =>
+                        parseURL(
+                          (document.getElementById("url") as HTMLInputElement)
+                            .value
+                        )
+                      }
+                    >
                       Add
                     </button>
                   </div>
@@ -173,7 +181,8 @@ const Pocket: React.FC = () => {
           </div>
           <div className={styles.introContain}>
             <p className={styles.intro}>
-              This is where I collect the sparks of thought.
+              This is where I collect the sparks of thought that I find
+              interesting.
             </p>
           </div>
         </div>
@@ -198,8 +207,8 @@ const Pocket: React.FC = () => {
                           src={item.favicon}
                           className={styles.articlesLogo}
                           alt={item.title}
-                          width={80}
-                          height={80}
+                          width={50}
+                          height={50}
                         />
                         <div className={styles.articlesItemContent}>
                           <div className={styles.articleTitleContain}>

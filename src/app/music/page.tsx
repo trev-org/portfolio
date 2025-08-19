@@ -133,7 +133,7 @@ const Music: React.FC = () => {
     return () => {
       if (progressInterval) clearInterval(progressInterval);
     };
-  }, [currentlyPlaying]);
+  }, [currentlyPlaying, fetchCurrentlyPlaying]);
 
   return (
     <>
@@ -155,8 +155,8 @@ const Music: React.FC = () => {
                       src={currentlyPlaying.image}
                       className={styles.currentlyPlayingLogo}
                       alt={currentlyPlaying.name}
-                      width={60}
-                      height={60}
+                      width={50}
+                      height={50}
                     />
                     <div className={styles.currentlyPlayingInfo}>
                       <span className={styles.currentlyPlayingSong}>

@@ -1,6 +1,7 @@
 :root {
   --background: #000;
   --foreground: #F7F7F7;
+  --main-color: #B931FF;
 }
 
 html {
@@ -10,6 +11,7 @@ html {
 
 html, body {
   font-family: 'MarketSans-Medium';
+  font-size: 14px;
   color: var(--foreground);
   height: 100%;
   width: 100%;
@@ -32,7 +34,7 @@ html, body {
   transition: all 1.5s cubic-bezier(.075,.82,.165,1);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #BA0F2F;
+  background: var(--main-color);
 }
 
 p {
@@ -61,18 +63,6 @@ p {
 @font-face {
   font-family: "MarketSans-Regular";
   src: url(/fonts/MarketSans-Regular.otf) format('opentype');
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "MarketSans-SemiBold";
-  src: url(/fonts/MarketSans-SemiBold.otf) format('opentype');
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "MarketSans-Thin";
-  src: url(/fonts/MarketSans-Thin.otf) format('opentype');
   font-style: normal;
 }
 

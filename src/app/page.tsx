@@ -32,12 +32,43 @@ const useWindowWidth = (): number => {
 
 const Home: React.FC = () => {
   const width = useWindowWidth();
+  const brandingRef = useRef<HTMLDivElement>(null);
   const nameRef = useRef<HTMLSpanElement>(null);
   const introRef = useRef<HTMLDivElement>(null);
   const experienceRef = useRef<HTMLDivElement>(null);
   const educationRef = useRef<HTMLDivElement>(null);
   const extrasRef = useRef<HTMLDivElement>(null);
   const projectRef = useRef<HTMLDivElement>(null);
+  const projectListRef = useRef<HTMLDivElement>(null);
+  const explanationRef = useRef<HTMLDivElement>(null);
+
+  const projects = {
+    rtuhub: {
+      name: "RTU Hub",
+      link: "https://rtuhub.com/",
+      description: "one-stop shop for discovering food service products",
+    },
+    polymer: {
+      name: "Polymer",
+      link: "",
+      description: "redefining social media x music",
+    },
+    honeycomb: {
+      name: "Honeycomb Studios",
+      link: "https://honeycomb-studios.web.app/",
+      description: "high quality posters for the masses",
+    },
+    urmp: {
+      name: "URMP",
+      link: "https://research.osu.dev/",
+      description: "platform to connect researchers to mentees, 500+ users",
+    },
+  };
+
+  const [hoveredProject, setHoveredProject] = useState<
+    keyof typeof projects | null
+  >(null);
+  const [isProjectHovering, setIsProjectHovering] = useState<boolean>(false);
 
   useEffect(() => {
     // Initialize Firebase Analytics
@@ -45,6 +76,45 @@ const Home: React.FC = () => {
       getAnalytics(app);
     }
   }, []);
+
+  // Close explanation on outside click or Escape
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (
+        isProjectHovering &&
+        !projectListRef.current?.contains(target) &&
+        !explanationRef.current?.contains(target)
+      ) {
+        setHoveredProject(null);
+        setIsProjectHovering(false);
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setHoveredProject(null);
+        setIsProjectHovering(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isProjectHovering]);
+
+  const toggleProject = (key: keyof typeof projects) => {
+    if (hoveredProject === key && isProjectHovering) {
+      setHoveredProject(null);
+      setIsProjectHovering(false);
+    } else {
+      setHoveredProject(key);
+      setIsProjectHovering(true);
+    }
+  };
 
   const animateName = () => {
     if (!nameRef.current) return;
@@ -66,21 +136,21 @@ const Home: React.FC = () => {
         color: "#F7F7F7",
       },
       {
-        duration: 0.1,
-        stagger: 0.1,
+        duration: 0.05,
+        stagger: 0.05,
         repeat: -1,
         yoyo: true,
         repeatDelay: 1.5,
-        color: "#BA0F2F",
+        color: "var(--main-color)",
       }
     );
   };
 
   useEffect(() => {
-    const nameFadeTimer = setTimeout(() => {
-      if (nameRef.current) {
+    const brandingFadeTimer = setTimeout(() => {
+      if (brandingRef.current) {
         gsap.fromTo(
-          nameRef.current,
+          brandingRef.current,
           { opacity: 0, y: 20 },
           { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
         );
@@ -89,7 +159,7 @@ const Home: React.FC = () => {
 
     const animationTimer = setTimeout(() => {
       animateName();
-    }, 1000);
+    }, 0);
 
     const introFadeTimer = setTimeout(() => {
       if (introRef.current) {
@@ -99,7 +169,7 @@ const Home: React.FC = () => {
           { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
         );
       }
-    }, 2500);
+    }, 750);
 
     const experienceFadeTimer = setTimeout(() => {
       if (experienceRef.current) {
@@ -109,7 +179,7 @@ const Home: React.FC = () => {
           { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
         );
       }
-    }, 3000);
+    }, 1000);
 
     const educationFadeTimer = setTimeout(() => {
       if (educationRef.current) {
@@ -119,7 +189,7 @@ const Home: React.FC = () => {
           { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
         );
       }
-    }, 3500);
+    }, 1250);
 
     const extrasFadeTimer = setTimeout(() => {
       if (extrasRef.current) {
@@ -129,7 +199,7 @@ const Home: React.FC = () => {
           { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
         );
       }
-    }, 4000);
+    }, 1500);
 
     const projectsFadeTimer = setTimeout(() => {
       if (projectRef.current) {
@@ -139,10 +209,10 @@ const Home: React.FC = () => {
           { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
         );
       }
-    }, 4500);
+    }, 1750);
 
     return () => {
-      clearTimeout(nameFadeTimer);
+      clearTimeout(brandingFadeTimer);
       clearTimeout(animationTimer);
       clearTimeout(introFadeTimer);
       clearTimeout(experienceFadeTimer);
@@ -158,9 +228,24 @@ const Home: React.FC = () => {
       <div className={styles.landingContain}>
         {/* Branding Section */}
         <section className={styles.brandingContain}>
-          <span className={styles.name} ref={nameRef}>
-            Trevor Gerald.
-          </span>
+          <div className={styles.brandingContent} ref={brandingRef}>
+            <span className={styles.name} ref={nameRef}>
+              Trevor Gerald.
+            </span>
+            <div className={styles.brandingLinks}>
+              <a
+                className={styles.introLink}
+                href="https://www.linkedin.com/in/trevorgerald/"
+                rel="noreferrer"
+                target="_blank"
+              >
+                IN
+              </a>
+              <a className={styles.introLink} href="mailto:gerald.26@osu.edu">
+                MAIL
+              </a>
+            </div>
+          </div>
           <div className={styles.introContain} ref={introRef}>
             <p className={styles.intro}>
               Hey! I&apos;m a software engineer based in Columbus + a student
@@ -171,32 +256,34 @@ const Home: React.FC = () => {
             <p className={styles.intro}>
               Building software has been a passion of mine from a young
               age&mdash;so much so that it&apos;s now a form of creative
-              expression. I believe the best tools are intuitive, efficient, and
-              accessible to everyone. I&apos;m passionate about AI and web +
-              mobile dev, focusing on building SaaS products and solutions that
-              solve problems and empower others.
-            </p>
-            <p className={styles.intro}>
-              You can connect with me on{" "}
-              <a
-                className={styles.introLink}
-                href="https://www.linkedin.com/in/trevorgerald/"
-                rel="noreferrer"
-                target="_blank"
-              >
-                LinkedIn
-              </a>{" "}
-              or reach me at{" "}
-              <a className={styles.introLink} href="mailto:gerald.26@osu.edu">
-                gerald.26@osu.edu
-              </a>
-              .
+              expression. I believe the best tools are aestheically pleasing,
+              efficient, and accessible to everyone. I&apos;m passionate about
+              building tools that make the world a better place.
             </p>
           </div>
         </section>
 
         <section className={styles.experienceContain} ref={experienceRef}>
           <span className={styles.sectionTitle}>Experience</span>
+          <div className={styles.experienceItem}>
+            <Image
+              src="/static/cognition.jpeg"
+              className={styles.experienceLogo}
+              alt="Cognition"
+              width={40}
+              height={40}
+            />
+            <div className={styles.experienceItemContent}>
+              <div className={styles.experienceItemHeader}>
+                <span className={styles.experienceItemCompany}>Cognition</span>
+                {/* <span className={styles.experienceItemPresentTag}>Present</span> */}
+              </div>
+              <span className={styles.experienceItemPosition}>
+                Engineering + GTM
+              </span>
+            </div>
+          </div>
+
           <div className={styles.experienceItem}>
             <Image
               src="/static/windsurf.jpeg"
@@ -208,10 +295,10 @@ const Home: React.FC = () => {
             <div className={styles.experienceItemContent}>
               <div className={styles.experienceItemHeader}>
                 <span className={styles.experienceItemCompany}>Windsurf</span>
-                <span className={styles.experienceItemPresentTag}>Present</span>
+                {/* <span className={styles.experienceItemPresentTag}>Present</span> */}
               </div>
               <span className={styles.experienceItemPosition}>
-                Engineering/GTM
+                Engineering + GTM, Acquired by Cognition
               </span>
             </div>
           </div>
@@ -227,24 +314,7 @@ const Home: React.FC = () => {
               <div className={styles.experienceItemHeader}>
                 <span className={styles.experienceItemCompany}>Perplexity</span>
               </div>
-              <span className={styles.experienceItemPosition}>
-                Fellow
-              </span>
-            </div>
-          </div>
-          <div className={styles.experienceItem}>
-            <Image
-              src="/static/stealth.png"
-              className={styles.experienceLogo}
-              alt="Stealth"
-              width={40}
-              height={40}
-            />
-            <div className={styles.experienceItemContent}>
-              <div className={styles.experienceItemHeader}>
-                <span className={styles.experienceItemCompany}>Stealth</span>
-              </div>
-              <span className={styles.experienceItemPosition}>Founding</span>
+              <span className={styles.experienceItemPosition}>Fellow</span>
             </div>
           </div>
 
@@ -260,23 +330,9 @@ const Home: React.FC = () => {
               <span className={styles.experienceItemCompanyNonPresent}>
                 Chipotle
               </span>
-              <span className={styles.experienceItemPosition}>Software</span>
-            </div>
-          </div>
-
-          <div className={styles.experienceItem}>
-            <Image
-              src="/static/bob-evans.png"
-              className={styles.experienceLogo}
-              alt="Bob Evans"
-              width={40}
-              height={40}
-            />
-            <div className={styles.experienceItemContent}>
-              <span className={styles.experienceItemCompanyNonPresent}>
-                Bob Evans
+              <span className={styles.experienceItemPosition}>
+                IT Infrastructure
               </span>
-              <span className={styles.experienceItemPosition}>Software</span>
             </div>
           </div>
 
@@ -292,7 +348,9 @@ const Home: React.FC = () => {
               <span className={styles.experienceItemCompanyNonPresent}>
                 Mimecast (Aware)
               </span>
-              <span className={styles.experienceItemPosition}>Software</span>
+              <span className={styles.experienceItemPosition}>
+                Internal Tooling
+              </span>
             </div>
           </div>
         </section>
@@ -313,7 +371,7 @@ const Home: React.FC = () => {
                   The Ohio State University
                 </span>
                 <span className={styles.experienceItemPresentTag}>
-                  {width <= 500 ? "Spring 2026" : "Expected: Spring 2026"}
+                  {width <= 500 ? "Dec 2025" : "Expected: Dec 2025"}
                 </span>
               </div>
               <span className={styles.experienceItemPosition}>
@@ -330,130 +388,110 @@ const Home: React.FC = () => {
             </span>
           </div>
           <div className={styles.extrasGrid}>
-          <Link href="/music">
-            <div className={styles.projectsItem}>
-              <div className={styles.projectItemHoverTopLeft}></div>
-              <div className={styles.projectItemHoverBottomRight}></div>
-              <div className={styles.projectItemHoverLeft}></div>
-              <div className={styles.projectItemHoverBottom}></div>
-              <div className={styles.projectsItemContentContain}>
-                <span className={styles.projectsItemTitle}>Music</span>
-                <span className={styles.projectsItemDesc}>
-                A glimpse into my current listening habits and recent audio discoveries
-                </span>
+            <Link href="/music">
+              <div className={styles.projectsItem}>
+                <div className={styles.projectItemHoverTopLeft}></div>
+                <div className={styles.projectItemHoverBottomRight}></div>
+                <div className={styles.projectItemHoverLeft}></div>
+                <div className={styles.projectItemHoverBottom}></div>
+                <div className={styles.projectsItemContentContain}>
+                  <span className={styles.projectsItemTitle}>Music</span>
+                  <span className={styles.projectsItemDesc}>
+                    A glimpse into my current listening habits and recent audio
+                    discoveries
+                  </span>
+                </div>
               </div>
-            </div>
-          </Link>
-          <Link href="/pocket">
-            <div className={styles.projectsItem}>
-              <div className={styles.projectItemHoverTopLeft}></div>
-              <div className={styles.projectItemHoverBottomRight}></div>
-              <div className={styles.projectItemHoverLeft}></div>
-              <div className={styles.projectItemHoverBottom}></div>
-              <div className={styles.projectsItemContentContain}>
-                <span className={styles.projectsItemTitle}>Pocket</span>
-                <span className={styles.projectsItemDesc}>
-                A handpicked collection of articles I&apos;m drawn to and eager to explore
-                </span>
+            </Link>
+            <Link href="/pocket">
+              <div className={styles.projectsItem}>
+                <div className={styles.projectItemHoverTopLeft}></div>
+                <div className={styles.projectItemHoverBottomRight}></div>
+                <div className={styles.projectItemHoverLeft}></div>
+                <div className={styles.projectItemHoverBottom}></div>
+                <div className={styles.projectsItemContentContain}>
+                  <span className={styles.projectsItemTitle}>Pocket</span>
+                  <span className={styles.projectsItemDesc}>
+                    A handpicked collection of knowledge I&apos;m drawn to and
+                    eager to explore
+                  </span>
+                </div>
               </div>
-            </div>
-          </Link>
+            </Link>
           </div>
         </section>
 
         <section className={styles.projectsContain} ref={projectRef}>
           <span className={styles.sectionTitle}>Projects</span>
-          <div className={styles.projectsGrid}>
-            <div className={styles.projectsItem}>
-              <div className={styles.projectItemHoverTopLeft}></div>
-              <div className={styles.projectItemHoverBottomRight}></div>
-              <div className={styles.projectItemHoverLeft}></div>
-              <div className={styles.projectItemHoverBottom}></div>
-              <div className={styles.projectsItemContentContain}>
-                <span className={styles.projectsItemTitle}>Rep Finder</span>
-                <span className={styles.projectsItemDesc}>
-                  Mobile app to track gym machine availability using computer
-                  vision
-                </span>
-              </div>
-            </div>
-
-            <div className={styles.projectsItem}>
-              <div className={styles.projectItemHoverTopLeft}></div>
-              <div className={styles.projectItemHoverBottomRight}></div>
-              <div className={styles.projectItemHoverLeft}></div>
-              <div className={styles.projectItemHoverBottom}></div>
-              <div className={styles.projectsItemContentContain}>
-                <span className={styles.projectsItemTitle}>
-                  Honeycomb Studios
-                </span>
-                <span className={styles.projectsItemDesc}>
-                  High-quality, custom posters designed to be visually stunning
-                  for the masses
-                </span>
-              </div>
-            </div>
-
-            <div className={styles.projectsItem}>
-              <div className={styles.projectItemHoverTopLeft}></div>
-              <div className={styles.projectItemHoverBottomRight}></div>
-              <div className={styles.projectItemHoverLeft}></div>
-              <div className={styles.projectItemHoverBottom}></div>
-              <div className={styles.projectsItemContentContain}>
-                <span className={styles.projectsItemTitle}>OSI Bot</span>
-                <span className={styles.projectsItemDesc}>
-                  LLM to diagnose problems with networking infrastructure at
-                  Chipotle restaurants
-                </span>
-              </div>
-            </div>
-
-            <div className={styles.projectsItem}>
-              <div className={styles.projectItemHoverTopLeft}></div>
-              <div className={styles.projectItemHoverBottomRight}></div>
-              <div className={styles.projectItemHoverLeft}></div>
-              <div className={styles.projectItemHoverBottom}></div>
-              <div className={styles.projectsItemContentContain}>
-                <span className={styles.projectsItemTitle}>
-                  Research Mentorship Program
-                </span>
-                <span className={styles.projectsItemDesc}>
-                  Web platform commissioned by Ohio State&apos;s Undergraduate
-                  Student Government
-                </span>
-              </div>
-            </div>
-
-            <div className={styles.projectsItem}>
-              <div className={styles.projectItemHoverTopLeft}></div>
-              <div className={styles.projectItemHoverBottomRight}></div>
-              <div className={styles.projectItemHoverLeft}></div>
-              <div className={styles.projectItemHoverBottom}></div>
-              <div className={styles.projectsItemContentContain}>
-                <span className={styles.projectsItemTitle}>
-                  Brutus the Plumber
-                </span>
-                <span className={styles.projectsItemDesc}>
-                  Super Mario clone developed in C featuring both a graphics + a
-                  text mode
-                </span>
-              </div>
-            </div>
-
-            <div className={styles.projectsItem}>
-              <div className={styles.projectItemHoverTopLeft}></div>
-              <div className={styles.projectItemHoverBottomRight}></div>
-              <div className={styles.projectItemHoverLeft}></div>
-              <div className={styles.projectItemHoverBottom}></div>
-              <div className={styles.projectsItemContentContain}>
-                <span className={styles.projectsItemTitle}>Brawl Stars</span>
-                <span className={styles.projectsItemDesc}>
-                  Brawl Stars clone written for the Freescale Kinetis K60 in C++
-                  with custom graphics libraries
-                </span>
-              </div>
-            </div>
+          <div className={styles.projectList} ref={projectListRef}>
+            <button
+              onClick={() => toggleProject("rtuhub")}
+              className={
+                hoveredProject === "rtuhub" ? styles.activeProject : ""
+              }
+              aria-label={projects.rtuhub.name}
+              title={projects.rtuhub.name}
+            >
+              🍔
+            </button>
+            <button
+              onClick={() => toggleProject("polymer")}
+              className={
+                hoveredProject === "polymer" ? styles.activeProject : ""
+              }
+              aria-label={projects.polymer.name}
+              title={projects.polymer.name}
+            >
+              🎧
+            </button>
+            <button
+              onClick={() => toggleProject("honeycomb")}
+              className={
+                hoveredProject === "honeycomb" ? styles.activeProject : ""
+              }
+              aria-label={projects.honeycomb.name}
+              title={projects.honeycomb.name}
+            >
+              🖼️
+            </button>
+            <button
+              onClick={() => toggleProject("urmp")}
+              className={hoveredProject === "urmp" ? styles.activeProject : ""}
+              aria-label={projects.urmp.name}
+              title={projects.urmp.name}
+            >
+              👨‍🔬
+            </button>
           </div>
+          {isProjectHovering && (
+            <div
+              className={`${styles.projectExplanation} ${
+                isProjectHovering ? styles.showExplanation : ""
+              }`}
+              ref={explanationRef}
+            >
+              {hoveredProject ? (
+                <>
+                  {projects[hoveredProject].link ? (
+                    <a
+                      href={projects[hoveredProject].link}
+                      target="_blank"
+                      rel="noreferrer"
+                      className={styles.projectLink}
+                    >
+                      {projects[hoveredProject].name}
+                    </a>
+                  ) : (
+                    projects[hoveredProject].name
+                  )}
+                  {" — "}
+                  {projects[hoveredProject].description}
+                </>
+              ) : (
+                ""
+              )}
+            </div>
+          )}
         </section>
 
         <Footer />
