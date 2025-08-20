@@ -9,6 +9,10 @@ html {
   scroll-behavior: smooth;
 }
 
+*:focus {
+  outline: none;
+}
+
 html, body {
   font-family: 'MarketSans-Medium';
   font-size: 14px;

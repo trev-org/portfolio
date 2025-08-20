@@ -201,8 +201,10 @@ const Music: React.FC = () => {
                 <span className={styles.sectionSubtitle}>
                   last at{" "}
                   {new Date(history[0].played_at).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
+                    day: "numeric",
+                    month: "numeric",
+                    hour: "numeric",
+                    minute: "numeric",
                   })}
                 </span>
               )}
