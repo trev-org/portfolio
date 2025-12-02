@@ -9,6 +9,23 @@
   margin: 0 auto;
   transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
 }
+/* Staggered fade-in animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fadeInUp {
+  opacity: 0;
+  animation: fadeInUp 1s ease-out forwards;
+}
+
 .brandingContain,
 .musicContain {
   opacity: 0;

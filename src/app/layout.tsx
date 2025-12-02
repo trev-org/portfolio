@@ -3,8 +3,9 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Trevor Gerald - Portfolio",
-  description: "Personal portfolio showcasing my work in music, development, and creative projects",
-  keywords: "portfolio, developer, music, creative",
+  description: "All about me.",
+  keywords:
+    "portfolio, developer, trevor, trevor gerald, trevor gerald portfolio",
   authors: [{ name: "Trevor Gerald" }],
 };
 
@@ -20,9 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

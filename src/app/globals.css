@@ -1,7 +1,7 @@
 :root {
-  --background: #000;
-  --foreground: #F7F7F7;
-  --main-color: #B931FF;
+  --background: #121212;
+  --foreground: #e5e5e0;
+  --main-color: #b931ff;
 }
 
 html {
@@ -13,8 +13,9 @@ html {
   outline: none;
 }
 
-html, body {
-  font-family: 'MarketSans-Medium';
+html,
+body {
+  font-family: "MarketSans-Medium";
   font-size: 14px;
   color: var(--foreground);
   height: 100%;
@@ -28,14 +29,14 @@ html, body {
 
 ::-webkit-scrollbar {
   width: 10px;
-  transition: all 1.5s cubic-bezier(.075,.82,.165,1);
+  transition: all 1.5s cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 ::-webkit-scrollbar-track {
-  background: #3B3B3B;
+  background: #3b3b3b;
 }
 ::-webkit-scrollbar-thumb {
-  background: #2B2B2B;
-  transition: all 1.5s cubic-bezier(.075,.82,.165,1);
+  background: #2b2b2b;
+  transition: all 1.5s cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--main-color);
@@ -48,25 +49,25 @@ p {
 
 @font-face {
   font-family: "MarketSans-Bold";
-  src: url(/fonts/MarketSans-Bold.otf) format('opentype');
+  src: url(/fonts/MarketSans-Bold.otf) format("opentype");
   font-style: normal;
 }
 
 @font-face {
   font-family: "MarketSans-Light";
-  src: url(/fonts/MarketSans-Light.otf) format('opentype');
+  src: url(/fonts/MarketSans-Light.otf) format("opentype");
   font-style: normal;
 }
 
 @font-face {
   font-family: "MarketSans-Medium";
-  src: url(/fonts/MarketSans-Medium.otf) format('opentype');
+  src: url(/fonts/MarketSans-Medium.otf) format("opentype");
   font-style: normal;
 }
 
 @font-face {
   font-family: "MarketSans-Regular";
-  src: url(/fonts/MarketSans-Regular.otf) format('opentype');
+  src: url(/fonts/MarketSans-Regular.otf) format("opentype");
   font-style: normal;
 }
 

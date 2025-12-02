@@ -1,75 +1,22 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "../../styles/pocket.module.css";
 import Footer from "../../components/Footer";
 import { createClient } from "../../lib/supabase";
 import Image from "next/image";
-import gsap from "gsap";
 import { Article } from "../../types/types";
 import Link from "next/link";
 
 const Pocket: React.FC = () => {
   const [articles, setArticles] = useState<Article[]>([]);
   const [isArticlesLoading, setIsArticlesLoading] = useState<boolean>(true);
-  const [modalOpen, setModalOpen] = useState<boolean>(false);
-  const [authenticated, setAuthenticated] = useState<boolean>(false);
-  const nameRef = useRef<HTMLDivElement>(null);
-  const sectionRef = useRef<HTMLDivElement>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
 
+  // Trigger CSS animations on mount
   useEffect(() => {
-    const nameFadeTimer = setTimeout(() => {
-      if (nameRef.current) {
-        gsap.fromTo(
-          nameRef.current,
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
-        );
-      }
-    }, 0);
-    const sectionFadeTimer = setTimeout(() => {
-      if (sectionRef.current) {
-        gsap.fromTo(
-          sectionRef.current,
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
-        );
-      }
-    }, 500);
-    return () => {
-      clearTimeout(nameFadeTimer);
-      clearTimeout(sectionFadeTimer);
-    };
+    setIsLoaded(true);
   }, []);
-
-  function checkAuth() {
-    const password = document.getElementById("password") as HTMLInputElement;
-    if (password.value === process.env.NEXT_PUBLIC_PASSWORD) {
-      setAuthenticated(true);
-    }
-  }
-
-  async function parseURL(url: string) {
-    try {
-      const response = await fetch("/api/parse-url", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ url }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error(`Failed to parse URL: ${url}`, error);
-      return null;
-    }
-  }
 
   useEffect(() => {
     async function fetchArticles() {
@@ -91,107 +38,35 @@ const Pocket: React.FC = () => {
     <>
       {/* Landing Section */}
       <div className={styles.landingContain}>
-        {/* Modal */}
-        {modalOpen && (
-          <div className={styles.modal}>
-            <div className={styles.modalIconHeader}>
-              <span
-                className={styles.close}
-                onClick={() => setModalOpen(false)}
-              >
-                &times;
-              </span>
-            </div>
-            <div className={styles.modalContent}>
-              {!authenticated && (
-                <div className={styles.modalForm}>
-                  <input
-                    id="password"
-                    type="password"
-                    className={styles.modalPasswordInput}
-                    placeholder="Password"
-                  />
-                  <button className={styles.modalButton} onClick={checkAuth}>
-                    Submit
-                  </button>
-                </div>
-              )}
-              {authenticated && (
-                <>
-                  <div className={styles.modalHeader}>Articles</div>
-                  {articles && articles.length > 0 && (
-                    <div className={styles.modalArticlesGrid}>
-                      {articles.map((article: Article, index: number) => (
-                        <div key={index} className={styles.modalArticlesItem}>
-                          <div className={styles.modalArticlesItemTitle}>
-                            {article.title}
-                          </div>
-                          <select
-                            value={article.has_read ? "true" : "false"}
-                            onChange={(e) => {
-                              const updatedArticle = {
-                                ...article,
-                                has_read: e.target.value === "true",
-                              };
-                              const updatedArticles = articles.map((a) =>
-                                a.id === article.id ? updatedArticle : a
-                              );
-                              setArticles(updatedArticles);
-                            }}
-                          >
-                            <option value="true">Read</option>
-                            <option value="false">Not Read</option>
-                          </select>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  <div className={styles.modalHeader}>Add Article</div>
-                  <div className={styles.modalAddArticleForm}>
-                    <input
-                      type="text"
-                      id="url"
-                      placeholder="URL"
-                      className={styles.modalAddArticleInput}
-                    />
-                    <button
-                      className={styles.modalAddArticleButton}
-                      onClick={() =>
-                        parseURL(
-                          (document.getElementById("url") as HTMLInputElement)
-                            .value
-                        )
-                      }
-                    >
-                      Add
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        )}
-
         {/* Branding Section */}
-        <div className={styles.brandingContain} ref={nameRef}>
+        <div
+          className={`${styles.brandingContain} ${
+            isLoaded ? styles.fadeInUp : ""
+          }`}
+        >
           <div className={styles.brandingHeader}>
-            <span className={styles.name} onClick={() => setModalOpen(true)}>
+            <Link className={styles.name} href="/">
               Pocket
-            </span>
+            </Link>
           </div>
           <div className={styles.introContain}>
             <p className={styles.intro}>
               This is where I collect the sparks of thought that I find
-              interesting.
+              interesting and sometimes write my own.
             </p>
           </div>
         </div>
 
-        <div className={styles.musicContain} ref={sectionRef}>
+        <div
+          className={`${styles.musicContain} ${
+            isLoaded ? styles.fadeInUp : ""
+          }`}
+          style={{ animationDelay: "0.05s" }}
+        >
           {/* Recently Played Section */}
           <section className={styles.articlesContain}>
             <div className={styles.sectionTitleContainer}>
-              <span className={styles.sectionTitle}>Articles</span>
+              <span className={styles.sectionTitle}>Saved Articles</span>
             </div>
             {!isArticlesLoading && articles && articles.length > 0 && (
               <div className={styles.articlesGrid}>
@@ -215,7 +90,7 @@ const Pocket: React.FC = () => {
                             <span className={styles.articleTitle}>
                               {item.title}
                             </span>
-                            <span
+                            {/* <span
                               className={
                                 item.has_read
                                   ? styles.articleHasRead
@@ -223,7 +98,7 @@ const Pocket: React.FC = () => {
                               }
                             >
                               {item.has_read ? "Read" : "Not Read"}
-                            </span>
+                            </span> */}
                           </div>
                           <span className={styles.articleDescription}>
                             {item.description}

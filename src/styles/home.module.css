@@ -30,6 +30,39 @@
   }
 }
 
+/* Staggered fade-in animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fadeInUp {
+  opacity: 0;
+  animation: fadeInUp 1s ease-out forwards;
+}
+
+/* Name character color animation */
+@keyframes nameColorPulse {
+  0%,
+  100% {
+    color: #f7f7f7;
+  }
+  50% {
+    color: var(--main-color);
+  }
+}
+
+.nameChar {
+  display: inline;
+  animation: nameColorPulse 3.1s ease-in-out infinite;
+}
+
 .introContain,
 .experienceContain,
 .educationContain,
@@ -75,7 +108,7 @@
   font-size: 12px;
   user-select: none;
 }
-.introLink  {
+.introLink {
   font-size: 10px;
   color: #fff5ea;
   text-decoration: none;
@@ -188,10 +221,10 @@
   font-size: 12px;
   user-select: none;
 }
-.projectLink  {
+.projectLink {
   transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
 }
-.projectLink:hover  {
+.projectLink:hover {
   color: #000;
   background-color: var(--main-color);
   padding: 2px 5px;
@@ -267,7 +300,7 @@
 }
 .projectList {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   align-items: center;
   justify-content: space-between;
   width: 100%;
@@ -282,20 +315,21 @@
   transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
   padding: 5px;
 }
-.projectList button:hover, .activeProject {
+.projectList button:hover,
+.activeProject {
   background: var(--main-color) !important;
 }
 .projectExplanation {
   font-family: "MarketSans-Regular";
-  background-color: #000;
+  background-color: var(--background);
   color: #807b75;
   margin-top: 10px;
   font-size: 12px;
   user-select: none;
   width: 100%;
-  position: relative; 
+  position: relative;
   transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
-  pointer-events: none; 
+  pointer-events: none;
 }
 .projectExplanation a {
   font-weight: bold;
@@ -304,7 +338,6 @@
 .showExplanation {
   pointer-events: auto;
 }
-
 
 /* Experience Styling */
 .experienceContain {
@@ -386,7 +419,7 @@
 
 .achievementsList li {
   font-size: 12px;
-  color: #807b75
+  color: #807b75;
 }
 
 .achievementsList li a {

@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { getMyRecentlyPlayed, getMyCurrentlyPlaying } from "../../lib/spotify";
 import styles from "../../styles/music.module.css";
 import Footer from "../../components/Footer";
 import { createClient } from "../../lib/supabase";
 import Image from "next/image";
-import gsap from "gsap";
 import { History, CurrentlyPlaying, AlbumReview } from "../../types/types";
+import Link from "next/link";
 
 const Music: React.FC = () => {
   const [history, setHistory] = useState<History[]>([]);
@@ -20,53 +20,32 @@ const Music: React.FC = () => {
   const [isAlbumReviewsLoading, setIsAlbumReviewsLoading] =
     useState<boolean>(true);
   const [progress, setProgress] = useState<number>(0);
-  const nameRef = useRef<HTMLDivElement>(null);
-  const sectionRef = useRef<HTMLDivElement>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
 
+  // Trigger CSS animations on mount
   useEffect(() => {
-    const nameFadeTimer = setTimeout(() => {
-      if (nameRef.current) {
-        gsap.fromTo(
-          nameRef.current,
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
-        );
-      }
-    }, 0);
-    const sectionFadeTimer = setTimeout(() => {
-      if (sectionRef.current) {
-        gsap.fromTo(
-          sectionRef.current,
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
-        );
-      }
-    }, 500);
-    return () => {
-      clearTimeout(nameFadeTimer);
-      clearTimeout(sectionFadeTimer);
-    };
+    setIsLoaded(true);
   }, []);
 
   const supabase = createClient();
 
   // Fetch Album Reviews
-  const fetchAlbumReviews = async () => {
-    try {
-      setIsAlbumReviewsLoading(true);
-      const { data, error } = await supabase.from("album_reviews").select("*");
+  // const fetchAlbumReviews = async () => {
+  //   try {
+  //     setIsAlbumReviewsLoading(true);
+  //     const { data, error } = await supabase.from("album_reviews").select("*");
 
-      if (error) {
-        console.error("Error fetching album reviews:", error);
-      } else {
-        setAlbumReviews(data || []);
-      }
-    } catch (error) {
-      console.error("Error fetching album reviews:", error);
-    } finally {
-      setIsAlbumReviewsLoading(false);
-    }
-  };
+  //     if (error) {
+  //       console.error("Error fetching album reviews:", error);
+  //     } else {
+  //       setAlbumReviews(data || []);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching album reviews:", error);
+  //   } finally {
+  //     setIsAlbumReviewsLoading(false);
+  //   }
+  // };
 
   // Fetch History
   const fetchHistory = async () => {
@@ -102,7 +81,7 @@ const Music: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchAlbumReviews();
+    // fetchAlbumReviews();
     fetchHistory();
     fetchCurrentlyPlaying();
   }, []);
@@ -125,7 +104,7 @@ const Music: React.FC = () => {
             fetchCurrentlyPlaying();
             return currentlyPlaying.duration_ms;
           }
-          return prev + 1000; // Add 1 second (1000ms)
+          return prev + 1000;
         });
       }, 1000);
     }
@@ -133,16 +112,22 @@ const Music: React.FC = () => {
     return () => {
       if (progressInterval) clearInterval(progressInterval);
     };
-  }, [currentlyPlaying, fetchCurrentlyPlaying]);
+  }, [currentlyPlaying]);
 
   return (
     <>
       {/* Landing Section */}
       <div className={styles.landingContain}>
         {/* Branding Section */}
-        <div className={styles.brandingContain} ref={nameRef}>
+        <div
+          className={`${styles.brandingContain} ${
+            isLoaded ? styles.fadeInUp : ""
+          }`}
+        >
           <div className={styles.brandingHeader}>
-            <span className={styles.name}>Music</span>
+            <Link className={styles.name} href="/">
+              Music
+            </Link>
             <>
               {currentlyPlaying && !isCurrentlyPlayingLoading && (
                 <div className={styles.currentlyPlayingContainer}>
@@ -192,7 +177,12 @@ const Music: React.FC = () => {
           </div>
         </div>
 
-        <div className={styles.musicContain} ref={sectionRef}>
+        <div
+          className={`${styles.musicContain} ${
+            isLoaded ? styles.fadeInUp : ""
+          }`}
+          style={{ animationDelay: "0.05s" }}
+        >
           {/* Recently Played Section */}
           <section className={styles.recentlyPlayedContain}>
             <div className={styles.sectionTitleContainer}>
@@ -246,7 +236,7 @@ const Music: React.FC = () => {
           </section>
 
           {/* Album Reviews Section */}
-          <section className={styles.albumReviewsContain}>
+          {/* <section className={styles.albumReviewsContain}>
             <span className={styles.sectionTitle}>Album Reviews</span>
             {!isAlbumReviewsLoading &&
               albumReviews &&
@@ -282,7 +272,7 @@ const Music: React.FC = () => {
             {!albumReviews && !isAlbumReviewsLoading && (
               <p>Unable to load album reviews!</p>
             )}
-          </section>
+          </section> */}
         </div>
 
         <Footer />

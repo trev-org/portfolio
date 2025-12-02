@@ -4,13 +4,9 @@ import React, { useRef, useEffect, useState } from "react";
 import styles from "../styles/home.module.css";
 import { app } from "../lib/firebase";
 import { getAnalytics } from "firebase/analytics";
-import gsap from "gsap";
-import { TextPlugin } from "gsap/TextPlugin";
 import Image from "next/image";
 import Link from "next/link";
 import Footer from "../components/Footer";
-
-gsap.registerPlugin(TextPlugin);
 
 const useWindowWidth = (): number => {
   const [width, setWidth] = useState<number>(0);
@@ -32,16 +28,10 @@ const useWindowWidth = (): number => {
 
 const Home: React.FC = () => {
   const width = useWindowWidth();
-  const brandingRef = useRef<HTMLDivElement>(null);
-  const nameRef = useRef<HTMLSpanElement>(null);
-  const introRef = useRef<HTMLDivElement>(null);
-  const experienceRef = useRef<HTMLDivElement>(null);
-  const educationRef = useRef<HTMLDivElement>(null);
-  const extrasRef = useRef<HTMLDivElement>(null);
-  const projectRef = useRef<HTMLDivElement>(null);
   const projectListRef = useRef<HTMLDivElement>(null);
   const explanationRef = useRef<HTMLDivElement>(null);
-  const achievementsRef = useRef<HTMLDivElement>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const animationDelay = 0.2;
 
   const projects = {
     rtuhub: {
@@ -49,11 +39,11 @@ const Home: React.FC = () => {
       link: "https://rtuhub.com/",
       description: "one-stop shop for discovering food service products",
     },
-    polymer: {
-      name: "Polymer",
-      link: "",
-      description: "redefining social media x music",
-    },
+    // polymer: {
+    //   name: "Polymer",
+    //   link: "",
+    //   description: "redefining social media x music",
+    // },
     honeycomb: {
       name: "Honeycomb Studios",
       link: "https://honeycomb-studios.web.app/",
@@ -123,148 +113,71 @@ const Home: React.FC = () => {
     }
   };
 
-  const animateName = () => {
-    if (!nameRef.current) return;
-
-    const text = nameRef.current.textContent || "";
-    nameRef.current.innerHTML = "";
-
-    Array.from(text).forEach((char) => {
-      if (char !== "") {
-        const span = document.createElement("span");
-        span.textContent = char;
-        nameRef.current?.appendChild(span);
-      }
-    });
-
-    gsap.fromTo(
-      nameRef.current.children,
-      {
-        color: "#F7F7F7",
-      },
-      {
-        duration: 0.05,
-        stagger: 0.05,
-        repeat: -1,
-        yoyo: true,
-        repeatDelay: 1.5,
-        color: "var(--main-color)",
-      }
-    );
-  };
-
+  // Trigger CSS animations on mount
   useEffect(() => {
-    const brandingFadeTimer = setTimeout(() => {
-      if (brandingRef.current) {
-        gsap.fromTo(
-          brandingRef.current,
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
-        );
-      }
-    }, 0);
-
-    const animationTimer = setTimeout(() => {
-      animateName();
-    }, 0);
-
-    const introFadeTimer = setTimeout(() => {
-      if (introRef.current) {
-        gsap.fromTo(
-          introRef.current,
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
-        );
-      }
-    }, 750);
-
-    const achievementsFadeTimer = setTimeout(() => {
-      if (achievementsRef.current) {
-        gsap.fromTo(
-          achievementsRef.current,
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
-        );
-      }
-    }, 1000);
-
-    const experienceFadeTimer = setTimeout(() => {
-      if (experienceRef.current) {
-        gsap.fromTo(
-          experienceRef.current,
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
-        );
-      }
-    }, 1250);
-
-    const educationFadeTimer = setTimeout(() => {
-      if (educationRef.current) {
-        gsap.fromTo(
-          educationRef.current,
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
-        );
-      }
-    }, 1500);
-
-    const projectsFadeTimer = setTimeout(() => {
-      if (projectRef.current) {
-        gsap.fromTo(
-          projectRef.current,
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
-        );
-      }
-    }, 1750);
-
-    const extrasFadeTimer = setTimeout(() => {
-      if (extrasRef.current) {
-        gsap.fromTo(
-          extrasRef.current,
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
-        );
-      }
-    }, 2000);
-
-    return () => {
-      clearTimeout(brandingFadeTimer);
-      clearTimeout(animationTimer);
-      clearTimeout(introFadeTimer);
-      clearTimeout(experienceFadeTimer);
-      clearTimeout(educationFadeTimer);
-      clearTimeout(extrasFadeTimer);
-      clearTimeout(projectsFadeTimer);
-      clearTimeout(achievementsFadeTimer);
-    };
+    setIsLoaded(true);
   }, []);
 
   return (
     <>
       {/* Landing Section */}
-      <div className={styles.landingContain}>
+      <div
+        className={`${styles.landingContain} ${
+          isLoaded ? styles.staggerChildren : ""
+        }`}
+      >
         {/* Branding Section */}
-        <section className={styles.brandingContain}>
-          <div className={styles.brandingContent} ref={brandingRef}>
-            <span className={styles.name} ref={nameRef}>
-              Trevor Gerald.
+        <section
+          className={`${styles.brandingContain} ${
+            isLoaded ? styles.fadeInUp : ""
+          }`}
+        >
+          <div className={styles.brandingContent}>
+            <span className={styles.name}>
+              {"Trevor Gerald.".split("").map((char, i) => (
+                <span
+                  key={i}
+                  className={styles.nameChar}
+                  style={{ animationDelay: `${i * animationDelay}s` }}
+                >
+                  {char}
+                </span>
+              ))}
             </span>
             <div className={styles.brandingLinks}>
-              <a
+              <Link
                 className={styles.introLink}
                 href="https://www.linkedin.com/in/trevorgerald/"
                 rel="noreferrer"
                 target="_blank"
               >
                 IN
-              </a>
-              <a className={styles.introLink} href="mailto:gerald.26@osu.edu">
+              </Link>
+              <Link
+                className={styles.introLink}
+                href="https://github.com/trev-org"
+                rel="noreferrer"
+                target="_blank"
+              >
+                GH
+              </Link>
+              <Link
+                className={styles.introLink}
+                href="mailto:gerald.26@osu.edu"
+              >
                 MAIL
-              </a>
+              </Link>
+              <Link className={styles.introLink} href="/schedule">
+                SCHEDULE
+              </Link>
             </div>
           </div>
-          <div className={styles.introContain} ref={introRef}>
+          <div
+            className={`${styles.introContain} ${
+              isLoaded ? styles.fadeInUp : ""
+            }`}
+            style={{ animationDelay: `${animationDelay * 1}s` }}
+          >
             <p className={styles.intro}>
               Hey! I&apos;m a software engineer and a computer science student
               at{" "}
@@ -286,7 +199,12 @@ const Home: React.FC = () => {
           </div>
         </section>
 
-        <section className={styles.projectsContain} ref={achievementsRef}>
+        <section
+          className={`${styles.projectsContain} ${
+            isLoaded ? styles.fadeInUp : ""
+          }`}
+          style={{ animationDelay: `${animationDelay * 2}s` }}
+        >
           <span className={styles.sectionTitle}>Achievements</span>
           <ul className={styles.achievementsList}>
             <li>
@@ -314,7 +232,12 @@ const Home: React.FC = () => {
           </ul>
         </section>
 
-        <section className={styles.experienceContain} ref={experienceRef}>
+        <section
+          className={`${styles.experienceContain} ${
+            isLoaded ? styles.fadeInUp : ""
+          }`}
+          style={{ animationDelay: `${animationDelay * 3}s` }}
+        >
           <span className={styles.sectionTitle}>Experience</span>
           <div className={styles.experienceItem}>
             <Image
@@ -365,7 +288,9 @@ const Home: React.FC = () => {
               <div className={styles.experienceItemHeader}>
                 <span className={styles.experienceItemCompany}>Perplexity</span>
               </div>
-              <span className={styles.experienceItemPosition}>Fellow</span>
+              <span className={styles.experienceItemPosition}>
+                Fellow, Campus Growth
+              </span>
             </div>
           </div>
 
@@ -406,7 +331,12 @@ const Home: React.FC = () => {
           </div>
         </section>
 
-        <section className={styles.educationContain} ref={educationRef}>
+        <section
+          className={`${styles.educationContain} ${
+            isLoaded ? styles.fadeInUp : ""
+          }`}
+          style={{ animationDelay: `${animationDelay * 4}s` }}
+        >
           <span className={styles.sectionTitle}>Education</span>
           <div className={styles.experienceItem}>
             <Image
@@ -432,7 +362,12 @@ const Home: React.FC = () => {
           </div>
         </section>
 
-        <section className={styles.projectsContain} ref={projectRef}>
+        <section
+          className={`${styles.projectsContain} ${
+            isLoaded ? styles.fadeInUp : ""
+          }`}
+          style={{ animationDelay: `${animationDelay * 5}s` }}
+        >
           <span className={styles.sectionTitle}>Ventures</span>
           <div className={styles.projectList} ref={projectListRef}>
             <button
@@ -445,7 +380,7 @@ const Home: React.FC = () => {
             >
               🍔
             </button>
-            <button
+            {/* <button
               onClick={() => toggleProject("polymer")}
               className={
                 hoveredProject === "polymer" ? styles.activeProject : ""
@@ -454,7 +389,7 @@ const Home: React.FC = () => {
               title={projects.polymer.name}
             >
               🎧
-            </button>
+            </button> */}
             <button
               onClick={() => toggleProject("urmp")}
               className={hoveredProject === "urmp" ? styles.activeProject : ""}
@@ -513,7 +448,12 @@ const Home: React.FC = () => {
           )}
         </section>
 
-        <section className={styles.educationContain} ref={extrasRef}>
+        <section
+          className={`${styles.educationContain} ${
+            isLoaded ? styles.fadeInUp : ""
+          }`}
+          style={{ animationDelay: `${animationDelay * 6}s` }}
+        >
           <div className={styles.sectionTitleContainer}>
             <span className={styles.sectionTitle} style={{ marginBottom: 0 }}>
               Extras
