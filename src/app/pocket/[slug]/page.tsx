@@ -1,9 +1,20 @@
-"use client";
-
 import React from "react";
 
-const PocketPost: React.FC = () => {
-  return <div>Coming soon...</div>;
+type PocketPostParams = {
+  slug: string;
 };
 
-export default PocketPost;
+export async function generateStaticParams(): Promise<PocketPostParams[]> {
+  // Placeholder - return at least one slug for static export to work
+  return [{ slug: "placeholder" }];
+}
+
+export default async function PocketPost({
+  params,
+}: {
+  params: Promise<PocketPostParams>;
+}) {
+  const { slug } = await params;
+
+  return <div>Coming soon... ({slug})</div>;
+}

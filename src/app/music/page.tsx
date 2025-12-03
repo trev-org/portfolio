@@ -4,30 +4,28 @@ import React, { useEffect, useState } from "react";
 import { getMyRecentlyPlayed, getMyCurrentlyPlaying } from "../../lib/spotify";
 import styles from "../../styles/music.module.css";
 import Footer from "../../components/Footer";
-import { createClient } from "../../lib/supabase";
+// import { createClient } from "../../lib/supabase";
 import Image from "next/image";
-import { History, CurrentlyPlaying, AlbumReview } from "../../types/types";
+import { History, CurrentlyPlaying } from "../../types/types";
 import Link from "next/link";
 
 const Music: React.FC = () => {
   const [history, setHistory] = useState<History[]>([]);
   const [currentlyPlaying, setCurrentlyPlaying] =
     useState<CurrentlyPlaying | null>(null);
-  const [albumReviews, setAlbumReviews] = useState<AlbumReview[]>([]);
+  // const [albumReviews, setAlbumReviews] = useState<AlbumReview[]>([]);
   const [isHistoryLoading, setIsHistoryLoading] = useState<boolean>(true);
   const [isCurrentlyPlayingLoading, setIsCurrentlyPlayingLoading] =
     useState<boolean>(true);
-  const [isAlbumReviewsLoading, setIsAlbumReviewsLoading] =
-    useState<boolean>(true);
+  // const [isAlbumReviewsLoading, setIsAlbumReviewsLoading] = useState<boolean>(true);
   const [progress, setProgress] = useState<number>(0);
   const [isLoaded, setIsLoaded] = useState(false);
+  // const supabase = createClient();
 
   // Trigger CSS animations on mount
   useEffect(() => {
     setIsLoaded(true);
   }, []);
-
-  const supabase = createClient();
 
   // Fetch Album Reviews
   // const fetchAlbumReviews = async () => {
