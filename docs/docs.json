@@ -50,6 +50,7 @@
       },
       {
         "tab": "API reference",
+        "public": true,
         "groups": [
           {
             "group": "API documentation",
