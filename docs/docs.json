@@ -12,6 +12,7 @@
     "tabs": [
       {
         "tab": "Guides",
+        "public": true,
         "groups": [
           {
             "group": "Getting started",
@@ -49,7 +50,6 @@
       },
       {
         "tab": "API reference",
-        "public": true,
         "groups": [
           {
             "group": "API documentation",
