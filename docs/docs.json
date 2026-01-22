@@ -12,10 +12,10 @@
     "tabs": [
       {
         "tab": "Guides",
-        "public": true,
         "groups": [
           {
             "group": "Getting started",
+            "public": true,
             "pages": [
               "index",
               "quickstart",
@@ -24,6 +24,7 @@
           },
           {
             "group": "Customization",
+            "public": true,
             "pages": [
               "essentials/settings",
               "essentials/navigation"
@@ -31,6 +32,7 @@
           },
           {
             "group": "Writing content",
+            "public": true,
             "pages": [
               "essentials/markdown",
               "essentials/code",
@@ -40,6 +42,7 @@
           },
           {
             "group": "AI tools",
+            "public": true,
             "pages": [
               "ai-tools/cursor",
               "ai-tools/claude-code",
@@ -50,7 +53,6 @@
       },
       {
         "tab": "API reference",
-        "public": true,
         "groups": [
           {
             "group": "API documentation",
