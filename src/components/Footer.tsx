@@ -35,7 +35,7 @@ const Footer: React.FC = () => {
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
-      const timeZone = "America/New_York";
+      const timeZone = "America/Los_Angeles";
       const formatter = new Intl.DateTimeFormat("en-US", {
         timeZone,
         hour: "2-digit",
@@ -44,7 +44,7 @@ const Footer: React.FC = () => {
         hour12: false,
       });
       const formattedTime = formatter.format(now);
-      setCurrentTime(formattedTime + " UTC -5");
+      setCurrentTime(formattedTime + " UTC -8");
     };
     updateTime();
     const interval = setInterval(updateTime, 1000);
