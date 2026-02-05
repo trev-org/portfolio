@@ -34,6 +34,20 @@ const Pocket: React.FC = () => {
     }
     fetchArticles();
   }, []);
+
+  useEffect(() => {
+    const fetchBookmarks = async () => {
+      const response = await fetch("/api/fetch-twitter-bookmarks");
+      if (!response.ok) {
+        console.error("Failed to fetch Twitter bookmarks");
+        return;
+      }
+      const data = await response.json();
+      console.log("Twitter bookmarks:", data);
+    };
+    fetchBookmarks();
+  }, []);
+
   return (
     <>
       {/* Landing Section */}
@@ -63,7 +77,7 @@ const Pocket: React.FC = () => {
           }`}
           style={{ animationDelay: "0.05s" }}
         >
-          {/* Recently Played Section */}
+          {/* Saved Articles Section */}
           <section className={styles.articlesContain}>
             <div className={styles.sectionTitleContainer}>
               <span className={styles.sectionTitle}>Saved Articles</span>
@@ -117,6 +131,52 @@ const Pocket: React.FC = () => {
             )}
             {isArticlesLoading && <p>Loading...</p>}
           </section>
+
+          {/* Twitter Bookmarks Section */}
+          {/* <section className={styles.articlesContain}>
+            <div className={styles.sectionTitleContainer}>
+              <span className={styles.sectionTitle}>Twitter Bookmarks</span>
+            </div>
+            {!isArticlesLoading && articles && articles.length > 0 && (
+              <div className={styles.articlesGrid}>
+                {articles.map((item: Article, index: number) => (
+                  <Link href={`${item.link}`} target="_blank" key={index}>
+                    <div className={styles.articleItem}>
+                      <div className={styles.articleHoverTopLeft}></div>
+                      <div className={styles.articleHoverBottomRight}></div>
+                      <div className={styles.articleHoverLeft}></div>
+                      <div className={styles.articleHoverBottom}></div>
+                      <div className={styles.articleContentContain}>
+                        <Image
+                          src={item.favicon}
+                          className={styles.articlesLogo}
+                          alt={item.title}
+                          width={50}
+                          height={50}
+                        />
+                        <div className={styles.articlesItemContent}>
+                          <div className={styles.articleTitleContain}>
+                            <span className={styles.articleTitle}>
+                              {item.title}
+                            </span>
+                          </div>
+                          <span className={styles.articleDescription}>
+                            {item.description}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+            {!isArticlesLoading && (!articles || articles.length === 0) && (
+              <div className={styles.articlesPlaceholder}>
+                <p>No articles found.</p>
+              </div>
+            )}
+            {isArticlesLoading && <p>Loading...</p>}
+          </section> */}
         </div>
 
         <Footer />

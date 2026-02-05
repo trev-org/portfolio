@@ -1,9 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'export',  // Enables static HTML export
   images: {
-    unoptimized: true,  // Required for static export
+    unoptimized: true, // Required for static export
     remotePatterns: [
       {
         protocol: "https",
@@ -20,7 +19,7 @@ const nextConfig: NextConfig = {
     ],
   },
   // Ensure all assets are properly included in the build
-  assetPrefix: process.env.NODE_ENV === 'production' ? undefined : undefined,
+  assetPrefix: process.env.NODE_ENV === "production" ? undefined : undefined,
   trailingSlash: true,
 };
 

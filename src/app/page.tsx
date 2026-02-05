@@ -239,94 +239,139 @@ const Home: React.FC = () => {
           style={{ animationDelay: `${animationDelay * 3}s` }}
         >
           <span className={styles.sectionTitle}>Experience</span>
-          <div className={styles.experienceItem}>
-            <Image
-              src="/static/cognition.jpeg"
-              className={styles.experienceLogo}
-              alt="Cognition"
-              width={40}
-              height={40}
-            />
-            <div className={styles.experienceItemContent}>
-              <div className={styles.experienceItemHeader}>
-                <span className={styles.experienceItemCompany}>Cognition</span>
-                {/* <span className={styles.experienceItemPresentTag}>Present</span> */}
+          <div
+            style={{
+              display: width < 768 ? "block" : "grid",
+              gridTemplateColumns: width < 768 ? "auto" : "repeat(2, 1fr)",
+              width: "100%",
+            }}
+          >
+            <div className={styles.experienceItem}>
+              <Image
+                src="/static/mintlify.jpeg"
+                className={styles.experienceLogo}
+                alt="Mintlify"
+                width={40}
+                height={40}
+              />
+              <div className={styles.experienceItemContent}>
+                <div className={styles.experienceItemHeader}>
+                  <span className={styles.experienceItemCompany}>Mintlify</span>
+                  {/* <span className={styles.experienceItemPresentTag}>Present</span> */}
+                </div>
+                <span className={styles.experienceItemPosition}>
+                  Engineering + GTM
+                </span>
               </div>
-              <span className={styles.experienceItemPosition}>
-                Engineering + GTM
-              </span>
             </div>
-          </div>
-
-          <div className={styles.experienceItem}>
-            <Image
-              src="/static/windsurf.jpeg"
-              className={styles.experienceLogo}
-              alt="Windsurf"
-              width={40}
-              height={40}
-            />
-            <div className={styles.experienceItemContent}>
-              <div className={styles.experienceItemHeader}>
-                <span className={styles.experienceItemCompany}>Windsurf</span>
-                {/* <span className={styles.experienceItemPresentTag}>Present</span> */}
+            <div className={styles.experienceItem}>
+              <Image
+                src="/static/handshake.jpeg"
+                className={styles.experienceLogo}
+                alt="Handshake"
+                width={40}
+                height={40}
+              />
+              <div className={styles.experienceItemContent}>
+                <div className={styles.experienceItemHeader}>
+                  <span className={styles.experienceItemCompany}>
+                    Handshake
+                  </span>
+                  {/* <span className={styles.experienceItemPresentTag}>Present</span> */}
+                </div>
+                <span className={styles.experienceItemPosition}>Fellow</span>
               </div>
-              <span className={styles.experienceItemPosition}>
-                Engineering + GTM, Acquired by Cognition
-              </span>
             </div>
-          </div>
-          <div className={styles.experienceItem}>
-            <Image
-              src="/static/perplexity.jpeg"
-              className={styles.experienceLogo}
-              alt="Perplexity"
-              width={40}
-              height={40}
-            />
-            <div className={styles.experienceItemContent}>
-              <div className={styles.experienceItemHeader}>
-                <span className={styles.experienceItemCompany}>Perplexity</span>
+            <div className={styles.experienceItem}>
+              <Image
+                src="/static/perplexity.jpeg"
+                className={styles.experienceLogo}
+                alt="Perplexity"
+                width={40}
+                height={40}
+              />
+              <div className={styles.experienceItemContent}>
+                <div className={styles.experienceItemHeader}>
+                  <span className={styles.experienceItemCompany}>
+                    Perplexity
+                  </span>
+                </div>
+                <span className={styles.experienceItemPosition}>
+                  Fellow, Campus Growth
+                </span>
               </div>
-              <span className={styles.experienceItemPosition}>
-                Fellow, Campus Growth
-              </span>
             </div>
-          </div>
-
-          <div className={styles.experienceItem}>
-            <Image
-              src="/static/chipotle.png"
-              className={styles.experienceLogo}
-              alt="Chipotle"
-              width={40}
-              height={40}
-            />
-            <div className={styles.experienceItemContent}>
-              <span className={styles.experienceItemCompanyNonPresent}>
-                Chipotle
-              </span>
-              <span className={styles.experienceItemPosition}>
-                IT Infrastructure
-              </span>
+            <div className={styles.experienceItem}>
+              <Image
+                src="/static/cognition.jpeg"
+                className={styles.experienceLogo}
+                alt="Cognition"
+                width={40}
+                height={40}
+              />
+              <div className={styles.experienceItemContent}>
+                <div className={styles.experienceItemHeader}>
+                  <span className={styles.experienceItemCompany}>
+                    Cognition
+                  </span>
+                  {/* <span className={styles.experienceItemPresentTag}>Present</span> */}
+                </div>
+                <span className={styles.experienceItemPosition}>
+                  Engineering + GTM
+                </span>
+              </div>
             </div>
-          </div>
-
-          <div className={styles.experienceItem}>
-            <Image
-              src="/static/mimecast.png"
-              className={styles.experienceLogo}
-              alt="Mimecast"
-              width={40}
-              height={40}
-            />
-            <div className={styles.experienceItemContent}>
-              <span className={styles.experienceItemCompanyNonPresent}>
-                Mimecast (Aware)
-              </span>
-              <span className={styles.experienceItemPosition}>
-                Internal Tooling
-              </span>
+            <div className={styles.experienceItem}>
+              <Image
+                src="/static/windsurf.jpeg"
+                className={styles.experienceLogo}
+                alt="Windsurf"
+                width={40}
+                height={40}
+              />
+              <div className={styles.experienceItemContent}>
+                <div className={styles.experienceItemHeader}>
+                  <span className={styles.experienceItemCompany}>Windsurf</span>
+                  {/* <span className={styles.experienceItemPresentTag}>Present</span> */}
+                </div>
+                <span className={styles.experienceItemPosition}>
+                  Engineering + GTM, acq. by Cognition
+                </span>
+              </div>
+            </div>
+            <div className={styles.experienceItem}>
+              <Image
+                src="/static/chipotle.png"
+                className={styles.experienceLogo}
+                alt="Chipotle"
+                width={40}
+                height={40}
+              />
+              <div className={styles.experienceItemContent}>
+                <span className={styles.experienceItemCompanyNonPresent}>
+                  Chipotle
+                </span>
+                <span className={styles.experienceItemPosition}>
+                  Software — IT Infrastructure
+                </span>
+              </div>
+            </div>
+            <div className={styles.experienceItem}>
+              <Image
+                src="/static/mimecast.png"
+                className={styles.experienceLogo}
+                alt="Mimecast"
+                width={40}
+                height={40}
+              />
+              <div className={styles.experienceItemContent}>
+                <span className={styles.experienceItemCompanyNonPresent}>
+                  Mimecast (Aware)
+                </span>
+                <span className={styles.experienceItemPosition}>
+                  Software — Internal Tooling
+                </span>
+              </div>
             </div>
           </div>
         </section>
@@ -351,12 +396,13 @@ const Home: React.FC = () => {
                 <span className={styles.experienceItemCompany}>
                   The Ohio State University
                 </span>
-                <span className={styles.experienceItemPresentTag}>
+                {/* <span className={styles.experienceItemPresentTag}>
                   {width <= 500 ? "Dec 2025" : "Expected: Dec 2025"}
-                </span>
+                </span> */}
               </div>
               <span className={styles.experienceItemPosition}>
-                B.S. in Computer Science and Engineering, AI Specialization
+                Honors B.S. in Computer Science and Engineering, AI
+                Specialization
               </span>
             </div>
           </div>
@@ -460,6 +506,21 @@ const Home: React.FC = () => {
             </span>
           </div>
           <div className={styles.extrasGrid}>
+            {/* <Link href="/arena">
+              <div className={styles.projectsItem}>
+                <div className={styles.projectItemHoverTopLeft}></div>
+                <div className={styles.projectItemHoverBottomRight}></div>
+                <div className={styles.projectItemHoverLeft}></div>
+                <div className={styles.projectItemHoverBottom}></div>
+                <div className={styles.projectsItemContentContain}>
+                  <span className={styles.projectsItemTitle}>Arena</span>
+                  <span className={styles.projectsItemDesc}>
+                    A space where I experiment with and compare AI models in
+                    competitive scenarios
+                  </span>
+                </div>
+              </div>
+            </Link> */}
             <Link href="/music">
               <div className={styles.projectsItem}>
                 <div className={styles.projectItemHoverTopLeft}></div>

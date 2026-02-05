@@ -43,7 +43,7 @@ const Schedule: React.FC = () => {
         <div className={styles.introContain}>
           <p className={styles.intro}>
             Always looking to connect with others. Feel free to grab some time
-            here!
+            with me below!
           </p>
         </div>
       </div>
