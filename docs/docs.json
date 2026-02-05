@@ -11,6 +11,14 @@
   "navigation": {
     "tabs": [
       {
+        "tab": "Test",
+        "pages": [
+          "test",
+          "test2",
+          "test3"
+        ]
+      },
+      {
         "tab": "Guides",
         "groups": [
           {

@@ -1,0 +1,156 @@
+---
+title: "Recorded Future Leaked Credential Alert Handling"
+---
+
+## Overview
+
+This playbook handles and processes security alerts.
+
+<CardGroup cols={2}>
+  <Card title="Sub-Playbooks" icon="diagram-project">
+    1 sub-playbook(s)
+  </Card>
+  <Card title="Manual Tasks" icon="user">
+    5 manual task(s)
+  </Card>
+</CardGroup>
+
+## Playbook Metadata
+
+| Property | Value |
+|----------|-------|
+| **Playbook ID** | `Recorded Future Leaked Credential Alert Handling` |
+| **Minimum XSOAR Version** | 6.5.0 |
+| **Tests** | None configured |
+
+## Prerequisites
+
+### Sub-Playbooks
+
+This playbook calls the following sub-playbooks:
+
+- Account Enrichment - Generic v2.1
+
+## Inputs
+
+<Info>
+Configure these inputs when running the playbook to customize its behavior.
+</Info>
+
+| Name | Required | Description | Default Source |
+|------|----------|-------------|----------------|
+| `account` | No | *No description provided* | `incident.recordedfuturealertentities.name` |
+
+### Input Value Derivation
+
+Some inputs derive their default values from context data:
+
+<Accordion title="account">
+
+**Context Path:** `incident.recordedfuturealertentities`
+**Accessor:** `name`
+
+</Accordion>
+
+## Workflow
+
+<Steps>
+  <Step title="Account Enrichment - Generic v2.1" icon="diagram-project">
+    Enrich accounts using one or more integrations.
+    Supported integrations:
+    - Active Directory
+    - SailPoint IdentityNow
+    - SailPoint IdentityIQ
+    - PingOne
+    - Okta
+    - AWS IAM
+    
+    Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
+
+    <Tip>
+    **Calls Sub-Playbook:** `Account Enrichment - Generic v2.1`
+    
+    This sub-playbook runs in a separate context.
+    </Tip>
+
+    <Accordion title="Loop/Polling Configuration">
+
+    | Setting | Value |
+    |---------|-------|
+    | Is Command | False |
+    | Wait Between Iterations | 1s |
+    | Max Iterations | 100 |
+
+    </Accordion>
+
+    <Accordion title="Sub-Playbook Inputs">
+
+    | Input | Value |
+    |-------|-------|
+    | `Username` | `$&#123;inputs.account&#125;` |
+
+    </Accordion>
+
+  </Step>
+  <Step title="Is the user account active?" icon="code-branch">
+    <Tabs>
+      <Tab title="Otherwise">
+        **Leads to:** Done
+      </Tab>
+      <Tab title="Yes">
+        **Leads to:** Query SIEM for suspicious behavior, logins, and location
+      </Tab>
+    </Tabs>
+
+  </Step>
+  <Step title="Query SIEM for suspicious behavior, logins, and location" icon="user">
+    <Warning>
+    **Manual Task:** This step requires human intervention.
+    </Warning>
+
+  </Step>
+  <Step title="Notify user" icon="user">
+    <Warning>
+    **Manual Task:** This step requires human intervention.
+    </Warning>
+
+  </Step>
+  <Step title="Verify activity" icon="code-branch">
+    <Tabs>
+      <Tab title="Otherwise">
+        **Leads to:** Disable account
+
+      </Tab>
+      <Tab title="Yes">
+        **Leads to:** Done
+      </Tab>
+    </Tabs>
+
+  </Step>
+  <Step title="Disable account " icon="user">
+    <Warning>
+    **Manual Task:** This step requires human intervention.
+    </Warning>
+
+  </Step>
+  <Step title="Expire password" icon="user">
+    <Warning>
+    **Manual Task:** This step requires human intervention.
+    </Warning>
+
+  </Step>
+  <Step title="Enable account" icon="user">
+    <Warning>
+    **Manual Task:** This step requires human intervention.
+    </Warning>
+
+  </Step>
+</Steps>
+
+## Related Resources
+
+<CardGroup cols={1}>
+  <Card title="Account Enrichment - Generic v2.1" icon="diagram-project">
+    View sub-playbook documentation
+  </Card>
+</CardGroup>

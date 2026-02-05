@@ -1,0 +1,576 @@
+---
+title: "Recorded Future Hatching Sandbox"
+---
+
+## Overview
+
+This playbook submits files or URLs for sandbox analysis and retrieves results using Hatching Triage, Recorded Future v2.
+
+<CardGroup cols={3}>
+  <Card title="Integrations" icon="plug">
+    2 integration(s) used
+  </Card>
+  <Card title="Sub-Playbooks" icon="diagram-project">
+    1 sub-playbook(s)
+  </Card>
+  <Card title="Commands" icon="terminal">
+    14 command(s) executed
+  </Card>
+</CardGroup>
+
+## Playbook Metadata
+
+| Property | Value |
+|----------|-------|
+| **Playbook ID** | `Recorded Future Hatching Sandbox` |
+| **Minimum XSOAR Version** | 6.5.0 |
+| **Tests** | None configured |
+| **Parallel Execution** | Yes |
+
+### Parallel Execution Points
+
+<Note>
+This playbook contains parallel execution paths where multiple tasks run simultaneously:
+
+- After **Extract Indicators from Report**: 4 parallel tasks
+  - Is there a domain?
+  - Is there an ip?
+  - Is there a malware family?
+  - Is there a URL?
+- After **Extract Indicators from Report**: 3 parallel tasks
+  - Is there a URL?
+  - Is there an ip?
+  - Is there a domain?
+</Note>
+
+## Prerequisites
+
+### Required Integrations
+
+The following integrations must be configured and enabled:
+
+- **Hatching Triage**
+- **Recorded Future v2**
+
+### Sub-Playbooks
+
+This playbook calls the following sub-playbooks:
+
+- GenericPolling
+
+## Inputs
+
+<Info>
+Configure these inputs when running the playbook to customize its behavior.
+</Info>
+
+| Name | Required | Description | Default Source |
+|------|----------|-------------|----------------|
+| `File` | No | *No description provided* | `File.EntryID` |
+
+### Input Value Derivation
+
+Some inputs derive their default values from context data:
+
+<Accordion title="File">
+
+**Context Path:** `File`
+**Accessor:** `EntryID`
+
+</Accordion>
+
+## Workflow
+
+<Steps>
+  <Step title="Submit File Sample" icon="terminal">
+    Submits a file or url for analysis
+
+    **Executes command:** `!triage-submit-sample`
+    **Integration:** Hatching Triage
+
+    <Accordion title="Command Arguments">
+
+    | Argument | Value |
+    |----------|-------|
+    | `data` | Context: `inputs.File` |
+    | `kind` | `file` |
+
+    </Accordion>
+
+  </Step>
+  <Step title="GenericPolling" icon="diagram-project">
+    Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+    This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+    The remote action should have the following structure:
+    
+    1. Initiate the operation.
+    2. Poll to check if the operation completed.
+    3. (optional) Get the results of the operation.
+
+    <Tip>
+    **Calls Sub-Playbook:** `GenericPolling`
+    
+    This sub-playbook runs in a separate context.
+    </Tip>
+
+    <Accordion title="Loop/Polling Configuration">
+
+    | Setting | Value |
+    |---------|-------|
+    | Is Command | False |
+    | Wait Between Iterations | 1s |
+    | Max Iterations | Unlimited |
+
+    </Accordion>
+
+    <Accordion title="Sub-Playbook Inputs">
+
+    | Input | Value |
+    |-------|-------|
+    | `Ids` | `$&#123;Triage.submissions.id&#125;` |
+    | `Interval` | `1` |
+    | `PollingCommandArgName` | `sample_id` |
+    | `PollingCommandName` | `triage-get-sample-summary` |
+    | `Timeout` | `5` |
+    | `dt` | `Triage.sample-summaries&#40;val.status!=='reported'&#41;.sample` |
+
+    </Accordion>
+
+  </Step>
+  <Step title="Get Sample Summary" icon="terminal">
+    Gets a summary report of the sample id provided
+
+    **Executes command:** `!triage-get-sample-summary`
+    **Integration:** Hatching Triage
+
+    <Accordion title="Command Arguments">
+
+    | Argument | Value |
+    |----------|-------|
+    | `sample_id` | `$&#123;Triage.submissions.id&#125;` |
+
+    </Accordion>
+
+  </Step>
+  <Step title="Choose Report Type" icon="clipboard-list">
+    <Info>
+    **Data Collection Task:** This task collects input from analysts.
+    </Info>
+
+    **Form Title:** Choose Hatching Report Type
+
+    <Accordion title="Form Questions">
+
+    **1. $&#123;Triage.sample-summaries.tasks&#125;**
+    - Type: `singleSelect`
+    - Optional
+    - Options: `static`, `behavioral1`, `behavioral2`
+
+    </Accordion>
+
+    <Accordion title="Collection Settings">
+
+    | Setting | Value |
+    |---------|-------|
+    | Retry Count | 2 |
+    | Retry Interval | 360s |
+    | Complete After Replies | 1 |
+
+    </Accordion>
+
+  </Step>
+  <Step title="Which Report Type?" icon="code-branch">
+    <Tabs>
+      <Tab title="Otherwise">
+        **Leads to:** Get Report (behavioral2)
+      </Tab>
+      <Tab title="Behavioral1">
+        **Leads to:** Get Report (behavioral1)
+      </Tab>
+      <Tab title="Static">
+        **Leads to:** Get Report (static)
+      </Tab>
+    </Tabs>
+
+    <Accordion title="Condition Logic">
+
+    **Branch: static**
+
+    - `Choose Hatching Report Type.Answers.0` equals `static`
+
+    **Branch: behavioral1**
+
+    - `Choose Hatching Report Type.Answers.0` equals `behavioral1`
+
+    </Accordion>
+
+  </Step>
+  <Step title="Get Report (behavioral2)" icon="terminal">
+    Retrieves the generated Triage Report for a single task
+
+    **Executes command:** `!triage-get-report-triage`
+    **Integration:** Hatching Triage
+
+    <Accordion title="Command Arguments">
+
+    | Argument | Value |
+    |----------|-------|
+    | `sample_id` | `$&#123;Triage.submissions.id&#125;` |
+    | `task_id` | `behavioral2` |
+
+    </Accordion>
+
+    <Accordion title="Field Mappings">
+
+    This task populates the following incident fields:
+
+    | Incident Field | Source |
+    |----------------|--------|
+    | `Malware Family` | `$&#123;Triage.sample.reports.triage.extracted.config.family&#125;` → uniq |
+
+    </Accordion>
+
+  </Step>
+  <Step title="Extract Indicators from Report" icon="terminal">
+    Extract all indicators according to server indicators configuration
+
+    **Executes command:** `!extractIndicators`
+
+    <Accordion title="Command Arguments">
+
+    | Argument | Value |
+    |----------|-------|
+    | `text` | `$&#123;Triage.sample.reports.triage&#125;` |
+
+    </Accordion>
+
+  </Step>
+  <Step title="Is there a URL?" icon="code-branch">
+    <Tabs>
+      <Tab title="Otherwise">
+        **Leads to:** Done
+      </Tab>
+      <Tab title="Yes">
+        **Leads to:** Recorded Future URL Enrich
+      </Tab>
+    </Tabs>
+
+    <Accordion title="Condition Logic">
+
+    **Branch: yes**
+
+    - `$&#123;ExtractedIndicators.URL&#125;` is not empty
+
+    </Accordion>
+
+  </Step>
+  <Step title="Recorded Future URL Enrich" icon="terminal">
+    Gets a quick indicator of the risk associated with a URL.
+
+    **Executes command:** `!url`
+    **Integration:** Recorded Future v2
+
+    <Accordion title="Command Arguments">
+
+    | Argument | Value |
+    |----------|-------|
+    | `url` | `$&#123;ExtractedIndicators.URL&#125;` |
+
+    </Accordion>
+
+  </Step>
+  <Step title="Is there a malware family?" icon="code-branch">
+    <Tabs>
+      <Tab title="Otherwise">
+        **Leads to:** Done
+      </Tab>
+      <Tab title="Yes">
+        **Leads to:** Recorded Future Malware Lookup
+      </Tab>
+    </Tabs>
+
+    <Accordion title="Condition Logic">
+
+    **Branch: yes**
+
+    - `incident.malwarefamily` is not empty
+
+    </Accordion>
+
+  </Step>
+  <Step title="Recorded Future Malware Lookup" icon="terminal">
+    Search for a malware by specified filters.
+
+    **Executes command:** `!recordedfuture-malware-search`
+    **Integration:** Recorded Future v2
+
+    <Accordion title="Command Arguments">
+
+    | Argument | Value |
+    |----------|-------|
+    | `freetext` | `$&#123;incident.malwarefamily&#125;` |
+
+    </Accordion>
+
+  </Step>
+  <Step title="Is there an ip?" icon="code-branch">
+    <Tabs>
+      <Tab title="Otherwise">
+        **Leads to:** Done
+      </Tab>
+      <Tab title="Yes">
+        **Leads to:** Recorded Future IP Enrich
+      </Tab>
+    </Tabs>
+
+    <Accordion title="Condition Logic">
+
+    **Branch: yes**
+
+    - `$&#123;ExtractedIndicators.IP&#125;` is not empty
+
+    </Accordion>
+
+  </Step>
+  <Step title="Recorded Future IP Enrich" icon="terminal">
+    Gets a quick indicator of the risk associated with an IP address.
+
+    **Executes command:** `!ip`
+    **Integration:** Recorded Future v2
+
+    <Accordion title="Command Arguments">
+
+    | Argument | Value |
+    |----------|-------|
+    | `ip` | `$&#123;ExtractedIndicators.IP&#125;` |
+
+    </Accordion>
+
+  </Step>
+  <Step title="Is there a domain?" icon="code-branch">
+    <Tabs>
+      <Tab title="Otherwise">
+        **Leads to:** Done
+      </Tab>
+      <Tab title="Yes">
+        **Leads to:** Recorded Future Domain Enrich
+      </Tab>
+    </Tabs>
+
+    <Accordion title="Condition Logic">
+
+    **Branch: yes**
+
+    - `$&#123;ExtractedIndicators.Domain&#125;` is not empty
+
+    </Accordion>
+
+  </Step>
+  <Step title="Recorded Future Domain Enrich" icon="terminal">
+    Gets a quick indicator of the risk associated with a domain.
+
+    **Executes command:** `!domain`
+    **Integration:** Recorded Future v2
+
+    <Accordion title="Command Arguments">
+
+    | Argument | Value |
+    |----------|-------|
+    | `domain` | `$&#123;ExtractedIndicators.Domain&#125;` |
+
+    </Accordion>
+
+  </Step>
+  <Step title="Get Report (behavioral1)" icon="terminal">
+    Retrieves the generated Triage Report for a single task
+
+    **Executes command:** `!triage-get-report-triage`
+    **Integration:** Hatching Triage
+
+    <Accordion title="Command Arguments">
+
+    | Argument | Value |
+    |----------|-------|
+    | `sample_id` | `$&#123;Triage.submissions.id&#125;` |
+    | `task_id` | `behavioral1` |
+
+    </Accordion>
+
+    <Accordion title="Field Mappings">
+
+    This task populates the following incident fields:
+
+    | Incident Field | Source |
+    |----------------|--------|
+    | `Malware Family` | `$&#123;Triage.sample.reports.triage.extracted.config.family&#125;` → uniq |
+
+    </Accordion>
+
+  </Step>
+  <Step title="Get Report (static)" icon="terminal">
+    Get the static analysis of a sample
+
+    **Executes command:** `!triage-get-static-report`
+    **Integration:** Hatching Triage
+
+    <Accordion title="Command Arguments">
+
+    | Argument | Value |
+    |----------|-------|
+    | `sample_id` | `$&#123;Triage.submissions.id&#125;` |
+
+    </Accordion>
+
+  </Step>
+  <Step title="Extract Indicators from Report" icon="terminal">
+    Extract all indicators according to server indicators configuration
+
+    **Executes command:** `!extractIndicators`
+
+    <Accordion title="Command Arguments">
+
+    | Argument | Value |
+    |----------|-------|
+    | `text` | `$&#123;Triage.sample.reports.static&#125;` |
+
+    </Accordion>
+
+  </Step>
+  <Step title="Is there a domain?" icon="code-branch">
+    <Tabs>
+      <Tab title="Otherwise">
+        **Leads to:** Done
+      </Tab>
+      <Tab title="Yes">
+        **Leads to:** Recorded Future Domain Enrich
+      </Tab>
+    </Tabs>
+
+    <Accordion title="Condition Logic">
+
+    **Branch: yes**
+
+    - `$&#123;ExtractedIndicators.Domain&#125;` is not empty
+
+    </Accordion>
+
+  </Step>
+  <Step title="Recorded Future Domain Enrich" icon="terminal">
+    Gets a quick indicator of the risk associated with a domain.
+
+    **Executes command:** `!domain`
+    **Integration:** Recorded Future v2
+
+    <Accordion title="Command Arguments">
+
+    | Argument | Value |
+    |----------|-------|
+    | `domain` | `$&#123;ExtractedIndicators.Domain&#125;` |
+
+    </Accordion>
+
+  </Step>
+  <Step title="Is there an ip?" icon="code-branch">
+    <Tabs>
+      <Tab title="Otherwise">
+        **Leads to:** Done
+      </Tab>
+      <Tab title="Yes">
+        **Leads to:** Recorded Future IP Enrich
+      </Tab>
+    </Tabs>
+
+    <Accordion title="Condition Logic">
+
+    **Branch: yes**
+
+    - `$&#123;ExtractedIndicators.IP&#125;` is not empty
+
+    </Accordion>
+
+  </Step>
+  <Step title="Recorded Future IP Enrich" icon="terminal">
+    Gets a quick indicator of the risk associated with an IP address.
+
+    **Executes command:** `!ip`
+    **Integration:** Recorded Future v2
+
+    <Accordion title="Command Arguments">
+
+    | Argument | Value |
+    |----------|-------|
+    | `ip` | `$&#123;ExtractedIndicators.IP&#125;` |
+
+    </Accordion>
+
+  </Step>
+  <Step title="Is there a URL?" icon="code-branch">
+    <Tabs>
+      <Tab title="Otherwise">
+        **Leads to:** Done
+      </Tab>
+      <Tab title="Yes">
+        **Leads to:** Recorded Future URL Enrich
+      </Tab>
+    </Tabs>
+
+    <Accordion title="Condition Logic">
+
+    **Branch: yes**
+
+    - `$&#123;ExtractedIndicators.URL&#125;` is not empty
+
+    </Accordion>
+
+  </Step>
+  <Step title="Recorded Future URL Enrich" icon="terminal">
+    Gets a quick indicator of the risk associated with a URL.
+
+    **Executes command:** `!url`
+    **Integration:** Recorded Future v2
+
+    <Accordion title="Command Arguments">
+
+    | Argument | Value |
+    |----------|-------|
+    | `url` | `$&#123;ExtractedIndicators.URL&#125;` |
+
+    </Accordion>
+
+  </Step>
+</Steps>
+
+## Field Mappings
+
+This playbook populates the following incident fields:
+
+| Incident Field | Task | Source |
+|----------------|------|--------|
+| `Malware Family` | Get Report (behavioral1) | `$&#123;Triage.sample.reports.triage.extracted.config.family&#125;` → uniq |
+| `Malware Family` | Get Report (behavioral2) | `$&#123;Triage.sample.reports.triage.extracted.config.family&#125;` → uniq |
+
+## Outputs
+
+After execution, the following data is available in the context:
+
+| Context Path | Type | Description |
+|--------------|------|-------------|
+| `DBotScore` | unknown | The DBotScore object. |
+| `DBotScore.Indicator` | unknown | Triage analysis target |
+| `DBotScore.Type` | unknown | The indicator type - File or URL |
+| `DBotScore.Vendor` | unknown | The integration used to generate the indicator |
+| `DBotScore.Score` | unknown | Analysis verdict as score from 1 to 10 |
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="Hatching Triage Integration" icon="plug">
+    Configure the Hatching Triage integration
+  </Card>
+  <Card title="Recorded Future v2 Integration" icon="plug">
+    Configure the Recorded Future v2 integration
+  </Card>
+  <Card title="GenericPolling" icon="diagram-project">
+    View sub-playbook documentation
+  </Card>
+</CardGroup>

@@ -11,8 +11,15 @@
   "navigation": {
     "tabs": [
       {
+        "tab": "Test",
+        "pages": [
+          "test",
+          "test2",
+          "test3"
+        ]
+      },
+      {
         "tab": "Guides",
-        "public": true,
         "groups": [
           {
             "group": "Getting started",
@@ -57,9 +64,17 @@
         "groups": [
           {
             "group": "API documentation",
-            "public": true,
             "pages": [
               "api-reference/introduction"
+            ]
+          },
+          {
+            "group": "Endpoint examples",
+            "pages": [
+              "api-reference/endpoint/get",
+              "api-reference/endpoint/create",
+              "api-reference/endpoint/delete",
+              "api-reference/endpoint/webhook"
             ]
           }
         ]
