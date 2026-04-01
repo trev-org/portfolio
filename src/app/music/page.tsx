@@ -49,7 +49,7 @@ const Music: React.FC = () => {
   const fetchHistory = async () => {
     try {
       setIsHistoryLoading(true);
-      const recentlyPlayed = await getMyRecentlyPlayed();
+      const recentlyPlayed = await getMyRecentlyPlayed(20);
 
       if (recentlyPlayed) {
         setHistory(recentlyPlayed);
@@ -123,9 +123,14 @@ const Music: React.FC = () => {
           }`}
         >
           <div className={styles.brandingHeader}>
-            <Link className={styles.name} href="/">
-              Music
-            </Link>
+            <div className={styles.introContain}>
+              <Link className={styles.name} href="/">
+                Music
+              </Link>
+              <p className={styles.intro}>
+                Music is a key part of my life. The rest is a quiet blur.
+              </p>
+            </div>
             <>
               {currentlyPlaying && !isCurrentlyPlayingLoading && (
                 <div className={styles.currentlyPlayingContainer}>
@@ -150,7 +155,7 @@ const Music: React.FC = () => {
                       </span>
                     </div>
                   </div>
-                  <div className={styles.progressBarContainer}>
+                  {/* <div className={styles.progressBarContainer}>
                     <div
                       className={styles.progressBar}
                       style={{
@@ -159,7 +164,7 @@ const Music: React.FC = () => {
                         }%`,
                       }}
                     ></div>
-                  </div>
+                  </div> */}
                 </div>
               )}
               {isCurrentlyPlayingLoading && <p>Loading...</p>}
@@ -167,11 +172,6 @@ const Music: React.FC = () => {
                 <p className={styles.notPlaying}>Nothing playing.</p>
               )}
             </>
-          </div>
-          <div className={styles.introContain}>
-            <p className={styles.intro}>
-              Music is a key part of my life. The rest is a quiet blur.
-            </p>
           </div>
         </div>
 

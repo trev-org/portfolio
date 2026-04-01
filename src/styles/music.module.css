@@ -26,6 +26,14 @@
   animation: fadeInUp 1s ease-out forwards;
 }
 
+.introContain {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
 .musicContain {
   display: flex;
   flex-direction: column;
@@ -46,11 +54,14 @@
   .landingContain {
     width: 100%;
   }
-  .recentlyPlayedItemCompany,
-  .recentlyPlayedItemCompanyNonPresent,
-  .intro,
-  .projectsItemTitle {
-    font-size: 15px !important;
+  .intro {
+    font-size: 13px !important;
+  }
+  .introContain {
+    width: 50%;
+  }
+  .brandingHeader {
+    gap: 15px;
   }
 }
 
@@ -89,61 +100,26 @@
   font-family: "MarketSans-Regular";
   text-decoration: none;
   color: #807b75;
-  font-size: 12px;
+  font-size: 13px;
   user-select: none;
+  margin-bottom: 0;
 }
-.menuContain {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: end;
-}
-.menu {
-  font-family: "MarketSans-Medium";
-  font-weight: 700;
-  text-transform: uppercase;
-  text-decoration: none;
-  color: #fff5ea;
-  font-size: 14px;
-  transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
-  letter-spacing: -0.03em;
-  user-select: none;
-  opacity: 1 !important;
-}
-.menuItem {
-  font-family: "MarketSans-Medium";
-  font-weight: 700;
-  text-transform: uppercase;
-  text-decoration: none;
-  color: #fff5ea;
-  font-size: 14px;
-  transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
-  opacity: 0;
-  display: none;
-}
-.menu:hover,
-.menuItem:hover {
-  opacity: 0.7 !important;
-  cursor: pointer !important;
-}
-.menu:active,
-.menuItem:active {
-  color: var(--main-color);
-}
+
 .sectionTitle {
   text-decoration: none;
   color: #fff5ea;
   opacity: 0.5;
-  font-size: 16px;
-  font-family: "MarketSans-Bold";
+  font-size: 14px;
+  font-family: "MarketSans-Medium";
   user-select: none;
-  margin-bottom: 2em;
+  margin-bottom: 10px;
 }
+
 .sectionSubtitle {
   text-decoration: none;
   color: #fff5ea;
   opacity: 0.5;
-  font-size: 12px;
+  font-size: 13px;
   font-family: "MarketSans-Regular";
   user-select: none;
 }
@@ -162,7 +138,7 @@
   color: #fff5ea;
   opacity: 0.5;
   font-family: "MarketSans-Regular";
-  font-size: 12px;
+  font-size: 13px;
   user-select: none;
   margin: 0;
   padding: 0;
@@ -248,7 +224,7 @@
 .currentlyPlayingArtist {
   font-family: "MarketSans-Regular";
   color: #807b75;
-  font-size: 12px;
+  font-size: 13px;
   user-select: none;
 }
 .progressBarContainer {
@@ -273,62 +249,9 @@
   box-sizing: border-box;
   padding: 20px;
 }
-.recentlyPlayedItem {
-  display: flex;
-  flex: row;
-  margin-bottom: 15px;
-}
-.recentlyPlayedItemContent {
-  display: flex;
-  flex-direction: column;
-}
-.recentlyPlayedItemHeader {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-bottom: 5px;
-}
-.recentlyPlayedItemCompanyNonPresent {
-  margin-bottom: 5px;
-}
-.recentlyPlayedLogo {
-  width: 45px;
-  height: 45px;
-  margin-right: 15px;
-  border-radius: 7.5px;
-}
-.recentlyPlayedItemPosition {
-  font-family: "MarketSans-Regular";
-  color: #807b75;
-  font-size: 14px;
-  user-select: none;
-}
-
-/* Album Reviews Section */
-.albumReviewsContain {
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  justify-content: center;
-  width: 100%;
-  box-sizing: border-box;
-  padding: 20px;
-}
-.albumReviewItem {
-  display: flex;
-  flex: row;
-  margin-bottom: 15px;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
 .albumReviewItemContent {
   display: flex;
   flex-direction: column;
-}
-.albumReviewItemInformation {
-  display: flex;
-  flex-direction: r;
 }
 .albumReviewItemHeader {
   display: flex;
@@ -342,30 +265,14 @@
   font-size: 14px;
   user-select: none;
 }
-.albumReviewItemCompanyNonPresent {
-  margin-bottom: 5px;
-}
-.albumReviewLogo {
-  width: 45px;
-  height: 45px;
-  margin-right: 15px;
-  border-radius: 7.5px;
-}
 .albumReviewItemPosition {
   font-family: "MarketSans-Regular";
   color: #807b75;
-  font-size: 12px;
+  font-size: 13px;
   user-select: none;
-}
-.albumReviewItemRating {
-  padding: 5px;
-  font-size: 12px;
 }
 
 @media (max-width: 768px) {
-  .albumReviewItems {
-    grid-template-columns: 1fr;
-  }
   .albumReviewItemCompany {
     font-size: 15px;
   }
@@ -376,46 +283,18 @@
 
 /* History Section */
 .historyGrid {
-  display: flex;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   width: 100%;
-  gap: 10px;
-  overscroll-behavior-x: contain;
-}
-
-.historyItem {
-  flex: 0 0 auto;
-  width: 120px;
-  scroll-snap-align: start;
-}
-
-.historyItem:last-child {
-  margin-right: 0;
-}
-
-/* Hide scrollbar but keep functionality */
-.historyGrid::-webkit-scrollbar {
-  display: none;
-}
-
-.historyGrid {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
-}
-
-/* Adjust width on mobile */
-@media (max-width: 768px) {
-  .historyItem {
-    width: 160px;
-  }
+  gap: 15px;
+  align-items: start;
 }
 
 .historyItem {
   display: flex;
   flex-direction: column;
+  width: 100%;
+  min-width: 0;
 }
 
 .imageContainer {

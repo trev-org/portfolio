@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "../styles/home.module.css";
 import { app } from "../lib/firebase";
 import { getAnalytics } from "firebase/analytics";
@@ -28,44 +28,38 @@ const useWindowWidth = (): number => {
 
 const Home: React.FC = () => {
   const width = useWindowWidth();
-  const projectListRef = useRef<HTMLDivElement>(null);
-  const explanationRef = useRef<HTMLDivElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const animationDelay = 0.2;
 
-  const projects = {
-    rtuhub: {
+  const ventures = [
+    {
       name: "RTU Hub",
       link: "https://rtuhub.com/",
-      description: "one-stop shop for discovering food service products",
+      description:
+        "one-stop shop for discovering food service products; in beta with 7+ pilot clients",
     },
-    // polymer: {
+    // {
     //   name: "Polymer",
     //   link: "",
     //   description: "redefining social media x music",
     // },
-    honeycomb: {
-      name: "Honeycomb Studios",
-      link: "https://honeycomb-studios.web.app/",
-      description: "high quality posters for the masses",
-    },
-    urmp: {
+    {
       name: "URMP",
       link: "https://www.linkedin.com/posts/keminghe_ohiostate-osu-studentorganization-activity-7237797457709998080-eZb2?utm_source=share&utm_medium=member_desktop&rcm=ACoAADQqWlQBhaTkdQU-3gDKW2_4INiiIPHBhU0",
       description: "platform to connect researchers to mentees; 500+ users",
     },
-    casey: {
+    {
       name: "Casey",
       link: "https://www.linkedin.com/feed/update/urn:li:activity:7352015834879307776/",
       description:
         "turn any real-world experience into structured, classroom-ready case studies; 100+ on waitlist",
     },
-  };
-
-  const [hoveredProject, setHoveredProject] = useState<
-    keyof typeof projects | null
-  >(null);
-  const [isProjectHovering, setIsProjectHovering] = useState<boolean>(false);
+    {
+      name: "Honeycomb Studios",
+      link: "https://honeycomb-studios.web.app/",
+      description: "high quality posters for the masses",
+    },
+  ];
 
   useEffect(() => {
     // Initialize Firebase Analytics
@@ -73,45 +67,6 @@ const Home: React.FC = () => {
       getAnalytics(app);
     }
   }, []);
-
-  // Close explanation on outside click or Escape
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as Node;
-      if (
-        isProjectHovering &&
-        !projectListRef.current?.contains(target) &&
-        !explanationRef.current?.contains(target)
-      ) {
-        setHoveredProject(null);
-        setIsProjectHovering(false);
-      }
-    };
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setHoveredProject(null);
-        setIsProjectHovering(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isProjectHovering]);
-
-  const toggleProject = (key: keyof typeof projects) => {
-    if (hoveredProject === key && isProjectHovering) {
-      setHoveredProject(null);
-      setIsProjectHovering(false);
-    } else {
-      setHoveredProject(key);
-      setIsProjectHovering(true);
-    }
-  };
 
   // Trigger CSS animations on mount
   useEffect(() => {
@@ -179,17 +134,15 @@ const Home: React.FC = () => {
             style={{ animationDelay: `${animationDelay * 1}s` }}
           >
             <p className={styles.intro}>
-              Hey! I&apos;m a software engineer and a computer science student
-              at{" "}
-              <span className={styles.introOsu}>The Ohio State University</span>
-              .
+              Hey! I&apos;m a software engineer from Ohio, now based in SF.
+              Currently building at Mintlify.
             </p>
             <p className={styles.intro}>
               As a kid, I loved building things — cars, robots, anything I could
               imagine. In 5th grade, I taught myself to code, launched my first
-              app for my middle school, and even received a $1K fellowship
-              grant. By high school, I was diving into startups and haven&apos;t
-              stopped creating since.
+              app for my middle school, and received a $1K fellowship grant. By
+              high school, I was diving into startups and haven&apos;t stopped
+              creating since.
             </p>
             <p className={styles.intro}>
               I believe the best tools are visually appealing, efficient, and
@@ -352,7 +305,7 @@ const Home: React.FC = () => {
                   Chipotle
                 </span>
                 <span className={styles.experienceItemPosition}>
-                  Software — IT Infrastructure
+                  IT Infrastructure
                 </span>
               </div>
             </div>
@@ -366,17 +319,17 @@ const Home: React.FC = () => {
               />
               <div className={styles.experienceItemContent}>
                 <span className={styles.experienceItemCompanyNonPresent}>
-                  Mimecast (Aware)
+                  Mimecast
                 </span>
                 <span className={styles.experienceItemPosition}>
-                  Software — Internal Tooling
+                  Internal Tooling, acq. by Mimecast
                 </span>
               </div>
             </div>
           </div>
         </section>
 
-        <section
+        {/* <section
           className={`${styles.educationContain} ${
             isLoaded ? styles.fadeInUp : ""
           }`}
@@ -396,9 +349,6 @@ const Home: React.FC = () => {
                 <span className={styles.experienceItemCompany}>
                   The Ohio State University
                 </span>
-                {/* <span className={styles.experienceItemPresentTag}>
-                  {width <= 500 ? "Dec 2025" : "Expected: Dec 2025"}
-                </span> */}
               </div>
               <span className={styles.experienceItemPosition}>
                 Honors B.S. in Computer Science and Engineering, AI
@@ -406,99 +356,33 @@ const Home: React.FC = () => {
               </span>
             </div>
           </div>
-        </section>
+        </section> */}
 
         <section
           className={`${styles.projectsContain} ${
             isLoaded ? styles.fadeInUp : ""
           }`}
-          style={{ animationDelay: `${animationDelay * 5}s` }}
+          style={{ animationDelay: `${animationDelay * 4}s` }}
         >
           <span className={styles.sectionTitle}>Ventures</span>
-          <div className={styles.projectList} ref={projectListRef}>
-            <button
-              onClick={() => toggleProject("rtuhub")}
-              className={
-                hoveredProject === "rtuhub" ? styles.activeProject : ""
-              }
-              aria-label={projects.rtuhub.name}
-              title={projects.rtuhub.name}
-            >
-              🍔
-            </button>
-            {/* <button
-              onClick={() => toggleProject("polymer")}
-              className={
-                hoveredProject === "polymer" ? styles.activeProject : ""
-              }
-              aria-label={projects.polymer.name}
-              title={projects.polymer.name}
-            >
-              🎧
-            </button> */}
-            <button
-              onClick={() => toggleProject("urmp")}
-              className={hoveredProject === "urmp" ? styles.activeProject : ""}
-              aria-label={projects.urmp.name}
-              title={projects.urmp.name}
-            >
-              👨‍🔬
-            </button>
-            <button
-              onClick={() => toggleProject("casey")}
-              className={hoveredProject === "casey" ? styles.activeProject : ""}
-              aria-label={projects.casey.name}
-              title={projects.casey.name}
-            >
-              📖
-            </button>
-            <button
-              onClick={() => toggleProject("honeycomb")}
-              className={
-                hoveredProject === "honeycomb" ? styles.activeProject : ""
-              }
-              aria-label={projects.honeycomb.name}
-              title={projects.honeycomb.name}
-            >
-              🖼️
-            </button>
-          </div>
-          {isProjectHovering && (
-            <div
-              className={`${styles.projectExplanation} ${
-                isProjectHovering ? styles.showExplanation : ""
-              }`}
-              ref={explanationRef}
-            >
-              {hoveredProject ? (
-                <>
-                  {projects[hoveredProject].link ? (
-                    <a
-                      href={projects[hoveredProject].link}
-                      target="_blank"
-                      rel="noreferrer"
-                      className={styles.projectLink}
-                    >
-                      {projects[hoveredProject].name}
-                    </a>
-                  ) : (
-                    projects[hoveredProject].name
-                  )}
-                  {" — "}
-                  {projects[hoveredProject].description}
-                </>
-              ) : (
-                ""
-              )}
-            </div>
-          )}
+          <ul className={styles.achievementsList}>
+            {ventures.map((venture) => (
+              <li key={venture.name}>
+                <a href={venture.link} target="_blank" rel="noreferrer">
+                  {venture.name}
+                </a>
+                {" — "}
+                {venture.description}
+              </li>
+            ))}
+          </ul>
         </section>
 
         <section
           className={`${styles.educationContain} ${
             isLoaded ? styles.fadeInUp : ""
           }`}
-          style={{ animationDelay: `${animationDelay * 6}s` }}
+          style={{ animationDelay: `${animationDelay * 5}s` }}
         >
           <div className={styles.sectionTitleContainer}>
             <span className={styles.sectionTitle} style={{ marginBottom: 0 }}>
@@ -531,12 +415,12 @@ const Home: React.FC = () => {
                   <span className={styles.projectsItemTitle}>Music</span>
                   <span className={styles.projectsItemDesc}>
                     A glimpse into my current listening habits and recent audio
-                    discoveries
+                    discoveries.
                   </span>
                 </div>
               </div>
             </Link>
-            <Link href="/pocket">
+            {/* <Link href="/pocket">
               <div className={styles.projectsItem}>
                 <div className={styles.projectItemHoverTopLeft}></div>
                 <div className={styles.projectItemHoverBottomRight}></div>
@@ -550,7 +434,7 @@ const Home: React.FC = () => {
                   </span>
                 </div>
               </div>
-            </Link>
+            </Link> */}
           </div>
         </section>
 

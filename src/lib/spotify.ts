@@ -67,13 +67,13 @@ export async function getSpotifyToken(): Promise<string | null> {
   }
 }
 
-export async function getMyRecentlyPlayed() {
+export async function getMyRecentlyPlayed(limit = 20) {
   try {
     const token = await getSpotifyToken();
     if (!token) return null;
 
     const response = await fetch(
-      "https://api.spotify.com/v1/me/player/recently-played?limit=10",
+      `https://api.spotify.com/v1/me/player/recently-played?limit=${limit}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

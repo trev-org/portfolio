@@ -67,14 +67,6 @@
   position: relative;
   cursor: pointer;
 }
-.projectLink {
-  transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
-}
-.projectLink:hover {
-  color: #000;
-  background-color: var(--main-color);
-  padding: 2px 5px;
-}
 .projectItemHoverTopLeft {
   position: absolute;
   top: 0px;
