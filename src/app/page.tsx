@@ -54,11 +54,11 @@ const Home: React.FC = () => {
       description:
         "turn any real-world experience into structured, classroom-ready case studies; 100+ on waitlist",
     },
-    {
-      name: "Honeycomb Studios",
-      link: "https://honeycomb-studios.web.app/",
-      description: "high quality posters for the masses",
-    },
+    // {
+    //   name: "Honeycomb Studios",
+    //   link: "https://honeycomb-studios.web.app/",
+    //   description: "high quality posters for the masses",
+    // },
   ];
 
   useEffect(() => {
@@ -118,13 +118,13 @@ const Home: React.FC = () => {
               </Link>
               <Link
                 className={styles.introLink}
-                href="mailto:gerald.26@osu.edu"
+                href="mailto:tmgerald04@gmail.com"
               >
                 MAIL
               </Link>
-              <Link className={styles.introLink} href="/schedule">
+              {/* <Link className={styles.introLink} href="/schedule">
                 SCHEDULE
-              </Link>
+              </Link> */}
             </div>
           </div>
           <div
@@ -420,7 +420,7 @@ const Home: React.FC = () => {
                 </div>
               </div>
             </Link>
-            {/* <Link href="/pocket">
+            <Link href="/pocket">
               <div className={styles.projectsItem}>
                 <div className={styles.projectItemHoverTopLeft}></div>
                 <div className={styles.projectItemHoverBottomRight}></div>
@@ -434,7 +434,7 @@ const Home: React.FC = () => {
                   </span>
                 </div>
               </div>
-            </Link> */}
+            </Link>
           </div>
         </section>
 

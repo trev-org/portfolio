@@ -16,7 +16,7 @@ export interface History {
   played_at: string;
 }
 
-export interface Article {
+export interface SavedArticle {
   id: number;
   created_at: string;
   title: string;
@@ -24,6 +24,14 @@ export interface Article {
   favicon: string;
   link: string;
   has_read: boolean;
+}
+
+export interface WrittenArticleMetadata {
+  slug: string;
+  title: string;
+  description: string;
+  publishedAt: string;
+  draft: boolean;
 }
 
 export interface CurrentlyPlaying {

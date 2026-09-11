@@ -1,13 +1,22 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { getMyRecentlyPlayed, getMyCurrentlyPlaying } from "../../lib/spotify";
+import React, { useCallback, useEffect, useState } from "react";
+import type { Metadata } from "next";
+import {
+  getMyCurrentlyPlaying,
+  getMyRecentlyPlayed,
+} from "../../lib/spotify";
 import styles from "../../styles/music.module.css";
 import Footer from "../../components/Footer";
 // import { createClient } from "../../lib/supabase";
 import Image from "next/image";
 import { History, CurrentlyPlaying } from "../../types/types";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Music",
+  description: "What I've been listening to recently.",
+};
 
 const Music: React.FC = () => {
   const [history, setHistory] = useState<History[]>([]);
@@ -18,7 +27,7 @@ const Music: React.FC = () => {
   const [isCurrentlyPlayingLoading, setIsCurrentlyPlayingLoading] =
     useState<boolean>(true);
   // const [isAlbumReviewsLoading, setIsAlbumReviewsLoading] = useState<boolean>(true);
-  const [progress, setProgress] = useState<number>(0);
+  const [spotifyError, setSpotifyError] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   // const supabase = createClient();
 
@@ -45,72 +54,52 @@ const Music: React.FC = () => {
   //   }
   // };
 
-  // Fetch History
-  const fetchHistory = async () => {
+  const fetchSpotifyData = useCallback(async () => {
     try {
       setIsHistoryLoading(true);
-      const recentlyPlayed = await getMyRecentlyPlayed(20);
+      setIsCurrentlyPlayingLoading(true);
+      setSpotifyError(null);
 
-      if (recentlyPlayed) {
-        setHistory(recentlyPlayed);
-      }
-    } catch (error) {
-      console.error("Error fetching history:", error);
+      const [historyData, currentlyPlayingData] = await Promise.all([
+        getMyRecentlyPlayed(20),
+        getMyCurrentlyPlaying(),
+      ]);
+
+      setHistory(historyData);
+      setCurrentlyPlaying(currentlyPlayingData);
+    } catch {
+      setHistory([]);
+      setCurrentlyPlaying(null);
+      setSpotifyError("Spotify is temporarily unavailable.");
     } finally {
       setIsHistoryLoading(false);
-    }
-  };
-
-  // Fetch Currently Playing
-  const fetchCurrentlyPlaying = async () => {
-    try {
-      setIsCurrentlyPlayingLoading(true);
-
-      const currentlyPlayingData = await getMyCurrentlyPlaying();
-
-      if (currentlyPlayingData) {
-        setCurrentlyPlaying(currentlyPlayingData);
-      }
-    } catch (error) {
-      console.error("Error fetching currently playing:", error);
-    } finally {
       setIsCurrentlyPlayingLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     // fetchAlbumReviews();
-    fetchHistory();
-    fetchCurrentlyPlaying();
-  }, []);
+    void fetchSpotifyData();
+  }, [fetchSpotifyData]);
 
-  // Update progress bar
+  // Refresh shortly after the current track should finish.
   useEffect(() => {
-    if (!currentlyPlaying) return;
-    let progressInterval: NodeJS.Timeout;
-
-    if (currentlyPlaying && currentlyPlaying.is_playing) {
-      // Initialize progress
-      setProgress(currentlyPlaying.progress_ms);
-
-      // Update progress every second
-      progressInterval = setInterval(() => {
-        setProgress((prev) => {
-          // Don't exceed the song duration
-          if (prev >= currentlyPlaying.duration_ms) {
-            clearInterval(progressInterval);
-            fetchCurrentlyPlaying();
-            return currentlyPlaying.duration_ms;
-          }
-          return prev + 1000;
-        });
-      }, 1000);
+    if (!currentlyPlaying?.is_playing) {
+      return;
     }
 
+    const timeUntilTrackEnds = Math.max(
+      currentlyPlaying.duration_ms - currentlyPlaying.progress_ms + 1000,
+      1000
+    );
+    const refreshTimeout = window.setTimeout(() => {
+      void fetchSpotifyData();
+    }, timeUntilTrackEnds);
+
     return () => {
-      if (progressInterval) clearInterval(progressInterval);
+      window.clearTimeout(refreshTimeout);
     };
-  }, [currentlyPlaying]);
+  }, [currentlyPlaying, fetchSpotifyData]);
 
   return (
     <>
@@ -132,7 +121,9 @@ const Music: React.FC = () => {
               </p>
             </div>
             <>
-              {currentlyPlaying && !isCurrentlyPlayingLoading && (
+              {currentlyPlaying &&
+                !isCurrentlyPlayingLoading &&
+                !spotifyError && (
                 <div className={styles.currentlyPlayingContainer}>
                   <div
                     className={`${styles.currentlyPlayingContent} ${
@@ -155,20 +146,15 @@ const Music: React.FC = () => {
                       </span>
                     </div>
                   </div>
-                  {/* <div className={styles.progressBarContainer}>
-                    <div
-                      className={styles.progressBar}
-                      style={{
-                        width: `${
-                          (progress / currentlyPlaying.duration_ms) * 100
-                        }%`,
-                      }}
-                    ></div>
-                  </div> */}
                 </div>
               )}
               {isCurrentlyPlayingLoading && <p>Loading...</p>}
-              {!currentlyPlaying && !isCurrentlyPlayingLoading && (
+              {spotifyError && !isCurrentlyPlayingLoading && (
+                <p className={styles.notPlaying}>{spotifyError}</p>
+              )}
+              {!spotifyError &&
+                !currentlyPlaying &&
+                !isCurrentlyPlayingLoading && (
                 <p className={styles.notPlaying}>Nothing playing.</p>
               )}
             </>
@@ -197,7 +183,10 @@ const Music: React.FC = () => {
                 </span>
               )}
             </div>
-            {!isHistoryLoading && history && history.length > 0 && (
+            {!spotifyError &&
+              !isHistoryLoading &&
+              history &&
+              history.length > 0 && (
               <div className={styles.historyGrid}>
                 {history.map((item: History, index: number) => (
                   <div className={styles.historyItem} key={index}>
@@ -225,9 +214,16 @@ const Music: React.FC = () => {
                 ))}
               </div>
             )}
-            {!isHistoryLoading && (!history || history.length === 0) && (
+            {!spotifyError &&
+              !isHistoryLoading &&
+              (!history || history.length === 0) && (
               <div className={styles.historyPlaceholder}>
                 <p>No history found.</p>
+              </div>
+            )}
+            {spotifyError && !isHistoryLoading && (
+              <div className={styles.historyPlaceholder}>
+                <p>{spotifyError}</p>
               </div>
             )}
             {isHistoryLoading && <p>Loading...</p>}
