@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import type { Metadata } from "next";
 import {
   getMyCurrentlyPlaying,
   getMyRecentlyPlayed,
@@ -12,11 +11,6 @@ import Footer from "../../components/Footer";
 import Image from "next/image";
 import { History, CurrentlyPlaying } from "../../types/types";
 import Link from "next/link";
-
-export const metadata: Metadata = {
-  title: "Music",
-  description: "What I've been listening to recently.",
-};
 
 const Music: React.FC = () => {
   const [history, setHistory] = useState<History[]>([]);
