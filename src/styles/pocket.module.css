@@ -144,11 +144,6 @@
   position: relative;
 }
 
-.articlesLogo {
-  border-radius: 7.5px;
-  object-fit: cover;
-}
-
 .articlesItemContent {
   display: flex;
   flex-direction: column;

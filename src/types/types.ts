@@ -18,16 +18,6 @@ export interface History {
   artistId?: string;
 }
 
-export interface SavedArticle {
-  id: number;
-  created_at: string;
-  title: string;
-  description: string;
-  favicon: string;
-  link: string;
-  has_read: boolean;
-}
-
 export interface WrittenArticleMetadata {
   slug: string;
   title: string;
