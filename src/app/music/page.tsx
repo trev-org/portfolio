@@ -7,6 +7,7 @@ import {
 } from "../../lib/spotify";
 import styles from "../../styles/music.module.css";
 import Footer from "../../components/Footer";
+import ListeningStats from "../../components/ListeningStats";
 // import { createClient } from "../../lib/supabase";
 import Image from "next/image";
 import { History, CurrentlyPlaying } from "../../types/types";
@@ -23,12 +24,30 @@ const Music: React.FC = () => {
   // const [isAlbumReviewsLoading, setIsAlbumReviewsLoading] = useState<boolean>(true);
   const [spotifyError, setSpotifyError] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [viewMode, setViewMode] = useState<"tile" | "grid">("tile");
   // const supabase = createClient();
 
   // Trigger CSS animations on mount
   useEffect(() => {
     setIsLoaded(true);
+    try {
+      const saved = window.localStorage.getItem("music-view-mode");
+      if (saved === "tile" || saved === "grid") {
+        setViewMode(saved);
+      }
+    } catch {
+      // localStorage unavailable — fall back to tile view
+    }
   }, []);
+
+  const changeViewMode = (mode: "tile" | "grid") => {
+    setViewMode(mode);
+    try {
+      window.localStorage.setItem("music-view-mode", mode);
+    } catch {
+      // localStorage unavailable — view still updates for this session
+    }
+  };
 
   // Fetch Album Reviews
   // const fetchAlbumReviews = async () => {
@@ -165,23 +184,55 @@ const Music: React.FC = () => {
           <section className={styles.recentlyPlayedContain}>
             <div className={styles.sectionTitleContainer}>
               <span className={styles.sectionTitle}>Recently Played</span>
-              {history && history.length > 0 && (
-                <span className={styles.sectionSubtitle}>
-                  last at{" "}
-                  {new Date(history[0].played_at).toLocaleTimeString([], {
-                    day: "numeric",
-                    month: "numeric",
-                    hour: "numeric",
-                    minute: "numeric",
-                  })}
-                </span>
-              )}
+              <div className={styles.sectionActions}>
+                {history && history.length > 0 && (
+                  <span className={styles.sectionSubtitle}>
+                    last at{" "}
+                    {new Date(history[0].played_at).toLocaleTimeString([], {
+                      day: "numeric",
+                      month: "numeric",
+                      hour: "numeric",
+                      minute: "numeric",
+                    })}
+                  </span>
+                )}
+                <div
+                  className={styles.viewToggle}
+                  role="group"
+                  aria-label="Change recently played view"
+                >
+                  <button
+                    type="button"
+                    className={`${styles.viewToggleButton} ${
+                      viewMode === "tile" ? styles.viewToggleButtonActive : ""
+                    }`}
+                    aria-pressed={viewMode === "tile"}
+                    onClick={() => changeViewMode("tile")}
+                  >
+                    Tile
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.viewToggleButton} ${
+                      viewMode === "grid" ? styles.viewToggleButtonActive : ""
+                    }`}
+                    aria-pressed={viewMode === "grid"}
+                    onClick={() => changeViewMode("grid")}
+                  >
+                    Grid
+                  </button>
+                </div>
+              </div>
             </div>
             {!spotifyError &&
               !isHistoryLoading &&
               history &&
               history.length > 0 && (
-              <div className={styles.historyGrid}>
+              <div
+                className={`${styles.historyGrid} ${
+                  viewMode === "grid" ? styles.historyGridCompact : ""
+                }`}
+              >
                 {history.map((item: History, index: number) => (
                   <div className={styles.historyItem} key={index}>
                     <div className={styles.imageContainer}>
@@ -222,6 +273,9 @@ const Music: React.FC = () => {
             )}
             {isHistoryLoading && <p>Loading...</p>}
           </section>
+
+          {/* Listening Stats Section */}
+          <ListeningStats />
 
           {/* Album Reviews Section */}
           {/* <section className={styles.albumReviewsContain}>

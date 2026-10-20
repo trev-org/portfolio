@@ -14,6 +14,8 @@ export interface History {
   image: string;
   url: string;
   played_at: string;
+  trackId?: string;
+  artistId?: string;
 }
 
 export interface SavedArticle {
@@ -46,6 +48,7 @@ export interface CurrentlyPlaying {
 }
 
 export interface SpotifyArtist {
+  id: string;
   name: string;
   external_urls: {
     spotify: string;
@@ -62,6 +65,7 @@ export interface SpotifyAlbum {
 }
 
 export interface SpotifyTrack {
+  id: string;
   name: string;
   artists: SpotifyArtist[];
   album: SpotifyAlbum;
@@ -73,4 +77,53 @@ export interface SpotifyTrack {
 export interface SpotifyRecentlyPlayedItem {
   track: SpotifyTrack;
   played_at: string;
+}
+
+export type SpotifyTopTimeRange = "short_term" | "medium_term" | "long_term";
+
+export interface SpotifyTopArtist {
+  id: string;
+  name: string;
+  image: string;
+  genres: string[];
+  url: string;
+}
+
+export interface SpotifyTopTrack {
+  id: string;
+  name: string;
+  artistId: string;
+  artist: string;
+  image: string;
+  url: string;
+}
+
+export interface SpotifyArtistDetails {
+  id: string;
+  genres: string[];
+  image: string;
+}
+
+export type StatsRange = "day" | "week" | "month" | "year";
+
+export interface GenreScore {
+  genre: string;
+  score: number;
+}
+
+export interface StatsTopItem {
+  name: string;
+  artist?: string;
+  image?: string;
+  plays?: number;
+  url?: string;
+}
+
+export interface ListeningStats {
+  range: StatsRange;
+  rangeLabel: string;
+  note: string;
+  topArtist: StatsTopItem | null;
+  topSong: StatsTopItem | null;
+  genres: GenreScore[];
 }

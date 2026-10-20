@@ -134,6 +134,60 @@
 .sectionTitleContainer .sectionTitle {
   margin-bottom: 0;
 }
+.sectionActions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Tile/Grid view toggle — mobile only */
+.viewToggle {
+  display: none;
+  border: 1px solid rgba(255, 245, 234, 0.2);
+  border-radius: 999px;
+  padding: 2px;
+  gap: 2px;
+}
+.viewToggleButton {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: #807b75;
+  font-family: "MarketSans-Medium";
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+.viewToggleButtonActive {
+  background: rgba(255, 245, 234, 0.15);
+  color: #fff5ea;
+}
+
+@media (max-width: 768px) {
+  .viewToggle {
+    display: inline-flex;
+  }
+  /* Compact grid view for the recently played cards.
+     Doubled class keeps specificity above the base .historyGrid rule,
+     which is declared later in this file. */
+  .historyGrid.historyGridCompact {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .historyGridCompact .imageContainer {
+    margin-bottom: 6px;
+  }
+  .historyGridCompact .albumReviewItemCompany {
+    font-size: 11px;
+  }
+  .historyGridCompact .albumReviewItemPosition {
+    display: none;
+  }
+}
 .notPlaying {
   color: #fff5ea;
   opacity: 0.5;
@@ -320,4 +374,158 @@
   font-family: "MarketSans-Regular";
   font-size: 14px;
   user-select: none;
+}
+
+/* Listening Stats Section */
+.statsContain {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 20px;
+  border-top: 1px solid rgba(255, 245, 234, 0.08);
+}
+.statsTabs {
+  display: inline-flex;
+  border: 1px solid rgba(255, 245, 234, 0.2);
+  border-radius: 999px;
+  padding: 2px;
+  gap: 2px;
+}
+.statsMeta {
+  color: #fff5ea;
+  opacity: 0.5;
+  font-family: "MarketSans-Regular";
+  font-size: 12px;
+  user-select: none;
+  margin: 0 0 16px 0;
+}
+.statsCards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+.statsCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid rgba(255, 245, 234, 0.08);
+  border-radius: 10px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  min-width: 0;
+}
+.statsCard:hover {
+  opacity: 0.8;
+}
+.statsCardLabel {
+  color: #fff5ea;
+  opacity: 0.5;
+  font-size: 12px;
+  font-family: "MarketSans-Medium";
+  user-select: none;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.statsCardBody {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.statsCardImage {
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.statsCardImageRound {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.statsCardInfo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.statsCardName {
+  font-family: "MarketSans-Medium";
+  color: #fff5ea;
+  font-size: 14px;
+  user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.statsCardMeta {
+  font-family: "MarketSans-Regular";
+  color: #807b75;
+  font-size: 12px;
+  user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Genre bar chart */
+.genreChart {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+.genreRow {
+  display: grid;
+  grid-template-columns: 120px 1fr 52px;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+.genreName {
+  font-family: "MarketSans-Regular";
+  color: #fff5ea;
+  font-size: 13px;
+  user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: right;
+}
+.genreBarTrack {
+  height: 8px;
+  border-radius: 999px;
+  background-color: rgba(255, 245, 234, 0.1);
+  overflow: hidden;
+}
+.genreBarFill {
+  height: 100%;
+  border-radius: 999px;
+  background-color: #39be82;
+  transition: width 0.5s ease;
+}
+.genreValue {
+  font-family: "MarketSans-Regular";
+  color: #807b75;
+  font-size: 12px;
+  user-select: none;
+  text-align: right;
+}
+
+@media (max-width: 768px) {
+  .statsCards {
+    grid-template-columns: 1fr;
+  }
+  .genreRow {
+    grid-template-columns: 100px 1fr 44px;
+  }
 }
