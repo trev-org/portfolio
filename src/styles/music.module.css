@@ -134,6 +134,82 @@
 .sectionTitleContainer .sectionTitle {
   margin-bottom: 0;
 }
+.sectionActions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Tile/List view toggle — mobile only */
+.viewToggle {
+  display: none;
+  border: 1px solid rgba(255, 245, 234, 0.2);
+  border-radius: 999px;
+  padding: 2px;
+  gap: 2px;
+}
+.viewToggleButton {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: #807b75;
+  font-family: "MarketSans-Medium";
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+.viewToggleButtonActive {
+  background: rgba(255, 245, 234, 0.15);
+  color: #fff5ea;
+}
+
+@media (max-width: 768px) {
+  .sectionSubtitle {
+    display: none;
+  }
+  .viewToggle {
+    display: inline-flex;
+  }
+  /* List view for the recently played cards.
+     Doubled class keeps specificity above the base .historyGrid rule,
+     which is declared later in this file. */
+  .historyGrid.historyGridList {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .historyGridList .historyItem {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+  .historyGridList .imageContainer {
+    width: 56px;
+    height: 56px;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    flex: 0 0 56px;
+  }
+  .historyGridList .albumReviewItemContent,
+  .historyGridList .albumReviewItemHeader {
+    min-width: 0;
+  }
+  .historyGridList .albumReviewItemHeader {
+    margin-bottom: 4px;
+  }
+  .historyGridList .albumReviewItemCompany,
+  .historyGridList .albumReviewItemPosition {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .historyGridList .albumReviewItemCompany {
+    font-size: 14px;
+  }
+}
 .notPlaying {
   color: #fff5ea;
   opacity: 0.5;
@@ -320,4 +396,344 @@
   font-family: "MarketSans-Regular";
   font-size: 14px;
   user-select: none;
+}
+
+/* Listening Stats Section */
+.statsContain {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 20px;
+  border-top: 1px solid rgba(255, 245, 234, 0.08);
+}
+.statsTabs {
+  display: inline-flex;
+  border: 1px solid rgba(255, 245, 234, 0.2);
+  border-radius: 999px;
+  padding: 2px;
+  gap: 2px;
+}
+.statsSelectWrapper {
+  display: none;
+  position: relative;
+  border: 1px solid rgba(255, 245, 234, 0.2);
+  border-radius: 999px;
+  padding: 2px;
+}
+.statsSelectWrapper::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 13px;
+  width: 5px;
+  height: 5px;
+  border-right: 1px solid #fff5ea;
+  border-bottom: 1px solid #fff5ea;
+  pointer-events: none;
+  transform: translateY(-70%) rotate(45deg);
+}
+.statsSelect {
+  appearance: none;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 245, 234, 0.15);
+  color: #fff5ea;
+  font-family: "MarketSans-Medium";
+  font-size: 12px;
+  line-height: normal;
+  padding: 4px 30px 4px 12px;
+  cursor: pointer;
+}
+.statsSelectWrapper:focus-within {
+  border-color: var(--main-color);
+}
+.statsSelect option {
+  background: #121212;
+  color: #fff5ea;
+}
+.statsCards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+.statsCard {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+  width: 100%;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+  min-width: 0;
+  position: relative;
+}
+
+.statsCardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  padding: 5px;
+  transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+.statsCard:is(:hover, :focus-visible) .statsCardContent {
+  transform: translate3d(0.3rem, -0.3rem, 0);
+}
+
+.statsCardHoverTopLeft {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-top: 0.3rem solid transparent;
+  border-bottom: 0.3rem solid transparent;
+  border-right: 0.3rem solid var(--main-color);
+  transform-origin: left center;
+  transform: translateY(-0.3rem) scale(0);
+  transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+  pointer-events: none;
+}
+
+.statsCard:is(:hover, :focus-visible) .statsCardHoverTopLeft {
+  transform: translateY(-0.3rem) scale(1);
+}
+
+.statsCardHoverBottomRight {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-left: 0.3rem solid transparent;
+  border-right: 0.3rem solid transparent;
+  border-top: 0.3rem solid var(--main-color);
+  transform-origin: center bottom;
+  transform: translateX(0.3rem) scale(0);
+  transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+  pointer-events: none;
+}
+
+.statsCard:is(:hover, :focus-visible) .statsCardHoverBottomRight {
+  transform: translateX(0.3rem) scale(1);
+}
+
+.statsCardHoverLeft {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 0.3rem;
+  background: var(--main-color);
+  transform-origin: 0 100%;
+  transform: scaleX(0);
+  transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+  pointer-events: none;
+}
+
+.statsCard:is(:hover, :focus-visible) .statsCardHoverLeft {
+  transform: scaleX(1);
+}
+
+.statsCardHoverBottom {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 0.3rem;
+  background: var(--main-color);
+  transform-origin: 0 100%;
+  transform: scaleY(0);
+  transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+  pointer-events: none;
+}
+
+.statsCard:is(:hover, :focus-visible) .statsCardHoverBottom {
+  transform: scaleY(1);
+}
+
+.statsCardBody {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.statsCardImage {
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.statsCardInfo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.statsCardName {
+  font-family: "MarketSans-Medium";
+  color: #fff5ea;
+  font-size: 14px;
+  user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.statsCardMeta {
+  font-family: "MarketSans-Regular";
+  color: #807b75;
+  font-size: 12px;
+  user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Listening stats loading skeleton */
+@keyframes skeletonShimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.statsSkeleton {
+  width: 100%;
+}
+
+.skeletonBlock {
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 245, 234, 0.08);
+}
+
+.skeletonBlock::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 245, 234, 0.08),
+    transparent
+  );
+  animation: skeletonShimmer 1.5s ease-in-out infinite;
+}
+
+.statsCardSkeleton {
+  pointer-events: none;
+}
+
+.statsImageSkeleton {
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.statsNameSkeleton {
+  width: min(150px, 90%);
+  height: 17px;
+  margin-bottom: 8px;
+  border-radius: 999px;
+}
+
+.statsDetailSkeleton {
+  width: min(110px, 70%);
+  height: 14px;
+  border-radius: 999px;
+}
+
+.genreNameSkeleton {
+  width: 100px;
+  height: 14px;
+  border-radius: 999px;
+  justify-self: end;
+}
+
+.genreBarSkeleton {
+  height: 100%;
+  border-radius: 999px;
+}
+
+.genreValueSkeleton {
+  width: 36px;
+  height: 12px;
+  border-radius: 999px;
+  justify-self: end;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeletonBlock::after {
+    animation: none;
+  }
+}
+
+/* Genre bar chart */
+.genreChart {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr) max-content;
+  column-gap: 12px;
+  row-gap: 10px;
+  width: 100%;
+}
+
+.genreRow {
+  display: contents;
+}
+
+.genreName {
+  font-family: "MarketSans-Regular";
+  color: #fff5ea;
+  font-size: 13px;
+  user-select: none;
+  white-space: nowrap;
+  text-align: right;
+}
+.genreBarTrack {
+  align-self: center;
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background-color: rgba(255, 245, 234, 0.1);
+  overflow: hidden;
+}
+.genreBarFill {
+  height: 100%;
+  border-radius: 999px;
+  background-color: #b931ff;
+  transition: width 0.5s ease;
+}
+.genreValue {
+  align-self: center;
+  font-family: "MarketSans-Regular";
+  color: #807b75;
+  font-size: 12px;
+  user-select: none;
+  white-space: nowrap;
+  text-align: right;
+}
+
+@media (max-width: 768px) {
+  .statsTabs {
+    display: none;
+  }
+  .statsSelectWrapper {
+    display: inline-flex;
+  }
+  .statsCards {
+    grid-template-columns: 1fr;
+  }
+  .genreChart {
+    column-gap: 10px;
+  }
 }

@@ -13,6 +13,7 @@ const redirectUri = `http://${host}:${port}/callback`;
 const scopes = [
   "user-read-currently-playing",
   "user-read-recently-played",
+  "user-top-read",
 ];
 
 if (!clientId) {

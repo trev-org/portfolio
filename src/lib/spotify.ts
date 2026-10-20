@@ -1,4 +1,11 @@
-import { History, SpotifyRecentlyPlayedItem } from "../types/types";
+import {
+  History,
+  SpotifyArtistDetails,
+  SpotifyRecentlyPlayedItem,
+  SpotifyTopArtist,
+  SpotifyTopTimeRange,
+  SpotifyTopTrack,
+} from "../types/types";
 
 // Token cache to avoid unnecessary API calls
 type TokenCache = {
@@ -120,8 +127,145 @@ export async function getMyRecentlyPlayed(limit = 20): Promise<History[]> {
       image: item.track.album.images[0]?.url,
       url: item.track.external_urls.spotify,
       played_at: item.played_at,
+      trackId: item.track.id,
+      artistId: item.track.artists[0]?.id,
     })
   );
+}
+
+/**
+ * Fetches the user's top artists for a Spotify time range.
+ * Requires the `user-top-read` scope.
+ */
+export async function getMyTopArtists(
+  timeRange: SpotifyTopTimeRange = "short_term",
+  limit = 50
+): Promise<SpotifyTopArtist[]> {
+  const token = await getSpotifyToken();
+
+  const response = await fetch(
+    `https://api.spotify.com/v1/me/top/artists?time_range=${timeRange}&limit=${limit}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    }
+  );
+
+  if (!response.ok) {
+    throw await getSpotifyError(response, "Failed to fetch top artists");
+  }
+
+  const data = (await response.json()) as {
+    items: Array<{
+      id: string;
+      name: string;
+      images: Array<{ url: string }>;
+      genres: string[];
+      external_urls: { spotify: string };
+    }>;
+  };
+
+  return data.items.map((item) => ({
+    id: item.id,
+    name: item.name,
+    image: item.images[0]?.url ?? "",
+    genres: item.genres ?? [],
+    url: item.external_urls.spotify,
+  }));
+}
+
+/**
+ * Fetches the user's top tracks for a Spotify time range.
+ * Requires the `user-top-read` scope.
+ */
+export async function getMyTopTracks(
+  timeRange: SpotifyTopTimeRange = "short_term",
+  limit = 50
+): Promise<SpotifyTopTrack[]> {
+  const token = await getSpotifyToken();
+
+  const response = await fetch(
+    `https://api.spotify.com/v1/me/top/tracks?time_range=${timeRange}&limit=${limit}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    }
+  );
+
+  if (!response.ok) {
+    throw await getSpotifyError(response, "Failed to fetch top tracks");
+  }
+
+  const data = (await response.json()) as {
+    items: Array<{
+      id: string;
+      name: string;
+      artists: Array<{ id: string; name: string }>;
+      album: { images: Array<{ url: string }> };
+      external_urls: { spotify: string };
+    }>;
+  };
+
+  return data.items.map((item) => ({
+    id: item.id,
+    name: item.name,
+    artistId: item.artists[0]?.id ?? "",
+    artist: item.artists[0]?.name ?? "",
+    image: item.album.images[0]?.url ?? "",
+    url: item.external_urls.spotify,
+  }));
+}
+
+/**
+ * Fetches artist details (genres + images) for up to any number of artist ids.
+ * Spotify allows 50 ids per request; this chunks larger lists.
+ */
+export async function getArtistDetailsByIds(
+  ids: string[]
+): Promise<Map<string, SpotifyArtistDetails>> {
+  const token = await getSpotifyToken();
+  const details = new Map<string, SpotifyArtistDetails>();
+  const uniqueIds = [...new Set(ids)].filter(Boolean);
+
+  for (let i = 0; i < uniqueIds.length; i += 50) {
+    const chunk = uniqueIds.slice(i, i + 50);
+    const response = await fetch(
+      `https://api.spotify.com/v1/artists?ids=${chunk.join(",")}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      throw await getSpotifyError(response, "Failed to fetch artist details");
+    }
+
+    const data = (await response.json()) as {
+      artists: Array<{
+        id: string;
+        genres: string[];
+        images: Array<{ url: string }>;
+      }>;
+    };
+
+    for (const artist of data.artists) {
+      if (!artist) continue;
+      details.set(artist.id, {
+        id: artist.id,
+        genres: artist.genres ?? [],
+        image: artist.images[0]?.url ?? "",
+      });
+    }
+  }
+
+  return details;
 }
 
 export async function getMyCurrentlyPlaying() {
