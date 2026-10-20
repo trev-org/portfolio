@@ -24,7 +24,7 @@ const Music: React.FC = () => {
   // const [isAlbumReviewsLoading, setIsAlbumReviewsLoading] = useState<boolean>(true);
   const [spotifyError, setSpotifyError] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [viewMode, setViewMode] = useState<"tile" | "grid">("tile");
+  const [viewMode, setViewMode] = useState<"tile" | "list">("tile");
   // const supabase = createClient();
 
   // Trigger CSS animations on mount
@@ -32,15 +32,17 @@ const Music: React.FC = () => {
     setIsLoaded(true);
     try {
       const saved = window.localStorage.getItem("music-view-mode");
-      if (saved === "tile" || saved === "grid") {
+      if (saved === "tile" || saved === "list") {
         setViewMode(saved);
+      } else if (saved === "grid") {
+        setViewMode("list");
       }
     } catch {
       // localStorage unavailable — fall back to tile view
     }
   }, []);
 
-  const changeViewMode = (mode: "tile" | "grid") => {
+  const changeViewMode = (mode: "tile" | "list") => {
     setViewMode(mode);
     try {
       window.localStorage.setItem("music-view-mode", mode);
@@ -204,22 +206,22 @@ const Music: React.FC = () => {
                   <button
                     type="button"
                     className={`${styles.viewToggleButton} ${
+                      viewMode === "list" ? styles.viewToggleButtonActive : ""
+                    }`}
+                    aria-pressed={viewMode === "list"}
+                    onClick={() => changeViewMode("list")}
+                  >
+                    List
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.viewToggleButton} ${
                       viewMode === "tile" ? styles.viewToggleButtonActive : ""
                     }`}
                     aria-pressed={viewMode === "tile"}
                     onClick={() => changeViewMode("tile")}
                   >
                     Tile
-                  </button>
-                  <button
-                    type="button"
-                    className={`${styles.viewToggleButton} ${
-                      viewMode === "grid" ? styles.viewToggleButtonActive : ""
-                    }`}
-                    aria-pressed={viewMode === "grid"}
-                    onClick={() => changeViewMode("grid")}
-                  >
-                    Grid
                   </button>
                 </div>
               </div>
@@ -230,7 +232,7 @@ const Music: React.FC = () => {
               history.length > 0 && (
               <div
                 className={`${styles.historyGrid} ${
-                  viewMode === "grid" ? styles.historyGridCompact : ""
+                  viewMode === "list" ? styles.historyGridList : ""
                 }`}
               >
                 {history.map((item: History, index: number) => (

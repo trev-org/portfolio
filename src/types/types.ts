@@ -114,6 +114,7 @@ export interface GenreScore {
 export interface StatsTopItem {
   name: string;
   artist?: string;
+  detail?: string;
   image?: string;
   plays?: number;
   url?: string;
