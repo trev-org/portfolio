@@ -3,15 +3,6 @@
 import React, { useState } from "react";
 import styles from "../../styles/arena.module.css";
 import Link from "next/link";
-import { OpenRouter } from "@openrouter/sdk";
-
-const openRouter = new OpenRouter({
-  apiKey: process.env.NEXT_PUBLIC_OPENROUTER_API_KEY,
-  //   defaultHeaders: {
-  //     "HTTP-Referer": "<YOUR_SITE_URL>", // Optional. Site URL for rankings on openrouter.ai.
-  //     "X-Title": "<YOUR_SITE_NAME>", // Optional. Site title for rankings on openrouter.ai.
-  //   },
-});
 
 const Arena: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState(0);
