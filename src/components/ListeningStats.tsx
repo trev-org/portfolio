@@ -26,6 +26,7 @@ const RANGE_OPTIONS: Array<{ id: StatsRange; label: string }> = [
 
 const MAX_GENRE_BARS = 6;
 const GENRES_PER_ARTIST = 3;
+const SKELETON_GENRE_WIDTHS = [88, 76, 64, 52, 43, 34];
 
 function startOfDay(date: Date): Date {
   const start = new Date(date);
@@ -160,7 +161,14 @@ async function computeTopStats(range: "month" | "year"): Promise<ListeningStatsD
       : "Spotify's long-term top items";
 
   const topArtist: StatsTopItem | null = artists[0]
-    ? { name: artists[0].name, image: artists[0].image, url: artists[0].url }
+    ? {
+        name: artists[0].name,
+        detail: artists[0].genres[0]
+          ? titleCase(artists[0].genres[0])
+          : rangeLabel,
+        image: artists[0].image,
+        url: artists[0].url,
+      }
     : null;
   const topSong: StatsTopItem | null = tracks[0]
     ? {
@@ -202,6 +210,71 @@ function playsLabel(item: StatsTopItem, noun: string): string {
   return item.plays !== undefined
     ? `${item.plays} ${item.plays === 1 ? "play" : "plays"}`
     : noun;
+}
+
+function StatsCardAccents() {
+  return (
+    <>
+      <span className={styles.statsCardHoverTopLeft} aria-hidden="true" />
+      <span className={styles.statsCardHoverBottomRight} aria-hidden="true" />
+      <span className={styles.statsCardHoverLeft} aria-hidden="true" />
+      <span className={styles.statsCardHoverBottom} aria-hidden="true" />
+    </>
+  );
+}
+
+function ListeningStatsSkeleton() {
+  return (
+    <div
+      className={styles.statsSkeleton}
+      role="status"
+      aria-label="Loading listening stats"
+    >
+      <div className={styles.statsCards} aria-hidden="true">
+        {["artist", "song"].map((type) => (
+          <div
+            className={`${styles.statsCard} ${styles.statsCardSkeleton}`}
+            key={type}
+          >
+            <div className={styles.statsCardContent}>
+              <div className={styles.statsCardBody}>
+                <div
+                  className={`${styles.skeletonBlock} ${styles.statsImageSkeleton}`}
+                />
+                <div className={styles.statsCardInfo}>
+                  <div
+                    className={`${styles.skeletonBlock} ${styles.statsNameSkeleton}`}
+                  />
+                  <div
+                    className={`${styles.skeletonBlock} ${styles.statsDetailSkeleton}`}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className={styles.genreChart} aria-hidden="true">
+        {SKELETON_GENRE_WIDTHS.map((width) => (
+          <div className={styles.genreRow} key={width}>
+            <div
+              className={`${styles.skeletonBlock} ${styles.genreNameSkeleton}`}
+            />
+            <div className={styles.genreBarTrack}>
+              <div
+                className={`${styles.skeletonBlock} ${styles.genreBarSkeleton}`}
+                style={{ width: `${width}%` }}
+              />
+            </div>
+            <div
+              className={`${styles.skeletonBlock} ${styles.genreValueSkeleton}`}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 const ListeningStats: React.FC = () => {
@@ -268,15 +341,23 @@ const ListeningStats: React.FC = () => {
             </button>
           ))}
         </div>
+        <div className={styles.statsSelectWrapper}>
+          <select
+            className={styles.statsSelect}
+            value={range}
+            aria-label="Stats time range"
+            onChange={(event) => setRange(event.target.value as StatsRange)}
+          >
+            {RANGE_OPTIONS.map((option) => (
+              <option value={option.id} key={option.id}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      {stats && !isLoading && !error && (
-        <p className={styles.statsMeta}>
-          {stats.rangeLabel} · {stats.note}
-        </p>
-      )}
-
-      {isLoading && <p>Loading...</p>}
+      {isLoading && <ListeningStatsSkeleton />}
 
       {error && !isLoading && (
         <div className={styles.historyPlaceholder}>
@@ -300,24 +381,34 @@ const ListeningStats: React.FC = () => {
                 target="_blank"
                 rel="noreferrer"
               >
-                <span className={styles.statsCardLabel}>Top Artist</span>
-                <div className={styles.statsCardBody}>
-                  {stats.topArtist.image && (
-                    <Image
-                      src={stats.topArtist.image}
-                      className={styles.statsCardImageRound}
-                      alt={stats.topArtist.name}
-                      width={56}
-                      height={56}
-                    />
-                  )}
-                  <div className={styles.statsCardInfo}>
-                    <span className={styles.statsCardName}>
-                      {stats.topArtist.name}
-                    </span>
-                    <span className={styles.statsCardMeta}>
-                      {playsLabel(stats.topArtist, "Top artist")}
-                    </span>
+                <StatsCardAccents />
+                <div className={styles.statsCardContent}>
+                  <div className={styles.statsCardBody}>
+                    {stats.topArtist.image && (
+                      <Image
+                        src={stats.topArtist.image}
+                        className={styles.statsCardImage}
+                        alt={stats.topArtist.name}
+                        width={56}
+                        height={56}
+                      />
+                    )}
+                    <div className={styles.statsCardInfo}>
+                      <span className={styles.statsCardName}>
+                        {stats.topArtist.name}
+                      </span>
+                      {stats.topArtist.plays !== undefined && (
+                        <span className={styles.statsCardMeta}>
+                          {playsLabel(stats.topArtist, "Top artist")}
+                        </span>
+                      )}
+                      {stats.topArtist.plays === undefined &&
+                        stats.topArtist.detail && (
+                          <span className={styles.statsCardMeta}>
+                            {stats.topArtist.detail}
+                          </span>
+                        )}
+                    </div>
                   </div>
                 </div>
               </a>
@@ -329,25 +420,28 @@ const ListeningStats: React.FC = () => {
                 target="_blank"
                 rel="noreferrer"
               >
-                <span className={styles.statsCardLabel}>Top Song</span>
-                <div className={styles.statsCardBody}>
-                  {stats.topSong.image && (
-                    <Image
-                      src={stats.topSong.image}
-                      className={styles.statsCardImage}
-                      alt={stats.topSong.name}
-                      width={56}
-                      height={56}
-                    />
-                  )}
-                  <div className={styles.statsCardInfo}>
-                    <span className={styles.statsCardName}>
-                      {stats.topSong.name}
-                    </span>
-                    <span className={styles.statsCardMeta}>
-                      {stats.topSong.artist} ·{" "}
-                      {playsLabel(stats.topSong, "Top song")}
-                    </span>
+                <StatsCardAccents />
+                <div className={styles.statsCardContent}>
+                  <div className={styles.statsCardBody}>
+                    {stats.topSong.image && (
+                      <Image
+                        src={stats.topSong.image}
+                        className={styles.statsCardImage}
+                        alt={stats.topSong.name}
+                        width={56}
+                        height={56}
+                      />
+                    )}
+                    <div className={styles.statsCardInfo}>
+                      <span className={styles.statsCardName}>
+                        {stats.topSong.name}
+                      </span>
+                      <span className={styles.statsCardMeta}>
+                        {stats.topSong.artist}
+                        {stats.topSong.plays !== undefined &&
+                          ` · ${playsLabel(stats.topSong, "Top song")}`}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </a>
@@ -356,7 +450,6 @@ const ListeningStats: React.FC = () => {
 
           {stats.genres.length > 0 && (
             <div className={styles.genreChart}>
-              <span className={styles.statsCardLabel}>Top Genres</span>
               {stats.genres.map((genre) => (
                 <div className={styles.genreRow} key={genre.genre}>
                   <span className={styles.genreName}>{titleCase(genre.genre)}</span>
