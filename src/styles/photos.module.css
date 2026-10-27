@@ -1,0 +1,169 @@
+.landingContain {
+  box-sizing: border-box;
+  width: 50%;
+  justify-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+  margin: 0 auto;
+  transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+@media (max-width: 1000px) {
+  .landingContain {
+    width: 65%;
+  }
+}
+@media (max-width: 850px) {
+  .landingContain {
+    width: 85%;
+  }
+}
+@media (max-width: 550px) {
+  .landingContain {
+    width: 100%;
+  }
+  .intro {
+    font-size: 13px !important;
+  }
+}
+
+/* Branding Styling */
+.brandingContain {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 20px;
+}
+.brandingHeader {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1em;
+  width: 100%;
+}
+.name {
+  text-decoration: none;
+  color: #fff5ea;
+  font-size: 16px;
+  letter-spacing: -0.03em;
+  font-family: "MarketSans-Bold";
+  user-select: none;
+  transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+.name:hover {
+  opacity: 0.7 !important;
+  cursor: pointer !important;
+}
+.introContain {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+.intro {
+  font-family: "MarketSans-Regular";
+  text-decoration: none;
+  color: #807b75;
+  font-size: 13px;
+  user-select: none;
+  margin-bottom: 0;
+}
+
+/* Photos Section */
+.photosContain {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 20px;
+}
+
+/* Grid view (desktop): masonry-style columns that respect each photo's
+   natural aspect ratio instead of cropping it. */
+.photosGrid {
+  columns: 3;
+  column-gap: 15px;
+  width: 100%;
+}
+.photoItem {
+  break-inside: avoid;
+  margin-bottom: 15px;
+  position: relative;
+  border-radius: 7.5px;
+  overflow: hidden;
+}
+.photoImage {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 7.5px;
+  transition: transform 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+.photoItem:hover .photoImage {
+  transform: scale(1.03);
+}
+.photoCaption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 12px 10px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.photoItem:hover .photoCaption {
+  opacity: 1;
+}
+.photoTitle {
+  font-family: "MarketSans-Medium";
+  color: #fff5ea;
+  font-size: 14px;
+  user-select: none;
+}
+.photoMeta {
+  font-family: "MarketSans-Regular";
+  color: #807b75;
+  font-size: 12px;
+  user-select: none;
+}
+
+.emptyState {
+  color: #807b75;
+  font-family: "MarketSans-Regular";
+  font-size: 14px;
+  user-select: none;
+}
+
+/* List view (mobile): one full-width photo per row, caption always visible
+   below the image instead of on hover. */
+@media (max-width: 768px) {
+  .photosGrid {
+    columns: 1;
+  }
+  .photoItem {
+    margin-bottom: 28px;
+    overflow: visible;
+  }
+  .photoItem:hover .photoImage {
+    transform: none;
+  }
+  .photoCaption {
+    position: static;
+    opacity: 1;
+    background: none;
+    padding: 10px 0 0;
+  }
+  .photoMeta {
+    margin-top: 2px;
+  }
+}
