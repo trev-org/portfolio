@@ -1,10 +1,15 @@
+export interface WrappedVisit {
+  start: string;
+  end: string;
+}
+
 export interface WrappedCity {
   city: string;
   regionCountry: string;
   lat: number;
   lng: number;
   firstVisited?: string;
-  dates?: string[];
+  dates?: WrappedVisit[];
 }
 
 export interface WrappedFlight {
@@ -36,9 +41,11 @@ export interface WrappedData {
     totalMiles: number;
   };
   driving: {
+    example: boolean;
     monthlyMiles: WrappedDrivingMonth[];
   };
   steps: {
+    example: boolean;
     monthly: WrappedStepsMonth[];
     yearlyTotal: number;
   };

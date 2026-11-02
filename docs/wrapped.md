@@ -32,8 +32,10 @@ last command validates the whole file and recomputes
 is not in the small lookup, add its public coordinates to
 `scripts/wrapped/airports.mjs`.
 
-Keep `"example": true` until every placeholder is replaced. Before changing it
-to `false`, remove all `EXAMPLE` values; validation rejects hidden placeholders.
+`driving.example` and `steps.example` keep sample messaging scoped to those
+sections. Each importer clears its own flag, and the root `example` flag remains
+true while either section still uses sample data. Validation rejects an
+inconsistent flag or hidden `EXAMPLE` placeholders.
 
 ## Step input format
 
@@ -142,10 +144,11 @@ only. The raw Timeline export is never copied into committed data.
 
 ```text
 year, example, updatedThrough
-cities[]: city, regionCountry, lat, lng, and either firstVisited or dates[]
+cities[]: city, regionCountry, lat, lng, and either firstVisited or
+          dates[] ({ start, end } per visit)
 flights: segments[] (date/from/to) and computed totalMiles
-driving: monthlyMiles[] (month/miles)
-steps: monthly[] (month/total/sourceMix) and yearlyTotal
+driving: example and monthlyMiles[] (month/miles)
+steps: example, monthly[] (month/total/sourceMix), and yearlyTotal
 ```
 
 There must be exactly one ordered monthly row for every month of the file's

@@ -3,21 +3,179 @@
   "schemaVersion": 1,
   "year": 2026,
   "example": true,
-  "updatedThrough": "2026-01-01",
+  "updatedThrough": "2026-11-01",
   "cities": [
     {
-      "city": "EXAMPLE CITY — REPLACE ME",
-      "regionCountry": "EXAMPLE REGION",
-      "lat": 0,
-      "lng": 0,
-      "firstVisited": "2026-01-01"
+      "city": "Columbus",
+      "regionCountry": "Ohio, US",
+      "lat": 39.9612,
+      "lng": -82.9988,
+      "dates": [
+        {
+          "start": "2026-05-07",
+          "end": "2026-05-11"
+        }
+      ]
+    },
+    {
+      "city": "Tahoe City",
+      "regionCountry": "California, US",
+      "lat": 39.1677,
+      "lng": -120.1452,
+      "dates": [
+        {
+          "start": "2026-07-02",
+          "end": "2026-07-03"
+        }
+      ]
+    },
+    {
+      "city": "New York City",
+      "regionCountry": "New York, US",
+      "lat": 40.7128,
+      "lng": -74.006,
+      "dates": [
+        {
+          "start": "2026-08-16",
+          "end": "2026-08-21"
+        },
+        {
+          "start": "2026-10-22",
+          "end": "2026-10-24"
+        }
+      ]
+    },
+    {
+      "city": "Amsterdam",
+      "regionCountry": "North Holland, Netherlands",
+      "lat": 52.3676,
+      "lng": 4.9041,
+      "dates": [
+        {
+          "start": "2026-09-09",
+          "end": "2026-09-13"
+        }
+      ]
+    },
+    {
+      "city": "Gothenburg",
+      "regionCountry": "Västra Götaland, Sweden",
+      "lat": 57.7089,
+      "lng": 11.9746,
+      "dates": [
+        {
+          "start": "2026-09-13",
+          "end": "2026-09-15"
+        }
+      ]
+    },
+    {
+      "city": "Stockholm",
+      "regionCountry": "Stockholm County, Sweden",
+      "lat": 59.3293,
+      "lng": 18.0686,
+      "dates": [
+        {
+          "start": "2026-09-15",
+          "end": "2026-09-16"
+        }
+      ]
+    },
+    {
+      "city": "Jackson",
+      "regionCountry": "Wyoming, US",
+      "lat": 43.4799,
+      "lng": -110.7624,
+      "dates": [
+        {
+          "start": "2026-10-05",
+          "end": "2026-10-09"
+        }
+      ]
     }
   ],
   "flights": {
-    "segments": [],
-    "totalMiles": 0
+    "segments": [
+      {
+        "date": "2026-05-07",
+        "from": "SFO",
+        "to": "MSP"
+      },
+      {
+        "date": "2026-05-07",
+        "from": "MSP",
+        "to": "CMH"
+      },
+      {
+        "date": "2026-05-11",
+        "from": "CMH",
+        "to": "MSP"
+      },
+      {
+        "date": "2026-05-11",
+        "from": "MSP",
+        "to": "SFO"
+      },
+      {
+        "date": "2026-08-16",
+        "from": "SFO",
+        "to": "EWR"
+      },
+      {
+        "date": "2026-08-21",
+        "from": "EWR",
+        "to": "SFO"
+      },
+      {
+        "date": "2026-09-08",
+        "from": "SFO",
+        "to": "AMS"
+      },
+      {
+        "date": "2026-09-13",
+        "from": "AMS",
+        "to": "GOT"
+      },
+      {
+        "date": "2026-09-16",
+        "from": "ARN",
+        "to": "MUC"
+      },
+      {
+        "date": "2026-09-16",
+        "from": "MUC",
+        "to": "SFO"
+      },
+      {
+        "date": "2026-10-05",
+        "from": "SFO",
+        "to": "JAC"
+      },
+      {
+        "date": "2026-10-09",
+        "from": "JAC",
+        "to": "LAX"
+      },
+      {
+        "date": "2026-10-09",
+        "from": "LAX",
+        "to": "SFO"
+      },
+      {
+        "date": "2026-10-21",
+        "from": "SFO",
+        "to": "EWR"
+      },
+      {
+        "date": "2026-10-24",
+        "from": "EWR",
+        "to": "SFO"
+      }
+    ],
+    "totalMiles": 29131
   },
   "driving": {
+    "example": true,
     "monthlyMiles": [
       {
         "month": "2026-01",
@@ -70,6 +228,7 @@
     ]
   },
   "steps": {
+    "example": true,
     "monthly": [
       {
         "month": "2026-01",

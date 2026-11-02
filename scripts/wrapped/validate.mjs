@@ -38,14 +38,27 @@ function validateSemanticRules(data) {
   }
 
   for (const [index, city] of data.cities.entries()) {
-    const dates = city.firstVisited ? [city.firstVisited] : city.dates;
-    for (const date of dates) {
-      if (!isCalendarDate(date)) {
-        errors.push(`cities[${index}] contains an invalid date: ${date}`);
-      } else if (dateYear(date) !== data.year) {
-        errors.push(`cities[${index}] date ${date} is outside ${data.year}.`);
-      } else if (date > data.updatedThrough) {
-        errors.push(`cities[${index}] date ${date} is after updatedThrough.`);
+    const visits = city.firstVisited
+      ? [{ start: city.firstVisited, end: city.firstVisited }]
+      : city.dates;
+
+    for (const [visitIndex, visit] of visits.entries()) {
+      for (const [boundary, date] of Object.entries(visit)) {
+        if (!isCalendarDate(date)) {
+          errors.push(
+            `cities[${index}].dates[${visitIndex}].${boundary} is invalid: ${date}`
+          );
+        } else if (dateYear(date) !== data.year) {
+          errors.push(`cities[${index}] date ${date} is outside ${data.year}.`);
+        } else if (date > data.updatedThrough) {
+          errors.push(`cities[${index}] date ${date} is after updatedThrough.`);
+        }
+      }
+
+      if (visit.end < visit.start) {
+        errors.push(
+          `cities[${index}].dates[${visitIndex}] ends before it starts.`
+        );
       }
     }
   }
@@ -90,6 +103,13 @@ function validateSemanticRules(data) {
   if (summedSteps !== data.steps.yearlyTotal) {
     errors.push(
       `steps.yearlyTotal is ${data.steps.yearlyTotal}, but monthly totals sum to ${summedSteps}.`
+    );
+  }
+
+  const containsSampleData = data.driving.example || data.steps.example;
+  if (data.example !== containsSampleData) {
+    errors.push(
+      "example must be true exactly while driving or steps contains sample data."
     );
   }
 

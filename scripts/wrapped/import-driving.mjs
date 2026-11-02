@@ -175,7 +175,9 @@ async function main() {
   }
 
   const summary = buildMonthlyMiles(timelineSegments(timeline), year);
+  data.driving.example = false;
   data.driving.monthlyMiles = summary.monthlyMiles;
+  data.example = Boolean(data.steps.example);
   data.updatedThrough = latestDate(
     data.updatedThrough,
     summary.latestTimelineDate

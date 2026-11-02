@@ -8,6 +8,7 @@ import type {
   WrappedCity,
   WrappedData,
   WrappedStepsMonth,
+  WrappedVisit,
 } from "../../types/wrapped";
 
 export const metadata: Metadata = {
@@ -37,13 +38,28 @@ function formatMonth(month: string, length: "long" | "short" = "short") {
   }).format(new Date(`${month}-01T00:00:00Z`));
 }
 
+function formatVisitRange(visit: WrappedVisit) {
+  const startMonth = formatMonth(visit.start.slice(0, 7));
+  const endMonth = formatMonth(visit.end.slice(0, 7));
+  const startDay = Number(visit.start.slice(8, 10));
+  const endDay = Number(visit.end.slice(8, 10));
+
+  if (visit.start === visit.end) {
+    return `${startMonth} ${startDay}`;
+  }
+
+  return startMonth === endMonth
+    ? `${startMonth} ${startDay}–${endDay}`
+    : `${startMonth} ${startDay}–${endMonth} ${endDay}`;
+}
+
 function cityVisitLabel(city: WrappedCity) {
   if (city.firstVisited) {
     return `First visited ${formatDate(city.firstVisited)}`;
   }
 
   const dates = city.dates ?? [];
-  return `${dates.length} visit${dates.length === 1 ? "" : "s"}`;
+  return dates.map(formatVisitRange).join(" · ");
 }
 
 function sourceMixSummary(months: WrappedStepsMonth[]) {
@@ -95,18 +111,12 @@ export default function WrappedPage() {
         </p>
       </section>
 
-      {data.example && (
-        <aside className={styles.sampleBanner} role="status">
-          <span>Sample data</span>
-          Every value on this page is a clearly marked placeholder. Nothing
-          here represents Trevor&apos;s travel or health history.
-        </aside>
-      )}
-
       <section className={styles.numberGrid} aria-label="Year totals">
         <article className={`${styles.numberCard} ${styles.citiesCard}`}>
           <p className={styles.cardKicker}>Cities visited</p>
-          <p className={styles.bigNumber}>{numberFormatter.format(data.cities.length)}</p>
+          <p className={styles.bigNumber}>
+            {numberFormatter.format(data.cities.length)}
+          </p>
           <p className={styles.cardMeta}>City-level locations only</p>
         </article>
         <article className={`${styles.numberCard} ${styles.flightsCard}`}>
@@ -119,19 +129,40 @@ export default function WrappedPage() {
             {data.flights.segments.length === 1 ? "" : "s"} · great-circle
           </p>
         </article>
+        {data.example && (
+          <aside
+            className={`${styles.sampleBanner} ${styles.sampleGridBanner}`}
+            role="status"
+          >
+            <span>Sample activity data</span>
+            {data.driving.example && data.steps.example
+              ? "Miles driven and steps are placeholders until the Timeline and Health exports are imported. Travel data is confirmed."
+              : data.driving.example
+                ? "Miles driven is a placeholder until the Timeline export is imported. Travel and step data are confirmed."
+                : "Steps are placeholders until the Health export is imported. Travel and driving data are confirmed."}
+          </aside>
+        )}
         <article className={`${styles.numberCard} ${styles.drivingCard}`}>
           <p className={styles.cardKicker}>Miles driven</p>
           <p className={styles.bigNumber}>
             {milesFormatter.format(totalMilesDriven)}
           </p>
-          <p className={styles.cardMeta}>Summed from monthly Timeline totals</p>
+          <p className={styles.cardMeta}>
+            {data.driving.example
+              ? "Sample · waiting for Timeline export"
+              : "Summed from monthly Timeline totals"}
+          </p>
         </article>
         <article className={`${styles.numberCard} ${styles.stepsCard}`}>
           <p className={styles.cardKicker}>Steps</p>
           <p className={styles.bigNumber}>
             {numberFormatter.format(data.steps.yearlyTotal)}
           </p>
-          <p className={styles.cardMeta}>One preferred source per day</p>
+          <p className={styles.cardMeta}>
+            {data.steps.example
+              ? "Sample · waiting for Health export"
+              : "One preferred source per day"}
+          </p>
         </article>
       </section>
 

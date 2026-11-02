@@ -64,9 +64,13 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
+        "example",
         "monthlyMiles"
       ],
       "properties": {
+        "example": {
+          "type": "boolean"
+        },
         "monthlyMiles": {
           "type": "array",
           "minItems": 12,
@@ -81,10 +85,14 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
+        "example",
         "monthly",
         "yearlyTotal"
       ],
       "properties": {
+        "example": {
+          "type": "boolean"
+        },
         "monthly": {
           "type": "array",
           "minItems": 12,
@@ -145,7 +153,7 @@
           "minItems": 1,
           "uniqueItems": true,
           "items": {
-            "$ref": "#/$defs/date"
+            "$ref": "#/$defs/dateRange"
           }
         }
       },
@@ -161,6 +169,22 @@
           ]
         }
       ]
+    },
+    "dateRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end"
+      ],
+      "properties": {
+        "start": {
+          "$ref": "#/$defs/date"
+        },
+        "end": {
+          "$ref": "#/$defs/date"
+        }
+      }
     },
     "flight": {
       "type": "object",

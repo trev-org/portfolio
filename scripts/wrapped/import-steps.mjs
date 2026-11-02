@@ -243,7 +243,11 @@ async function main() {
     ""
   );
 
-  data.steps = buildStepSummary(rows, year);
+  data.steps = {
+    example: false,
+    ...buildStepSummary(rows, year),
+  };
+  data.example = Boolean(data.driving.example);
   data.updatedThrough = latestDate(data.updatedThrough, latestInputDate);
   await writeJson(outputPath, data);
 
