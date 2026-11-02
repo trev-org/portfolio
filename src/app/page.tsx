@@ -390,6 +390,20 @@ const Home: React.FC = () => {
             </span>
           </div>
           <div className={styles.extrasGrid}>
+            <Link href="/wrapped">
+              <div className={styles.projectsItem}>
+                <div className={styles.projectItemHoverTopLeft}></div>
+                <div className={styles.projectItemHoverBottomRight}></div>
+                <div className={styles.projectItemHoverLeft}></div>
+                <div className={styles.projectItemHoverBottom}></div>
+                <div className={styles.projectsItemContentContain}>
+                  <span className={styles.projectsItemTitle}>2026 Wrapped</span>
+                  <span className={styles.projectsItemDesc}>
+                    A year in cities, miles, and everyday steps.
+                  </span>
+                </div>
+              </div>
+            </Link>
             {/* <Link href="/arena">
               <div className={styles.projectsItem}>
                 <div className={styles.projectItemHoverTopLeft}></div>

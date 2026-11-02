@@ -10,7 +10,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "spotify:auth": "node --env-file=.env.local scripts/spotify-auth.mjs"
+    "spotify:auth": "node --env-file=.env.local scripts/spotify-auth.mjs",
+    "wrapped:steps": "node scripts/wrapped/import-steps.mjs",
+    "wrapped:driving": "node scripts/wrapped/import-driving.mjs",
+    "wrapped:validate": "node scripts/wrapped/validate.mjs data/wrapped-2026.json"
   },
   "dependencies": {
     "@auth0/auth0-spa-js": "^2.11.3",
@@ -36,6 +39,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "ajv": "^8.20.0",
     "eslint": "^9",
     "eslint-config-next": "^16.4.2",
     "typescript": "^5"

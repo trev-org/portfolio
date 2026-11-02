@@ -1,0 +1,137 @@
+{
+  "$schema": "./wrapped.schema.json",
+  "schemaVersion": 1,
+  "year": 2026,
+  "example": true,
+  "updatedThrough": "2026-01-01",
+  "cities": [
+    {
+      "city": "EXAMPLE CITY — REPLACE ME",
+      "regionCountry": "EXAMPLE REGION",
+      "lat": 0,
+      "lng": 0,
+      "firstVisited": "2026-01-01"
+    }
+  ],
+  "flights": {
+    "segments": [],
+    "totalMiles": 0
+  },
+  "driving": {
+    "monthlyMiles": [
+      {
+        "month": "2026-01",
+        "miles": 0
+      },
+      {
+        "month": "2026-02",
+        "miles": 0
+      },
+      {
+        "month": "2026-03",
+        "miles": 0
+      },
+      {
+        "month": "2026-04",
+        "miles": 0
+      },
+      {
+        "month": "2026-05",
+        "miles": 0
+      },
+      {
+        "month": "2026-06",
+        "miles": 0
+      },
+      {
+        "month": "2026-07",
+        "miles": 0
+      },
+      {
+        "month": "2026-08",
+        "miles": 0
+      },
+      {
+        "month": "2026-09",
+        "miles": 0
+      },
+      {
+        "month": "2026-10",
+        "miles": 0
+      },
+      {
+        "month": "2026-11",
+        "miles": 0
+      },
+      {
+        "month": "2026-12",
+        "miles": 0
+      }
+    ]
+  },
+  "steps": {
+    "monthly": [
+      {
+        "month": "2026-01",
+        "total": 0,
+        "sourceMix": "EXAMPLE — no step data imported"
+      },
+      {
+        "month": "2026-02",
+        "total": 0,
+        "sourceMix": "EXAMPLE — no step data imported"
+      },
+      {
+        "month": "2026-03",
+        "total": 0,
+        "sourceMix": "EXAMPLE — no step data imported"
+      },
+      {
+        "month": "2026-04",
+        "total": 0,
+        "sourceMix": "EXAMPLE — no step data imported"
+      },
+      {
+        "month": "2026-05",
+        "total": 0,
+        "sourceMix": "EXAMPLE — no step data imported"
+      },
+      {
+        "month": "2026-06",
+        "total": 0,
+        "sourceMix": "EXAMPLE — no step data imported"
+      },
+      {
+        "month": "2026-07",
+        "total": 0,
+        "sourceMix": "EXAMPLE — no step data imported"
+      },
+      {
+        "month": "2026-08",
+        "total": 0,
+        "sourceMix": "EXAMPLE — no step data imported"
+      },
+      {
+        "month": "2026-09",
+        "total": 0,
+        "sourceMix": "EXAMPLE — no step data imported"
+      },
+      {
+        "month": "2026-10",
+        "total": 0,
+        "sourceMix": "EXAMPLE — no step data imported"
+      },
+      {
+        "month": "2026-11",
+        "total": 0,
+        "sourceMix": "EXAMPLE — no step data imported"
+      },
+      {
+        "month": "2026-12",
+        "total": 0,
+        "sourceMix": "EXAMPLE — no step data imported"
+      }
+    ],
+    "yearlyTotal": 0
+  }
+}
