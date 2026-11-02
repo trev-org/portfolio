@@ -3,6 +3,8 @@ import Link from "next/link";
 import Footer from "../../components/Footer";
 import WrappedMap from "../../components/WrappedMap";
 import wrappedJson from "../../../data/wrapped-2026.json";
+import musicStyles from "../../styles/music.module.css";
+import pocketStyles from "../../styles/pocket.module.css";
 import styles from "../../styles/wrapped.module.css";
 import type {
   WrappedCity,
@@ -58,8 +60,7 @@ function cityVisitLabel(city: WrappedCity) {
     return `First visited ${formatDate(city.firstVisited)}`;
   }
 
-  const dates = city.dates ?? [];
-  return dates.map(formatVisitRange).join(" · ");
+  return (city.dates ?? []).map(formatVisitRange).join(" · ");
 }
 
 function sourceMixSummary(months: WrappedStepsMonth[]) {
@@ -67,6 +68,55 @@ function sourceMixSummary(months: WrappedStepsMonth[]) {
     .filter((month) => month.total > 0)
     .map((month) => `${formatMonth(month.month)}: ${month.sourceMix}`)
     .join("; ");
+}
+
+function sampleMessage() {
+  if (data.driving.example && data.steps.example) {
+    return "Miles driven and steps are placeholders until the Timeline and Health exports are imported. Travel data is confirmed.";
+  }
+  if (data.driving.example) {
+    return "Miles driven is a placeholder until the Timeline export is imported.";
+  }
+  return "Steps are placeholders until the Health export is imported.";
+}
+
+function HoverFrame() {
+  return (
+    <>
+      <span className={musicStyles.statsCardHoverTopLeft} aria-hidden="true" />
+      <span
+        className={musicStyles.statsCardHoverBottomRight}
+        aria-hidden="true"
+      />
+      <span className={musicStyles.statsCardHoverLeft} aria-hidden="true" />
+      <span className={musicStyles.statsCardHoverBottom} aria-hidden="true" />
+    </>
+  );
+}
+
+function MetricCard({
+  label,
+  value,
+  meta,
+}: {
+  label: string;
+  value: string;
+  meta: string;
+}) {
+  return (
+    <article className={musicStyles.statsCard}>
+      <HoverFrame />
+      <div className={musicStyles.statsCardContent}>
+        <div className={styles.metricCardBody}>
+          <span className={styles.metricValue}>{value}</span>
+          <div className={musicStyles.statsCardInfo}>
+            <span className={musicStyles.statsCardName}>{label}</span>
+            <span className={musicStyles.statsCardMeta}>{meta}</span>
+          </div>
+        </div>
+      </div>
+    </article>
+  );
 }
 
 export default function WrappedPage() {
@@ -81,193 +131,199 @@ export default function WrappedPage() {
   const sourceSummary = sourceMixSummary(data.steps.monthly);
 
   return (
-    <main className={styles.page}>
-      <div className={styles.ambientGlow} aria-hidden="true" />
+    <div className={pocketStyles.landingContain}>
+      <div
+        className={`${pocketStyles.brandingContain} ${pocketStyles.fadeInUp}`}
+      >
+        <div className={pocketStyles.brandingHeader}>
+          <Link className={pocketStyles.name} href="/">
+            2026 Wrapped
+          </Link>
+        </div>
+        <div className={styles.introBlock}>
+          <p className={pocketStyles.intro}>
+            Trevor&apos;s year in cities, miles, and everyday steps.
+          </p>
+          <p className={styles.updated}>
+            Updated through{" "}
+            <time dateTime={data.updatedThrough}>
+              {formatDate(data.updatedThrough)}
+            </time>
+          </p>
+        </div>
+      </div>
 
-      <header className={styles.header}>
-        <Link className={styles.homeLink} href="/">
-          Trevor Gerald
-        </Link>
-        <span className={styles.headerLabel}>
-          Wrapped <span aria-hidden="true">/</span> {data.year}
-        </span>
-      </header>
-
-      <section className={styles.hero}>
-        <p className={styles.eyebrow}>A year in motion</p>
-        <h1>
-          <span>{data.year}</span>
-          Wrapped.
-        </h1>
-        <p className={styles.heroCopy}>
-          The cities, miles, and everyday steps that made up Trevor&apos;s
-          year.
-        </p>
-        <p className={styles.updated}>
-          Updated through{" "}
-          <time dateTime={data.updatedThrough}>
-            {formatDate(data.updatedThrough)}
-          </time>
-        </p>
-      </section>
-
-      <section className={styles.numberGrid} aria-label="Year totals">
-        <article className={`${styles.numberCard} ${styles.citiesCard}`}>
-          <p className={styles.cardKicker}>Cities visited</p>
-          <p className={styles.bigNumber}>
-            {numberFormatter.format(data.cities.length)}
-          </p>
-          <p className={styles.cardMeta}>City-level locations only</p>
-        </article>
-        <article className={`${styles.numberCard} ${styles.flightsCard}`}>
-          <p className={styles.cardKicker}>Miles flown</p>
-          <p className={styles.bigNumber}>
-            {milesFormatter.format(data.flights.totalMiles)}
-          </p>
-          <p className={styles.cardMeta}>
-            {data.flights.segments.length} flight
-            {data.flights.segments.length === 1 ? "" : "s"} · great-circle
-          </p>
-        </article>
-        {data.example && (
-          <aside
-            className={`${styles.sampleBanner} ${styles.sampleGridBanner}`}
-            role="status"
-          >
-            <span>Sample activity data</span>
-            {data.driving.example && data.steps.example
-              ? "Miles driven and steps are placeholders until the Timeline and Health exports are imported. Travel data is confirmed."
-              : data.driving.example
-                ? "Miles driven is a placeholder until the Timeline export is imported. Travel and step data are confirmed."
-                : "Steps are placeholders until the Health export is imported. Travel and driving data are confirmed."}
-          </aside>
-        )}
-        <article className={`${styles.numberCard} ${styles.drivingCard}`}>
-          <p className={styles.cardKicker}>Miles driven</p>
-          <p className={styles.bigNumber}>
-            {milesFormatter.format(totalMilesDriven)}
-          </p>
-          <p className={styles.cardMeta}>
-            {data.driving.example
-              ? "Sample · waiting for Timeline export"
-              : "Summed from monthly Timeline totals"}
-          </p>
-        </article>
-        <article className={`${styles.numberCard} ${styles.stepsCard}`}>
-          <p className={styles.cardKicker}>Steps</p>
-          <p className={styles.bigNumber}>
-            {numberFormatter.format(data.steps.yearlyTotal)}
-          </p>
-          <p className={styles.cardMeta}>
-            {data.steps.example
-              ? "Sample · waiting for Health export"
-              : "One preferred source per day"}
-          </p>
-        </article>
-      </section>
-
-      <section className={styles.travelSection}>
-        <div className={styles.sectionHeading}>
-          <p className={styles.sectionNumber}>01</p>
-          <div>
-            <p className={styles.eyebrow}>Pin by pin</p>
-            <h2>The year had coordinates.</h2>
+      <div
+        className={`${pocketStyles.musicContain} ${pocketStyles.fadeInUp}`}
+        style={{ animationDelay: "0.05s" }}
+      >
+        <section className={musicStyles.recentlyPlayedContain}>
+          <div className={musicStyles.sectionTitleContainer}>
+            <span className={musicStyles.sectionTitle}>Year in numbers</span>
+            <span className={musicStyles.sectionSubtitle}>
+              through {formatDate(data.updatedThrough)}
+            </span>
           </div>
-        </div>
 
-        <div className={styles.mapCard}>
-          <WrappedMap cities={data.cities} />
-          {data.cities.length === 0 && (
-            <p className={styles.emptyMap}>No cities added yet.</p>
-          )}
-        </div>
-
-        <ol className={styles.cityList}>
-          {data.cities.map((city, index) => (
-            <li key={`${city.city}-${city.regionCountry}-${index}`}>
-              <span className={styles.cityIndex}>
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <span className={styles.cityName}>{city.city}</span>
-              <span className={styles.cityRegion}>{city.regionCountry}</span>
-              <span className={styles.cityDate}>{cityVisitLabel(city)}</span>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section className={styles.stepsSection}>
-        <div className={styles.sectionHeading}>
-          <p className={styles.sectionNumber}>02</p>
-          <div>
-            <p className={styles.eyebrow}>Twelve months on foot</p>
-            <h2>Every step, without double counting.</h2>
+          <div className={musicStyles.statsCards}>
+            <MetricCard
+              label="Cities visited"
+              value={numberFormatter.format(data.cities.length)}
+              meta="City-level locations only"
+            />
+            <MetricCard
+              label="Miles flown"
+              value={milesFormatter.format(data.flights.totalMiles)}
+              meta={`${data.flights.segments.length} flights · great-circle`}
+            />
+            <MetricCard
+              label="Miles driven"
+              value={milesFormatter.format(totalMilesDriven)}
+              meta={
+                data.driving.example
+                  ? "Sample · waiting for Timeline export"
+                  : "Summed from monthly Timeline totals"
+              }
+            />
+            <MetricCard
+              label="Steps"
+              value={numberFormatter.format(data.steps.yearlyTotal)}
+              meta={
+                data.steps.example
+                  ? "Sample · waiting for Health export"
+                  : "One preferred source per day"
+              }
+            />
           </div>
-        </div>
 
-        <div className={styles.stepChart}>
-          {data.steps.monthly.map((month) => {
-            const height =
-              month.total === 0
-                ? "2px"
-                : `${Math.max((month.total / largestStepMonth) * 100, 4)}%`;
-
-            return (
-              <div className={styles.stepMonth} key={month.month}>
-                <p className={styles.stepTotal}>
-                  {numberFormatter.format(month.total)}
-                </p>
-                <div
-                  className={styles.stepBarTrack}
-                  title={`${formatMonth(month.month, "long")}: ${numberFormatter.format(
-                    month.total
-                  )} steps. ${month.sourceMix}`}
-                >
-                  <span
-                    className={styles.stepBar}
-                    style={{ height }}
-                    aria-hidden="true"
-                  />
-                </div>
-                <p className={styles.monthLabel}>
-                  {formatMonth(month.month)}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-
-        <p className={styles.sourceNote}>
-          <sup>*</sup> Daily totals use Google Health when it has data for that
-          day; otherwise iPhone fills the gap. The two sources are never added
-          together.
-          {sourceSummary && ` Source mix — ${sourceSummary}.`}
-        </p>
-      </section>
-
-      {data.flights.segments.length > 0 && (
-        <section className={styles.flightLog}>
-          <div className={styles.sectionHeading}>
-            <p className={styles.sectionNumber}>03</p>
-            <div>
-              <p className={styles.eyebrow}>Flight log</p>
-              <h2>Great circles, one leg at a time.</h2>
+          {data.example && (
+            <div className={styles.sampleNotice} role="status">
+              <span className={pocketStyles.draftBadge}>Sample activity</span>
+              <p>{sampleMessage()}</p>
             </div>
+          )}
+        </section>
+
+        <section className={musicStyles.statsContain}>
+          <div className={musicStyles.sectionTitleContainer}>
+            <span className={musicStyles.sectionTitle}>Cities visited</span>
+            <span className={musicStyles.sectionSubtitle}>
+              {data.cities.length} city-level places
+            </span>
           </div>
-          <ol>
-            {data.flights.segments.map((flight, index) => (
-              <li key={`${flight.date}-${flight.from}-${flight.to}-${index}`}>
-                <time dateTime={flight.date}>{formatDate(flight.date)}</time>
-                <span>{flight.from}</span>
-                <span className={styles.flightLine} aria-hidden="true" />
-                <span>{flight.to}</span>
+
+          <div className={styles.mapCard}>
+            <WrappedMap cities={data.cities} />
+            {data.cities.length === 0 && (
+              <p className={styles.emptyMap}>No cities added yet.</p>
+            )}
+          </div>
+
+          <ol className={styles.cityList}>
+            {data.cities.map((city, index) => (
+              <li key={`${city.city}-${city.regionCountry}-${index}`}>
+                <span className={styles.cityIndex}>
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <span className={styles.cityInfo}>
+                  <span className={pocketStyles.articleTitle}>{city.city}</span>
+                  <span className={pocketStyles.articleDescription}>
+                    {city.regionCountry}
+                  </span>
+                </span>
+                <span
+                  className={`${pocketStyles.writtenArticleMeta} ${styles.cityDate}`}
+                >
+                  {cityVisitLabel(city)}
+                </span>
               </li>
             ))}
           </ol>
         </section>
-      )}
+
+        <section className={musicStyles.statsContain}>
+          <div className={musicStyles.sectionTitleContainer}>
+            <span className={musicStyles.sectionTitle}>Steps by month</span>
+            <span className={musicStyles.sectionSubtitle}>
+              {numberFormatter.format(data.steps.yearlyTotal)} total
+            </span>
+          </div>
+
+          <div className={musicStyles.genreChart}>
+            {data.steps.monthly.map((month) => (
+              <div className={musicStyles.genreRow} key={month.month}>
+                <span className={musicStyles.genreName}>
+                  {formatMonth(month.month)}
+                </span>
+                <div
+                  className={musicStyles.genreBarTrack}
+                  title={`${formatMonth(month.month, "long")}: ${numberFormatter.format(
+                    month.total
+                  )} steps. ${month.sourceMix}`}
+                >
+                  <div
+                    className={musicStyles.genreBarFill}
+                    style={{
+                      width: `${
+                        month.total === 0
+                          ? 0
+                          : Math.max(
+                              (month.total / largestStepMonth) * 100,
+                              4
+                            )
+                      }%`,
+                    }}
+                  />
+                </div>
+                <span className={musicStyles.genreValue}>
+                  {numberFormatter.format(month.total)}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <p className={styles.sourceNote}>
+            <sup>*</sup> Daily totals use Google Health when it has data for
+            that day; otherwise iPhone fills the gap. The sources are never
+            added together.
+            {sourceSummary && ` Source mix — ${sourceSummary}.`}
+          </p>
+        </section>
+
+        <section className={musicStyles.statsContain}>
+          <div className={musicStyles.sectionTitleContainer}>
+            <span className={musicStyles.sectionTitle}>Flight log</span>
+            <span className={musicStyles.sectionSubtitle}>
+              {data.flights.segments.length} flown ·{" "}
+              {milesFormatter.format(data.flights.totalMiles)} miles
+            </span>
+          </div>
+
+          <ol className={styles.flightList}>
+            {data.flights.segments.map((flight, index) => (
+              <li key={`${flight.date}-${flight.from}-${flight.to}-${index}`}>
+                <time
+                  className={pocketStyles.writtenArticleMeta}
+                  dateTime={flight.date}
+                >
+                  {formatDate(flight.date)}
+                </time>
+                <span className={styles.flightRoute}>
+                  <span className={musicStyles.albumReviewItemCompany}>
+                    {flight.from}
+                  </span>
+                  <span className={styles.flightLine} aria-hidden="true" />
+                  <span className={musicStyles.albumReviewItemCompany}>
+                    {flight.to}
+                  </span>
+                </span>
+              </li>
+            ))}
+          </ol>
+        </section>
+      </div>
 
       <Footer />
-    </main>
+    </div>
   );
 }
