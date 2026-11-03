@@ -37,4 +37,19 @@ export interface Photo {
   takenAt?: string;
 }
 
-export const photos: Photo[] = [];
+export const photos: Photo[] = [
+  {
+    src: "/photos/amsterdam-canal.jpg",
+    alt: "Canal houses and the Zuiderkerk tower along a canal in Amsterdam",
+    title: "Amsterdam Canal",
+    location: "Amsterdam, Netherlands",
+    takenAt: "2026-09",
+  },
+  {
+    src: "/photos/nobu-malibu.jpg",
+    alt: "The oceanfront patio at Nobu in Malibu overlooking the Pacific Ocean",
+    title: "Nobu Malibu",
+    location: "Malibu, CA",
+    takenAt: "2026-11",
+  },
+];
