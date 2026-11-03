@@ -52,4 +52,17 @@ export const photos: Photo[] = [
     location: "Malibu, CA",
     takenAt: "2026-11",
   },
+  {
+    src: "/photos/lands-end.jpg",
+    alt: "The Sutro Baths ruins and Seal Rocks at Lands End in San Francisco",
+    title: "Lands End",
+    location: "San Francisco, CA",
+    takenAt: "2026-06",
+  },
+  {
+    src: "/photos/pacifica-sunset.jpg",
+    alt: "Sunset over the Pacific Ocean in Pacifica, with a camper van parked along the coast road",
+    title: "Pacifica Sunset",
+    location: "Pacifica, CA",
+  },
 ];
