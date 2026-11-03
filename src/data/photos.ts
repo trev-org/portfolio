@@ -3,14 +3,24 @@
  *
  * HOW TO ADD A PHOTO
  * ------------------
- * 1. Put the image file in `public/photos/` (this folder is served at
- *    `/photos/...` on the site). Use a lowercase, hyphenated filename, e.g.
- *    `golden-gate-sunset.jpg`. JPG or WebP, ~2000px on the long edge is
- *    plenty for the web.
- * 2. Add one entry to the `photos` array below, in the order you want them
- *    to appear (first entry shows first).
- * 3. Commit and open a PR like any other change — the page updates itself
- *    from this list, no other file needs editing.
+ * Run the add-photo script with the original image file:
+ *
+ *   npm run photo:add -- ~/Downloads/my-photo.jpg --title "My Photo" \
+ *     --location "Somewhere, CA" --alt "What the photo shows"
+ *
+ * It resizes the image to at most 2048px on the long edge, saves it into
+ * `public/photos/` under a lowercase, hyphenated name derived from the
+ * title, reads the date taken from the photo's EXIF data (override with
+ * --date YYYY-MM), and adds the entry to the `photos` array below.
+ * Re-running it for the same title updates the entry instead of
+ * duplicating it. See `scripts/add-photo.mjs` for all the options.
+ *
+ * Then commit and open a PR like any other change — the page updates
+ * itself from this list, no other file needs editing.
+ *
+ * To add a photo by hand instead: put the file in `public/photos/` and
+ * add one entry to the array below, in the order you want them to appear
+ * (first entry shows first).
  *
  * Fields:
  * - `src` (required): path to the file, starting with `/photos/`.

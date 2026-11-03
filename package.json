@@ -10,7 +10,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "spotify:auth": "node --env-file=.env.local scripts/spotify-auth.mjs"
+    "spotify:auth": "node --env-file=.env.local scripts/spotify-auth.mjs",
+    "photo:add": "node scripts/add-photo.mjs"
   },
   "dependencies": {
     "@auth0/auth0-spa-js": "^2.11.3",
@@ -37,6 +38,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "^16.4.2",
+    "sharp": "^0.35.5",
     "typescript": "^5"
   }
 }
