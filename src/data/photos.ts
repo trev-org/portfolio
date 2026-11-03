@@ -75,4 +75,11 @@ export const photos: Photo[] = [
     title: "Pacifica Sunset",
     location: "Pacifica, CA",
   },
+  {
+    src: "/photos/lake-tahoe.jpg",
+    alt: "A pink bicycle parked by a bench on a sandy Lake Tahoe beach, with mountains across the water",
+    title: "Lake Tahoe",
+    location: "Lake Tahoe, CA",
+    takenAt: "2026-07",
+  },
 ];
