@@ -420,6 +420,20 @@ const Home: React.FC = () => {
                 </div>
               </div>
             </Link>
+            <Link href="/photos">
+              <div className={styles.projectsItem}>
+                <div className={styles.projectItemHoverTopLeft}></div>
+                <div className={styles.projectItemHoverBottomRight}></div>
+                <div className={styles.projectItemHoverLeft}></div>
+                <div className={styles.projectItemHoverBottom}></div>
+                <div className={styles.projectsItemContentContain}>
+                  <span className={styles.projectsItemTitle}>Photography</span>
+                  <span className={styles.projectsItemDesc}>
+                    A collection of photos I&apos;ve taken.
+                  </span>
+                </div>
+              </div>
+            </Link>
             <Link href="/pocket">
               <div className={styles.projectsItem}>
                 <div className={styles.projectItemHoverTopLeft}></div>
