@@ -11,7 +11,6 @@ import ListeningStats from "../../components/ListeningStats";
 import PageHeader from "../../components/layout/PageHeader";
 import PageShell from "../../components/layout/PageShell";
 import SectionHeader from "../../components/layout/SectionHeader";
-// import { createClient } from "../../lib/supabase";
 import Image from "next/image";
 import { History, CurrentlyPlaying } from "../../types/types";
 
@@ -19,18 +18,15 @@ const Music: React.FC = () => {
   const [history, setHistory] = useState<History[]>([]);
   const [currentlyPlaying, setCurrentlyPlaying] =
     useState<CurrentlyPlaying | null>(null);
-  // const [albumReviews, setAlbumReviews] = useState<AlbumReview[]>([]);
   const [isHistoryLoading, setIsHistoryLoading] = useState<boolean>(true);
   const [isCurrentlyPlayingLoading, setIsCurrentlyPlayingLoading] =
     useState<boolean>(true);
-  // const [isAlbumReviewsLoading, setIsAlbumReviewsLoading] = useState<boolean>(true);
   const [historyError, setHistoryError] = useState<string | null>(null);
   const [currentlyPlayingError, setCurrentlyPlayingError] = useState<
     string | null
   >(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [viewMode, setViewMode] = useState<"tile" | "list">("tile");
-  // const supabase = createClient();
 
   // Trigger CSS animations on mount
   useEffect(() => {
@@ -55,24 +51,6 @@ const Music: React.FC = () => {
       // localStorage unavailable — view still updates for this session
     }
   };
-
-  // Fetch Album Reviews
-  // const fetchAlbumReviews = async () => {
-  //   try {
-  //     setIsAlbumReviewsLoading(true);
-  //     const { data, error } = await supabase.from("album_reviews").select("*");
-
-  //     if (error) {
-  //       console.error("Error fetching album reviews:", error);
-  //     } else {
-  //       setAlbumReviews(data || []);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching album reviews:", error);
-  //   } finally {
-  //     setIsAlbumReviewsLoading(false);
-  //   }
-  // };
 
   const fetchHistory = useCallback(async () => {
     try {
@@ -103,7 +81,6 @@ const Music: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // fetchAlbumReviews();
     void fetchHistory();
     void fetchCurrentlyPlaying();
   }, [fetchCurrentlyPlaying, fetchHistory]);
@@ -294,45 +271,6 @@ const Music: React.FC = () => {
             isRecentPlaysLoading={isHistoryLoading}
             recentPlaysError={historyError}
           />
-
-          {/* Album Reviews Section */}
-          {/* <section className={styles.albumReviewsContain}>
-            <SectionHeader title="Album Reviews" spacing="compact" />
-            {!isAlbumReviewsLoading &&
-              albumReviews &&
-              albumReviews.map((item) => (
-                <div className={styles.albumReviewItem} key={item.id}>
-                  <div className={styles.albumReviewItemInformation}>
-                    <Image
-                      src={item.cover}
-                      className={styles.albumReviewLogo}
-                      alt={item.name}
-                      width={60}
-                      height={60}
-                    />
-                    <div className={styles.albumReviewItemContent}>
-                      <div className={styles.albumReviewItemHeader}>
-                        <span className={styles.albumReviewItemCompany}>
-                          {item.name}
-                        </span>
-                      </div>
-                      <span className={styles.albumReviewItemPosition}>
-                        {item.artist}
-                      </span>
-                    </div>
-                  </div>
-                  <div>
-                    <span className={styles.albumReviewItemRating}>
-                      {item.rating}/10
-                    </span>
-                  </div>
-                </div>
-              ))}
-            {isAlbumReviewsLoading && <p>Loading...</p>}
-            {!albumReviews && !isAlbumReviewsLoading && (
-              <p>Unable to load album reviews!</p>
-            )}
-          </section> */}
         </div>
 
         <Footer />

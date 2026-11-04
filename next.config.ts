@@ -8,13 +8,25 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "xzjjgvjhjoyjjkjdguza.supabase.co",
+        hostname: "i.scdn.co",
         port: "",
         pathname: "/**",
       },
       {
         protocol: "https",
-        hostname: "i.scdn.co",
+        hostname: "www.howtoeval.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.sanity.io",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "devin.ai",
         port: "",
         pathname: "/**",
       },

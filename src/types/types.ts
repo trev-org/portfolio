@@ -1,12 +1,3 @@
-export interface AlbumReview {
-  id: number;
-  name: string;
-  artist: string;
-  rating: number;
-  cover: string;
-  created_at: string;
-}
-
 export interface History {
   name: string;
   artist: string;

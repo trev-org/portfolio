@@ -8,7 +8,7 @@ import type { WrittenArticleMetadata } from "../types/types";
 const ARTICLES_DIRECTORY = path.join(
   process.cwd(),
   "src",
-  "content",
+  "data",
   "articles",
 );
 const ARTICLE_FILENAME_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -112,7 +112,7 @@ const getArticleSlugs = cache(async () => {
 
 const loadArticleModule = cache(async (slug: string) => {
   const articleModule = (await import(
-    `@/content/articles/${slug}.mdx`
+    `@/data/articles/${slug}.mdx`
   )) as ArticleModule;
 
   return {
