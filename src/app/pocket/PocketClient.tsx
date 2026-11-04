@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Footer from "../../components/Footer";
+import PageHeader from "../../components/layout/PageHeader";
+import PageShell from "../../components/layout/PageShell";
+import SectionHeader from "../../components/layout/SectionHeader";
 import styles from "../../styles/pocket.module.css";
 import type { WrittenArticleMetadata } from "../../types/types";
 
@@ -44,24 +47,14 @@ export default function PocketClient({
   }, []);
 
   return (
-    <div className={styles.landingContain}>
-      <div
-        className={`${styles.brandingContain} ${
+    <PageShell>
+      <PageHeader
+        title="Pocket"
+        description="Sparks of thought that I find interesting. Sometimes original, sometimes not."
+        className={`${styles.revealItem} ${
           isLoaded ? styles.fadeInUp : ""
         }`}
-      >
-        <div className={styles.brandingHeader}>
-          <div className={styles.introContain}>
-            <Link className={styles.name} href="/">
-              Pocket
-            </Link>
-            <p className={styles.intro}>
-              Sparks of thought that I find
-              interesting. Sometimes original, sometimes not.
-            </p>
-          </div>
-        </div>
-      </div>
+      />
 
       <div
         className={`${styles.musicContain} ${
@@ -70,9 +63,7 @@ export default function PocketClient({
         style={{ animationDelay: "0.05s" }}
       >
         <section className={styles.articlesContain}>
-          <div className={styles.sectionTitleContainer}>
-            <span className={styles.sectionTitle}>My Writing</span>
-          </div>
+          <SectionHeader title="My Writing" />
 
           {writtenArticles.length > 0 ? (
             <div className={styles.articlesGrid}>
@@ -117,6 +108,6 @@ export default function PocketClient({
       </div>
 
       <Footer />
-    </div>
+    </PageShell>
   );
 }

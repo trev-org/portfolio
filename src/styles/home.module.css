@@ -132,15 +132,6 @@
   box-sizing: border-box;
   padding: 20px 20px 15px 20px;
 }
-.sectionTitle {
-  text-decoration: none;
-  color: #fff5ea;
-  opacity: 0.5;
-  font-size: 14px;
-  font-family: "MarketSans-Medium";
-  user-select: none;
-  margin-bottom: 10px;
-}
 .projectsItem {
   display: flex;
   flex-direction: column;
@@ -318,14 +309,6 @@
 }
 
 /* Extras Styling */
-.sectionTitleContainer {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  margin-bottom: 10px;
-}
 .extrasGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

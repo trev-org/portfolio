@@ -1,7 +1,33 @@
 :root {
-  --background: #121212;
-  --foreground: #e5e5e0;
-  --main-color: #b931ff;
+  --color-background: #121212;
+  --color-foreground: #e5e5e0;
+  --color-text-strong: #fff5ea;
+  --color-text-muted: #807b75;
+  --color-accent: #b931ff;
+  --color-surface: #1a1a1a;
+  --color-surface-subtle: #0d0d0d;
+  --color-border: #3b3b3b;
+
+  --font-sans-bold: "MarketSans-Bold";
+  --font-sans-medium: "MarketSans-Medium";
+  --font-sans-regular: "MarketSans-Regular";
+  --font-sans-light: "MarketSans-Light";
+
+  --radius-sm: 7.5px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+
+  --motion-duration-standard: 0.5s;
+  --motion-ease-standard: cubic-bezier(0.075, 0.82, 0.165, 1);
+  --transition-interactive: all var(--motion-duration-standard)
+    var(--motion-ease-standard);
+
+  /* Backward-compatible aliases used by existing route styles. */
+  --background: var(--color-background);
+  --foreground: var(--color-foreground);
+  --main-color: var(--color-accent);
+  --border-color: var(--color-border);
+  --text-primary: var(--color-text-strong);
 }
 
 html {
@@ -15,7 +41,7 @@ html {
 
 html,
 body {
-  font-family: "MarketSans-Medium";
+  font-family: var(--font-sans-medium);
   font-size: 14px;
   color: var(--foreground);
   height: 100%;

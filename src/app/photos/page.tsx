@@ -2,9 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import styles from "../../styles/photos.module.css";
 import Footer from "../../components/Footer";
+import PageHeader from "../../components/layout/PageHeader";
+import PageShell from "../../components/layout/PageShell";
 import { photos, type Photo } from "../../data/photos";
 
 const Photos: React.FC = () => {
@@ -30,25 +31,16 @@ const Photos: React.FC = () => {
 
   return (
     <>
-      <div className={styles.landingContain}>
-        {/* Branding Section */}
-        <div className={styles.brandingContain}>
-          <div className={styles.brandingHeader}>
-            <div className={styles.introContain}>
-              <Link className={styles.name} href="/">
-                Photography
-              </Link>
-              <p className={styles.intro}>
-                I like to take photos. Some come out well.
-              </p>
-            </div>
-          </div>
-        </div>
+      <PageShell>
+        <PageHeader
+          title="Photography"
+          description="I like to take photos. Some come out well."
+        />
 
         <div className={styles.photosContain}>
           {photos.length > 0 ? (
             <div className={styles.photosGrid}>
-              {photos.map((photo) => (
+              {photos.map((photo, index) => (
                 <figure className={styles.photoItem} key={photo.src}>
                   <button
                     type="button"
@@ -62,6 +54,7 @@ const Photos: React.FC = () => {
                       width={1200}
                       height={800}
                       className={styles.photoImage}
+                      loading={index < 3 ? "eager" : "lazy"}
                     />
                   </button>
                   {(photo.title || photo.location) && (
@@ -87,7 +80,7 @@ const Photos: React.FC = () => {
         </div>
 
         <Footer />
-      </div>
+      </PageShell>
 
       {selectedPhoto && (
         <div

@@ -8,6 +8,7 @@ import {
   getMyTopArtists,
   getMyTopTracks,
 } from "../lib/spotify";
+import SectionHeader from "./layout/SectionHeader";
 import styles from "../styles/music.module.css";
 import type {
   GenreScore,
@@ -324,38 +325,48 @@ const ListeningStats: React.FC = () => {
 
   return (
     <section className={styles.statsContain}>
-      <div className={styles.sectionTitleContainer}>
-        <span className={styles.sectionTitle}>Listening Stats</span>
-        <div className={styles.statsTabs} role="group" aria-label="Stats time range">
-          {RANGE_OPTIONS.map((option) => (
-            <button
-              key={option.id}
-              type="button"
-              className={`${styles.viewToggleButton} ${
-                range === option.id ? styles.viewToggleButtonActive : ""
-              }`}
-              aria-pressed={range === option.id}
-              onClick={() => setRange(option.id)}
+      <SectionHeader
+        title="Listening Stats"
+        actions={
+          <>
+            <div
+              className={styles.statsTabs}
+              role="group"
+              aria-label="Stats time range"
             >
-              {option.label}
-            </button>
-          ))}
-        </div>
-        <div className={styles.statsSelectWrapper}>
-          <select
-            className={styles.statsSelect}
-            value={range}
-            aria-label="Stats time range"
-            onChange={(event) => setRange(event.target.value as StatsRange)}
-          >
-            {RANGE_OPTIONS.map((option) => (
-              <option value={option.id} key={option.id}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+              {RANGE_OPTIONS.map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  className={`${styles.viewToggleButton} ${
+                    range === option.id ? styles.viewToggleButtonActive : ""
+                  }`}
+                  aria-pressed={range === option.id}
+                  onClick={() => setRange(option.id)}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+            <div className={styles.statsSelectWrapper}>
+              <select
+                className={styles.statsSelect}
+                value={range}
+                aria-label="Stats time range"
+                onChange={(event) =>
+                  setRange(event.target.value as StatsRange)
+                }
+              >
+                {RANGE_OPTIONS.map((option) => (
+                  <option value={option.id} key={option.id}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </>
+        }
+      />
 
       {isLoading && <ListeningStatsSkeleton />}
 

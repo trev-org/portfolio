@@ -8,10 +8,12 @@ import {
 import styles from "../../styles/music.module.css";
 import Footer from "../../components/Footer";
 import ListeningStats from "../../components/ListeningStats";
+import PageHeader from "../../components/layout/PageHeader";
+import PageShell from "../../components/layout/PageShell";
+import SectionHeader from "../../components/layout/SectionHeader";
 // import { createClient } from "../../lib/supabase";
 import Image from "next/image";
 import { History, CurrentlyPlaying } from "../../types/types";
-import Link from "next/link";
 
 const Music: React.FC = () => {
   const [history, setHistory] = useState<History[]>([]);
@@ -119,22 +121,12 @@ const Music: React.FC = () => {
   return (
     <>
       {/* Landing Section */}
-      <div className={styles.landingContain}>
-        {/* Branding Section */}
-        <div
-          className={`${styles.brandingContain} ${
-            isLoaded ? styles.fadeInUp : ""
-          }`}
-        >
-          <div className={styles.brandingHeader}>
-            <div className={styles.introContain}>
-              <Link className={styles.name} href="/">
-                Music
-              </Link>
-              <p className={styles.intro}>
-                Music is a key part of my life. The rest is a quiet blur.
-              </p>
-            </div>
+      <PageShell>
+        <PageHeader
+          title="Music"
+          description="Music is a key part of my life. The rest is a quiet blur."
+          className={isLoaded ? styles.fadeInUp : ""}
+          actions={
             <>
               {currentlyPlaying &&
                 !isCurrentlyPlayingLoading &&
@@ -173,8 +165,8 @@ const Music: React.FC = () => {
                 <p className={styles.notPlaying}>Nothing playing.</p>
               )}
             </>
-          </div>
-        </div>
+          }
+        />
 
         <div
           className={`${styles.musicContain} ${
@@ -184,48 +176,54 @@ const Music: React.FC = () => {
         >
           {/* Recently Played Section */}
           <section className={styles.recentlyPlayedContain}>
-            <div className={styles.sectionTitleContainer}>
-              <span className={styles.sectionTitle}>Recently Played</span>
-              <div className={styles.sectionActions}>
-                {history && history.length > 0 && (
-                  <span className={styles.sectionSubtitle}>
-                    last at{" "}
-                    {new Date(history[0].played_at).toLocaleTimeString([], {
-                      day: "numeric",
-                      month: "numeric",
-                      hour: "numeric",
-                      minute: "numeric",
-                    })}
-                  </span>
-                )}
-                <div
-                  className={styles.viewToggle}
-                  role="group"
-                  aria-label="Change recently played view"
-                >
-                  <button
-                    type="button"
-                    className={`${styles.viewToggleButton} ${
-                      viewMode === "list" ? styles.viewToggleButtonActive : ""
-                    }`}
-                    aria-pressed={viewMode === "list"}
-                    onClick={() => changeViewMode("list")}
+            <SectionHeader
+              title="Recently Played"
+              actions={
+                <>
+                  {history && history.length > 0 && (
+                    <span className={styles.sectionSubtitle}>
+                      last at{" "}
+                      {new Date(history[0].played_at).toLocaleTimeString([], {
+                        day: "numeric",
+                        month: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                      })}
+                    </span>
+                  )}
+                  <div
+                    className={styles.viewToggle}
+                    role="group"
+                    aria-label="Change recently played view"
                   >
-                    List
-                  </button>
-                  <button
-                    type="button"
-                    className={`${styles.viewToggleButton} ${
-                      viewMode === "tile" ? styles.viewToggleButtonActive : ""
-                    }`}
-                    aria-pressed={viewMode === "tile"}
-                    onClick={() => changeViewMode("tile")}
-                  >
-                    Tile
-                  </button>
-                </div>
-              </div>
-            </div>
+                    <button
+                      type="button"
+                      className={`${styles.viewToggleButton} ${
+                        viewMode === "list"
+                          ? styles.viewToggleButtonActive
+                          : ""
+                      }`}
+                      aria-pressed={viewMode === "list"}
+                      onClick={() => changeViewMode("list")}
+                    >
+                      List
+                    </button>
+                    <button
+                      type="button"
+                      className={`${styles.viewToggleButton} ${
+                        viewMode === "tile"
+                          ? styles.viewToggleButtonActive
+                          : ""
+                      }`}
+                      aria-pressed={viewMode === "tile"}
+                      onClick={() => changeViewMode("tile")}
+                    >
+                      Tile
+                    </button>
+                  </div>
+                </>
+              }
+            />
             {!spotifyError &&
               !isHistoryLoading &&
               history &&
@@ -281,7 +279,7 @@ const Music: React.FC = () => {
 
           {/* Album Reviews Section */}
           {/* <section className={styles.albumReviewsContain}>
-            <span className={styles.sectionTitle}>Album Reviews</span>
+            <SectionHeader title="Album Reviews" spacing="compact" />
             {!isAlbumReviewsLoading &&
               albumReviews &&
               albumReviews.map((item) => (
@@ -320,7 +318,7 @@ const Music: React.FC = () => {
         </div>
 
         <Footer />
-      </div>
+      </PageShell>
     </>
   );
 };
