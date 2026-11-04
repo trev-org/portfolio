@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import {
   getArtistDetailsByIds,
-  getMyRecentlyPlayed,
   getMyTopArtists,
   getMyTopTracks,
 } from "../lib/spotify";
@@ -22,12 +21,34 @@ const RANGE_OPTIONS: Array<{ id: StatsRange; label: string }> = [
   { id: "day", label: "Day" },
   { id: "week", label: "Week" },
   { id: "month", label: "Month" },
-  { id: "year", label: "Year" },
+  { id: "year", label: "All Time" },
 ];
 
 const MAX_GENRE_BARS = 6;
 const GENRES_PER_ARTIST = 3;
 const SKELETON_GENRE_WIDTHS = [88, 76, 64, 52, 43, 34];
+const SKELETON_AXIS_POSITIONS = [0, 25, 50, 75, 100];
+const STATS_CACHE_PREFIX = "listening-stats:v5";
+const STATS_CACHE_TTL: Record<StatsRange, number> = {
+  day: 60 * 1000,
+  week: 60 * 1000,
+  month: 15 * 60 * 1000,
+  year: 15 * 60 * 1000,
+};
+
+type StatsCacheEntry = {
+  cacheKey: string;
+  data: ListeningStatsData;
+  expiresAt: number;
+};
+
+type StoredStatsCacheEntry = Omit<StatsCacheEntry, "cacheKey">;
+
+type ListeningStatsProps = {
+  recentPlays: History[];
+  isRecentPlaysLoading: boolean;
+  recentPlaysError: string | null;
+};
 
 function startOfDay(date: Date): Date {
   const start = new Date(date);
@@ -42,12 +63,72 @@ function startOfWeekSunday(date: Date): Date {
   return start;
 }
 
+function getStatsCacheKey(range: StatsRange): string {
+  const now = new Date();
+  const period =
+    range === "day"
+      ? startOfDay(now).getTime()
+      : range === "week"
+        ? startOfWeekSunday(now).getTime()
+        : "rolling";
+
+  return `${STATS_CACHE_PREFIX}:${range}:${period}`;
+}
+
+function readStoredStats(range: StatsRange): StatsCacheEntry | null {
+  if (typeof window === "undefined") return null;
+
+  const cacheKey = getStatsCacheKey(range);
+
+  try {
+    const stored = window.sessionStorage.getItem(cacheKey);
+    if (!stored) return null;
+
+    const parsed = JSON.parse(stored) as StoredStatsCacheEntry;
+    if (
+      parsed.expiresAt <= Date.now() ||
+      !parsed.data ||
+      parsed.data.range !== range
+    ) {
+      window.sessionStorage.removeItem(cacheKey);
+      return null;
+    }
+
+    return { ...parsed, cacheKey };
+  } catch {
+    return null;
+  }
+}
+
+function writeStoredStats(entry: StatsCacheEntry): void {
+  if (typeof window === "undefined") return;
+
+  try {
+    const stored: StoredStatsCacheEntry = {
+      data: entry.data,
+      expiresAt: entry.expiresAt,
+    };
+    window.sessionStorage.setItem(entry.cacheKey, JSON.stringify(stored));
+  } catch {
+    // Storage can be disabled; the in-memory cache still works.
+  }
+}
+
 function formatDay(date: Date): string {
   return date.toLocaleDateString([], { month: "short", day: "numeric" });
 }
 
 function titleCase(genre: string): string {
   return genre.replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function formatFollowerCount(count: number): string {
+  const compactCount = new Intl.NumberFormat("en-US", {
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(count);
+
+  return `${compactCount} followers`;
 }
 
 function sortGenres(scores: Map<string, number>): GenreScore[] {
@@ -62,10 +143,13 @@ function sortGenres(scores: Map<string, number>): GenreScore[] {
  * Spotify's recently-played endpoint caps at the 50 most recent plays,
  * so very heavy windows can undercount.
  */
-async function computePlayStats(range: "day" | "week"): Promise<ListeningStatsData> {
+async function computePlayStats(
+  range: "day" | "week",
+  recentPlays: History[]
+): Promise<ListeningStatsData> {
   const now = new Date();
   const start = range === "day" ? startOfDay(now) : startOfWeekSunday(now);
-  const plays = (await getMyRecentlyPlayed(50)).filter(
+  const plays = recentPlays.filter(
     (play) => new Date(play.played_at) >= start
   );
 
@@ -144,9 +228,9 @@ async function computePlayStats(range: "day" | "week"): Promise<ListeningStatsDa
 }
 
 /**
- * Month/year stats come from Spotify's ranked top-items windows, which have
+ * Month/all-time stats come from Spotify's ranked top-items windows, which have
  * no play counts — top items are ranks and genre bars are rank-weighted.
- * Month maps to Spotify's ~4-week window, year to its long-term window.
+ * Month maps to Spotify's ~4-week window, all time to its long-term window.
  */
 async function computeTopStats(range: "month" | "year"): Promise<ListeningStatsData> {
   const timeRange = range === "month" ? "short_term" : "long_term";
@@ -155,7 +239,7 @@ async function computeTopStats(range: "month" | "year"): Promise<ListeningStatsD
     getMyTopTracks(timeRange, 50),
   ]);
 
-  const rangeLabel = range === "month" ? "Last ~4 weeks" : "Long-term";
+  const rangeLabel = range === "month" ? "Last ~4 weeks" : "All time";
   const note =
     range === "month"
       ? "Spotify's top items over the last ~4 weeks"
@@ -164,9 +248,7 @@ async function computeTopStats(range: "month" | "year"): Promise<ListeningStatsD
   const topArtist: StatsTopItem | null = artists[0]
     ? {
         name: artists[0].name,
-        detail: artists[0].genres[0]
-          ? titleCase(artists[0].genres[0])
-          : rangeLabel,
+        detail: formatFollowerCount(artists[0].followers),
         image: artists[0].image,
         url: artists[0].url,
       }
@@ -200,9 +282,12 @@ async function computeTopStats(range: "month" | "year"): Promise<ListeningStatsD
   };
 }
 
-async function computeStats(range: StatsRange): Promise<ListeningStatsData> {
+async function computeStats(
+  range: StatsRange,
+  recentPlays: History[]
+): Promise<ListeningStatsData> {
   if (range === "day" || range === "week") {
-    return computePlayStats(range);
+    return computePlayStats(range, recentPlays);
   }
   return computeTopStats(range);
 }
@@ -211,6 +296,36 @@ function playsLabel(item: StatsTopItem, noun: string): string {
   return item.plays !== undefined
     ? `${item.plays} ${item.plays === 1 ? "play" : "plays"}`
     : noun;
+}
+
+function getAxisScale(
+  maxValue: number,
+  wholeNumbersOnly: boolean
+): { max: number; ticks: number[] } {
+  if (maxValue <= 0) return { max: 1, ticks: [0, 1] };
+
+  const roughStep = maxValue / 4;
+  const magnitude = 10 ** Math.floor(Math.log10(roughStep));
+  const normalizedStep = roughStep / magnitude;
+  const multiplier =
+    normalizedStep <= 1
+      ? 1
+      : normalizedStep <= 2
+        ? 2
+        : normalizedStep <= 5
+          ? 5
+          : 10;
+  const niceStep = Math.max(
+    wholeNumbersOnly ? 1 : Number.EPSILON,
+    multiplier * magnitude
+  );
+  const axisMax = Math.ceil(maxValue / niceStep) * niceStep;
+  const tickCount = Math.round(axisMax / niceStep);
+  const ticks = Array.from({ length: tickCount + 1 }, (_, index) =>
+    Number((index * niceStep).toFixed(10))
+  );
+
+  return { max: axisMax, ticks };
 }
 
 function StatsCardAccents() {
@@ -232,23 +347,28 @@ function ListeningStatsSkeleton() {
       aria-label="Loading listening stats"
     >
       <div className={styles.statsCards} aria-hidden="true">
-        {["artist", "song"].map((type) => (
-          <div
-            className={`${styles.statsCard} ${styles.statsCardSkeleton}`}
-            key={type}
-          >
-            <div className={styles.statsCardContent}>
-              <div className={styles.statsCardBody}>
-                <div
-                  className={`${styles.skeletonBlock} ${styles.statsImageSkeleton}`}
-                />
-                <div className={styles.statsCardInfo}>
+        {[
+          { type: "artist", label: "Top Artist" },
+          { type: "song", label: "Top Song" },
+        ].map(({ type, label }) => (
+          <div className={styles.statsCardGroup} key={type}>
+            <h3 className={styles.statsCardLabel}>{label}</h3>
+            <div
+              className={`${styles.statsCard} ${styles.statsCardSkeleton}`}
+            >
+              <div className={styles.statsCardContent}>
+                <div className={styles.statsCardBody}>
                   <div
-                    className={`${styles.skeletonBlock} ${styles.statsNameSkeleton}`}
+                    className={`${styles.skeletonBlock} ${styles.statsImageSkeleton}`}
                   />
-                  <div
-                    className={`${styles.skeletonBlock} ${styles.statsDetailSkeleton}`}
-                  />
+                  <div className={styles.statsCardInfo}>
+                    <div
+                      className={`${styles.skeletonBlock} ${styles.statsNameSkeleton}`}
+                    />
+                    <div
+                      className={`${styles.skeletonBlock} ${styles.statsDetailSkeleton}`}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -257,74 +377,188 @@ function ListeningStatsSkeleton() {
       </div>
 
       <div className={styles.genreChart} aria-hidden="true">
-        {SKELETON_GENRE_WIDTHS.map((width) => (
-          <div className={styles.genreRow} key={width}>
-            <div
-              className={`${styles.skeletonBlock} ${styles.genreNameSkeleton}`}
+        <div className={styles.genreGrid}>
+          {SKELETON_AXIS_POSITIONS.map((position) => (
+            <span
+              className={styles.genreGridLine}
+              style={{ left: `${position}%` }}
+              key={position}
             />
-            <div className={styles.genreBarTrack}>
-              <div
-                className={`${styles.skeletonBlock} ${styles.genreBarSkeleton}`}
-                style={{ width: `${width}%` }}
-              />
+          ))}
+        </div>
+        <div className={styles.genreRows}>
+          {SKELETON_GENRE_WIDTHS.map((width) => (
+            <div className={styles.genreRow} key={width}>
+              <div className={styles.genreLabels}>
+                <div
+                  className={`${styles.skeletonBlock} ${styles.genreNameSkeleton}`}
+                />
+                <div
+                  className={`${styles.skeletonBlock} ${styles.genreValueSkeleton}`}
+                />
+              </div>
+              <div className={styles.genreBarTrack}>
+                <div
+                  className={`${styles.skeletonBlock} ${styles.genreBarSkeleton}`}
+                  style={{ width: `${width}%` }}
+                />
+              </div>
             </div>
+          ))}
+        </div>
+        <div className={styles.genreAxis}>
+          {SKELETON_AXIS_POSITIONS.map((position) => (
             <div
-              className={`${styles.skeletonBlock} ${styles.genreValueSkeleton}`}
+              className={`${styles.skeletonBlock} ${styles.genreTickSkeleton}`}
+              style={{ left: `${position}%` }}
+              key={position}
             />
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
 }
 
-const ListeningStats: React.FC = () => {
+const ListeningStats: React.FC<ListeningStatsProps> = ({
+  recentPlays,
+  isRecentPlaysLoading,
+  recentPlaysError,
+}) => {
   const [range, setRange] = useState<StatsRange>("day");
   const [stats, setStats] = useState<ListeningStatsData | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const cacheRef = useRef(new Map<StatsRange, ListeningStatsData>());
+  const [shouldLoad, setShouldLoad] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+  const cacheRef = useRef(new Map<StatsRange, StatsCacheEntry>());
+  const requestSequenceRef = useRef(0);
 
-  const loadStats = useCallback(async (selectedRange: StatsRange) => {
-    const cached = cacheRef.current.get(selectedRange);
-    if (cached) {
-      setStats(cached);
-      setError(null);
-      setIsLoading(false);
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    if (!("IntersectionObserver" in window)) {
+      setShouldLoad(true);
       return;
     }
 
-    try {
-      setIsLoading(true);
-      setError(null);
-      const result = await computeStats(selectedRange);
-      cacheRef.current.set(selectedRange, result);
-      setStats(result);
-    } catch (caughtError) {
-      setStats(null);
-      const message =
-        caughtError instanceof Error ? caughtError.message : "";
-      setError(
-        message.includes("(403")
-          ? "Spotify hasn't granted stats access yet (the token needs the user-top-read scope — re-run npm run spotify:auth)."
-          : "Listening stats are temporarily unavailable."
-      );
-    } finally {
-      setIsLoading(false);
-    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setShouldLoad(true);
+        observer.disconnect();
+      },
+      { rootMargin: "400px 0px" }
+    );
+
+    observer.observe(section);
+    return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
-    void loadStats(range);
-  }, [range, loadStats]);
+  const loadStats = useCallback(
+    async (selectedRange: StatsRange) => {
+      const requestSequence = ++requestSequenceRef.current;
+      const cacheKey = getStatsCacheKey(selectedRange);
+      const now = Date.now();
+      const memoryEntry = cacheRef.current.get(selectedRange);
 
-  const maxGenreScore = stats?.genres[0]?.score ?? 0;
+      if (
+        memoryEntry &&
+        memoryEntry.cacheKey === cacheKey &&
+        memoryEntry.expiresAt > now
+      ) {
+        setStats(memoryEntry.data);
+        setError(null);
+        setIsLoading(false);
+        return;
+      }
+      if (memoryEntry) {
+        cacheRef.current.delete(selectedRange);
+      }
+
+      const storedEntry = readStoredStats(selectedRange);
+      if (storedEntry) {
+        cacheRef.current.set(selectedRange, storedEntry);
+        setStats(storedEntry.data);
+        setError(null);
+        setIsLoading(false);
+        return;
+      }
+
+      const needsRecentPlays =
+        selectedRange === "day" || selectedRange === "week";
+      if (needsRecentPlays && isRecentPlaysLoading) {
+        setIsLoading(true);
+        setError(null);
+        return;
+      }
+      if (needsRecentPlays && recentPlaysError) {
+        setStats(null);
+        setError(recentPlaysError);
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        setError(null);
+        const result = await computeStats(selectedRange, recentPlays);
+        const entry: StatsCacheEntry = {
+          cacheKey,
+          data: result,
+          expiresAt: Date.now() + STATS_CACHE_TTL[selectedRange],
+        };
+        cacheRef.current.set(selectedRange, entry);
+        writeStoredStats(entry);
+
+        if (requestSequence === requestSequenceRef.current) {
+          setStats(result);
+        }
+      } catch (caughtError) {
+        if (requestSequence !== requestSequenceRef.current) return;
+
+        setStats(null);
+        const message =
+          caughtError instanceof Error ? caughtError.message : "";
+        setError(
+          message.includes("(403")
+            ? "Spotify hasn't granted stats access yet (the token needs the user-top-read scope — re-run npm run spotify:auth)."
+            : "Listening stats are temporarily unavailable."
+        );
+      } finally {
+        if (requestSequence === requestSequenceRef.current) {
+          setIsLoading(false);
+        }
+      }
+    },
+    [isRecentPlaysLoading, recentPlays, recentPlaysError]
+  );
+
+  useEffect(() => {
+    if (!shouldLoad) return;
+
+    void loadStats(range);
+
+    return () => {
+      requestSequenceRef.current += 1;
+    };
+  }, [range, loadStats, shouldLoad]);
+
+  const isPlayBased = range === "day" || range === "week";
   const totalGenreScore =
     stats?.genres.reduce((sum, genre) => sum + genre.score, 0) ?? 0;
-  const isPlayBased = range === "day" || range === "week";
+  const maxGenreValue = stats?.genres[0]
+    ? isPlayBased
+      ? stats.genres[0].score
+      : totalGenreScore > 0
+        ? (stats.genres[0].score / totalGenreScore) * 100
+        : 0
+    : 0;
+  const axisScale = getAxisScale(maxGenreValue, isPlayBased);
 
   return (
-    <section className={styles.statsContain}>
+    <section className={styles.statsContain} ref={sectionRef}>
       <SectionHeader
         title="Listening Stats"
         actions={
@@ -386,99 +620,146 @@ const ListeningStats: React.FC = () => {
         <>
           <div className={styles.statsCards}>
             {stats.topArtist && (
-              <a
-                className={styles.statsCard}
-                href={stats.topArtist.url}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <StatsCardAccents />
-                <div className={styles.statsCardContent}>
-                  <div className={styles.statsCardBody}>
-                    {stats.topArtist.image && (
-                      <Image
-                        src={stats.topArtist.image}
-                        className={styles.statsCardImage}
-                        alt={stats.topArtist.name}
-                        width={56}
-                        height={56}
-                      />
-                    )}
-                    <div className={styles.statsCardInfo}>
-                      <span className={styles.statsCardName}>
-                        {stats.topArtist.name}
-                      </span>
-                      {stats.topArtist.plays !== undefined && (
-                        <span className={styles.statsCardMeta}>
-                          {playsLabel(stats.topArtist, "Top artist")}
-                        </span>
+              <div className={styles.statsCardGroup}>
+                <h3 className={styles.statsCardLabel}>Top Artist</h3>
+                <a
+                  className={styles.statsCard}
+                  href={stats.topArtist.url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <StatsCardAccents />
+                  <div className={styles.statsCardContent}>
+                    <div className={styles.statsCardBody}>
+                      {stats.topArtist.image && (
+                        <Image
+                          src={stats.topArtist.image}
+                          className={styles.statsCardImage}
+                          alt={stats.topArtist.name}
+                          width={56}
+                          height={56}
+                        />
                       )}
-                      {stats.topArtist.plays === undefined &&
-                        stats.topArtist.detail && (
+                      <div className={styles.statsCardInfo}>
+                        <span className={styles.statsCardName}>
+                          {stats.topArtist.name}
+                        </span>
+                        {stats.topArtist.plays !== undefined && (
                           <span className={styles.statsCardMeta}>
-                            {stats.topArtist.detail}
+                            {playsLabel(stats.topArtist, "Top artist")}
                           </span>
                         )}
+                        {stats.topArtist.plays === undefined &&
+                          stats.topArtist.detail && (
+                            <span className={styles.statsCardMeta}>
+                              {stats.topArtist.detail}
+                            </span>
+                          )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </a>
+                </a>
+              </div>
             )}
             {stats.topSong && (
-              <a
-                className={styles.statsCard}
-                href={stats.topSong.url}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <StatsCardAccents />
-                <div className={styles.statsCardContent}>
-                  <div className={styles.statsCardBody}>
-                    {stats.topSong.image && (
-                      <Image
-                        src={stats.topSong.image}
-                        className={styles.statsCardImage}
-                        alt={stats.topSong.name}
-                        width={56}
-                        height={56}
-                      />
-                    )}
-                    <div className={styles.statsCardInfo}>
-                      <span className={styles.statsCardName}>
-                        {stats.topSong.name}
-                      </span>
-                      <span className={styles.statsCardMeta}>
-                        {stats.topSong.artist}
-                        {stats.topSong.plays !== undefined &&
-                          ` · ${playsLabel(stats.topSong, "Top song")}`}
-                      </span>
+              <div className={styles.statsCardGroup}>
+                <h3 className={styles.statsCardLabel}>Top Song</h3>
+                <a
+                  className={styles.statsCard}
+                  href={stats.topSong.url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <StatsCardAccents />
+                  <div className={styles.statsCardContent}>
+                    <div className={styles.statsCardBody}>
+                      {stats.topSong.image && (
+                        <Image
+                          src={stats.topSong.image}
+                          className={styles.statsCardImage}
+                          alt={stats.topSong.name}
+                          width={56}
+                          height={56}
+                        />
+                      )}
+                      <div className={styles.statsCardInfo}>
+                        <span className={styles.statsCardName}>
+                          {stats.topSong.name}
+                        </span>
+                        <span className={styles.statsCardMeta}>
+                          {stats.topSong.artist}
+                          {stats.topSong.plays !== undefined &&
+                            ` · ${playsLabel(stats.topSong, "Top song")}`}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </a>
+                </a>
+              </div>
             )}
           </div>
 
           {stats.genres.length > 0 && (
             <div className={styles.genreChart}>
-              {stats.genres.map((genre) => (
-                <div className={styles.genreRow} key={genre.genre}>
-                  <span className={styles.genreName}>{titleCase(genre.genre)}</span>
-                  <div className={styles.genreBarTrack}>
-                    <div
-                      className={styles.genreBarFill}
-                      style={{
-                        width: `${maxGenreScore > 0 ? Math.max((genre.score / maxGenreScore) * 100, 4) : 0}%`,
-                      }}
-                    />
-                  </div>
-                  <span className={styles.genreValue}>
-                    {isPlayBased
-                      ? `${Math.round(genre.score)} ${Math.round(genre.score) === 1 ? "play" : "plays"}`
-                      : `${totalGenreScore > 0 ? Math.round((genre.score / totalGenreScore) * 100) : 0}%`}
+              <div className={styles.genreGrid} aria-hidden="true">
+                {axisScale.ticks.map((tick) => (
+                  <span
+                    className={styles.genreGridLine}
+                    style={{ left: `${(tick / axisScale.max) * 100}%` }}
+                    key={tick}
+                  />
+                ))}
+              </div>
+              <div className={styles.genreRows}>
+                {stats.genres.map((genre) => {
+                  const value = isPlayBased
+                    ? genre.score
+                    : totalGenreScore > 0
+                      ? (genre.score / totalGenreScore) * 100
+                      : 0;
+                  const width =
+                    axisScale.max > 0 ? (value / axisScale.max) * 100 : 0;
+                  const roundedValue = Math.round(value);
+
+                  return (
+                    <div className={styles.genreRow} key={genre.genre}>
+                      <div className={styles.genreLabels}>
+                        <span className={styles.genreName}>
+                          {titleCase(genre.genre)}
+                        </span>
+                        <span className={styles.genreValue}>
+                          {isPlayBased
+                            ? `${roundedValue} ${roundedValue === 1 ? "play" : "plays"}`
+                            : `${roundedValue}%`}
+                        </span>
+                      </div>
+                      <div className={styles.genreBarTrack}>
+                        <div
+                          className={styles.genreBarFill}
+                          style={{ width: `${width}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className={styles.genreAxis} aria-hidden="true">
+                {axisScale.ticks.map((tick) => (
+                  <span
+                    className={`${styles.genreAxisLabel} ${
+                      tick === axisScale.max ? styles.genreAxisLabelEnd : ""
+                    }`}
+                    style={{ left: `${(tick / axisScale.max) * 100}%` }}
+                    key={tick}
+                  >
+                    {tick === 0
+                      ? "0"
+                      : isPlayBased
+                        ? tick
+                        : `${tick}%`}
                   </span>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
         </>

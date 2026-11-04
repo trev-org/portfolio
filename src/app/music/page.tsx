@@ -24,7 +24,10 @@ const Music: React.FC = () => {
   const [isCurrentlyPlayingLoading, setIsCurrentlyPlayingLoading] =
     useState<boolean>(true);
   // const [isAlbumReviewsLoading, setIsAlbumReviewsLoading] = useState<boolean>(true);
-  const [spotifyError, setSpotifyError] = useState<string | null>(null);
+  const [historyError, setHistoryError] = useState<string | null>(null);
+  const [currentlyPlayingError, setCurrentlyPlayingError] = useState<
+    string | null
+  >(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [viewMode, setViewMode] = useState<"tile" | "list">("tile");
   // const supabase = createClient();
@@ -71,33 +74,39 @@ const Music: React.FC = () => {
   //   }
   // };
 
-  const fetchSpotifyData = useCallback(async () => {
+  const fetchHistory = useCallback(async () => {
     try {
       setIsHistoryLoading(true);
-      setIsCurrentlyPlayingLoading(true);
-      setSpotifyError(null);
-
-      const [historyData, currentlyPlayingData] = await Promise.all([
-        getMyRecentlyPlayed(20),
-        getMyCurrentlyPlaying(),
-      ]);
-
+      setHistoryError(null);
+      const historyData = await getMyRecentlyPlayed(50);
       setHistory(historyData);
-      setCurrentlyPlaying(currentlyPlayingData);
     } catch {
       setHistory([]);
-      setCurrentlyPlaying(null);
-      setSpotifyError("Spotify is temporarily unavailable.");
+      setHistoryError("Spotify is temporarily unavailable.");
     } finally {
       setIsHistoryLoading(false);
+    }
+  }, []);
+
+  const fetchCurrentlyPlaying = useCallback(async () => {
+    try {
+      setIsCurrentlyPlayingLoading(true);
+      setCurrentlyPlayingError(null);
+      const currentlyPlayingData = await getMyCurrentlyPlaying();
+      setCurrentlyPlaying(currentlyPlayingData);
+    } catch {
+      setCurrentlyPlaying(null);
+      setCurrentlyPlayingError("Spotify is temporarily unavailable.");
+    } finally {
       setIsCurrentlyPlayingLoading(false);
     }
   }, []);
 
   useEffect(() => {
     // fetchAlbumReviews();
-    void fetchSpotifyData();
-  }, [fetchSpotifyData]);
+    void fetchHistory();
+    void fetchCurrentlyPlaying();
+  }, [fetchCurrentlyPlaying, fetchHistory]);
 
   // Refresh shortly after the current track should finish.
   useEffect(() => {
@@ -110,13 +119,16 @@ const Music: React.FC = () => {
       1000
     );
     const refreshTimeout = window.setTimeout(() => {
-      void fetchSpotifyData();
+      void fetchCurrentlyPlaying();
+      void fetchHistory();
     }, timeUntilTrackEnds);
 
     return () => {
       window.clearTimeout(refreshTimeout);
     };
-  }, [currentlyPlaying, fetchSpotifyData]);
+  }, [currentlyPlaying, fetchCurrentlyPlaying, fetchHistory]);
+
+  const visibleHistory = history.slice(0, 20);
 
   return (
     <>
@@ -130,7 +142,7 @@ const Music: React.FC = () => {
             <>
               {currentlyPlaying &&
                 !isCurrentlyPlayingLoading &&
-                !spotifyError && (
+                !currentlyPlayingError && (
                 <div className={styles.currentlyPlayingContainer}>
                   <div
                     className={`${styles.currentlyPlayingContent} ${
@@ -143,6 +155,7 @@ const Music: React.FC = () => {
                       alt={currentlyPlaying.name}
                       width={50}
                       height={50}
+                      loading="eager"
                     />
                     <div className={styles.currentlyPlayingInfo}>
                       <span className={styles.currentlyPlayingSong}>
@@ -156,10 +169,10 @@ const Music: React.FC = () => {
                 </div>
               )}
               {isCurrentlyPlayingLoading && <p>Loading...</p>}
-              {spotifyError && !isCurrentlyPlayingLoading && (
-                <p className={styles.notPlaying}>{spotifyError}</p>
+              {currentlyPlayingError && !isCurrentlyPlayingLoading && (
+                <p className={styles.notPlaying}>{currentlyPlayingError}</p>
               )}
-              {!spotifyError &&
+              {!currentlyPlayingError &&
                 !currentlyPlaying &&
                 !isCurrentlyPlayingLoading && (
                 <p className={styles.notPlaying}>Nothing playing.</p>
@@ -224,7 +237,7 @@ const Music: React.FC = () => {
                 </>
               }
             />
-            {!spotifyError &&
+            {!historyError &&
               !isHistoryLoading &&
               history &&
               history.length > 0 && (
@@ -233,7 +246,7 @@ const Music: React.FC = () => {
                   viewMode === "list" ? styles.historyGridList : ""
                 }`}
               >
-                {history.map((item: History, index: number) => (
+                {visibleHistory.map((item: History, index: number) => (
                   <div className={styles.historyItem} key={index}>
                     <div className={styles.imageContainer}>
                       <Image
@@ -242,6 +255,7 @@ const Music: React.FC = () => {
                         alt={item.name}
                         width={100}
                         height={100}
+                        loading={index < 6 ? "eager" : "lazy"}
                         style={{ objectFit: "cover" }}
                       />
                     </div>
@@ -259,23 +273,27 @@ const Music: React.FC = () => {
                 ))}
               </div>
             )}
-            {!spotifyError &&
+            {!historyError &&
               !isHistoryLoading &&
               (!history || history.length === 0) && (
               <div className={styles.historyPlaceholder}>
                 <p>No history found.</p>
               </div>
             )}
-            {spotifyError && !isHistoryLoading && (
+            {historyError && !isHistoryLoading && (
               <div className={styles.historyPlaceholder}>
-                <p>{spotifyError}</p>
+                <p>{historyError}</p>
               </div>
             )}
             {isHistoryLoading && <p>Loading...</p>}
           </section>
 
           {/* Listening Stats Section */}
-          <ListeningStats />
+          <ListeningStats
+            recentPlays={history}
+            isRecentPlaysLoading={isHistoryLoading}
+            recentPlaysError={historyError}
+          />
 
           {/* Album Reviews Section */}
           {/* <section className={styles.albumReviewsContain}>

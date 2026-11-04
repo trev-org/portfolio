@@ -96,7 +96,8 @@ export const photos: Photo[] = [
   {
     src: "/photos/flower.jpg",
     alt: "A black-eyed Susan with yellow petals and a dark brown center, framed by white trim and gray house siding",
-    title: "Flower",
+    title: "Black-Eyed Susan",
+    location: "Lewis Center, OH",
     takenAt: "07-04-2022",
     camera: "iPhone SE (Gen 2)",
   },

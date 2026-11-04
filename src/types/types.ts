@@ -76,6 +76,7 @@ export interface SpotifyTopArtist {
   name: string;
   image: string;
   genres: string[];
+  followers: number;
   url: string;
 }
 
