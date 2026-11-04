@@ -93,4 +93,11 @@ export const photos: Photo[] = [
     takenAt: "07-19-2026",
     camera: "Kodak PIXPRO FZ55",
   },
+  {
+    src: "/photos/flower.jpg",
+    alt: "A black-eyed Susan with yellow petals and a dark brown center, framed by white trim and gray house siding",
+    title: "Flower",
+    takenAt: "07-04-2022",
+    camera: "iPhone SE (Gen 2)",
+  },
 ];
