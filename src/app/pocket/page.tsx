@@ -4,7 +4,7 @@ import PocketClient from "./PocketClient";
 
 export const metadata: Metadata = {
   title: "Pocket",
-  description: "Writing from my collection.",
+  description: "Writing and saved articles from my collection.",
 };
 
 export default async function Pocket() {

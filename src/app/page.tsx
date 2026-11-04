@@ -7,6 +7,7 @@ import { getAnalytics } from "firebase/analytics";
 import Image from "next/image";
 import Link from "next/link";
 import Footer from "../components/Footer";
+import SectionHeader from "../components/layout/SectionHeader";
 
 const useWindowWidth = (): number => {
   const [width, setWidth] = useState<number>(0);
@@ -158,7 +159,7 @@ const Home: React.FC = () => {
           }`}
           style={{ animationDelay: `${animationDelay * 2}s` }}
         >
-          <span className={styles.sectionTitle}>Achievements</span>
+          <SectionHeader title="Achievements" spacing="compact" />
           <ul className={styles.achievementsList}>
             <li>
               <a href="https://www.linkedin.com/posts/alex-davessar-22a064167_were-excited-to-introduce-you-to-the-business-activity-7289524878586589184-0IXc/?utm_source=share&utm_medium=member_desktop&rcm=ACoAADQqWlQBhaTkdQU-3gDKW2_4INiiIPHBhU0">
@@ -191,7 +192,7 @@ const Home: React.FC = () => {
           }`}
           style={{ animationDelay: `${animationDelay * 3}s` }}
         >
-          <span className={styles.sectionTitle}>Experience</span>
+          <SectionHeader title="Experience" spacing="compact" />
           <div
             style={{
               display: width < 768 ? "block" : "grid",
@@ -335,7 +336,7 @@ const Home: React.FC = () => {
           }`}
           style={{ animationDelay: `${animationDelay * 4}s` }}
         >
-          <span className={styles.sectionTitle}>Education</span>
+          <SectionHeader title="Education" spacing="compact" />
           <div className={styles.experienceItem}>
             <Image
               src="/static/ohio-state.png"
@@ -364,7 +365,7 @@ const Home: React.FC = () => {
           }`}
           style={{ animationDelay: `${animationDelay * 4}s` }}
         >
-          <span className={styles.sectionTitle}>Ventures</span>
+          <SectionHeader title="Ventures" spacing="compact" />
           <ul className={styles.achievementsList}>
             {ventures.map((venture) => (
               <li key={venture.name}>
@@ -384,11 +385,7 @@ const Home: React.FC = () => {
           }`}
           style={{ animationDelay: `${animationDelay * 5}s` }}
         >
-          <div className={styles.sectionTitleContainer}>
-            <span className={styles.sectionTitle} style={{ marginBottom: 0 }}>
-              Extras
-            </span>
-          </div>
+          <SectionHeader title="Extras" spacing="compact" />
           <div className={styles.extrasGrid}>
             <Link href="/wrapped">
               <div className={styles.projectsItem}>
@@ -428,8 +425,21 @@ const Home: React.FC = () => {
                 <div className={styles.projectsItemContentContain}>
                   <span className={styles.projectsItemTitle}>Music</span>
                   <span className={styles.projectsItemDesc}>
-                    A glimpse into my current listening habits and recent audio
-                    discoveries.
+                    A glimpse into my current listening habits.
+                  </span>
+                </div>
+              </div>
+            </Link>
+            <Link href="/photos">
+              <div className={styles.projectsItem}>
+                <div className={styles.projectItemHoverTopLeft}></div>
+                <div className={styles.projectItemHoverBottomRight}></div>
+                <div className={styles.projectItemHoverLeft}></div>
+                <div className={styles.projectItemHoverBottom}></div>
+                <div className={styles.projectsItemContentContain}>
+                  <span className={styles.projectsItemTitle}>Photography</span>
+                  <span className={styles.projectsItemDesc}>
+                    A repository of photos I&apos;ve taken.
                   </span>
                 </div>
               </div>
@@ -443,8 +453,7 @@ const Home: React.FC = () => {
                 <div className={styles.projectsItemContentContain}>
                   <span className={styles.projectsItemTitle}>Pocket</span>
                   <span className={styles.projectsItemDesc}>
-                    A handpicked collection of knowledge I&apos;m drawn to and
-                    eager to explore
+                    A collection of knowledge I&apos;m drawn to.
                   </span>
                 </div>
               </div>

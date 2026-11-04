@@ -8,24 +8,25 @@ import {
 import styles from "../../styles/music.module.css";
 import Footer from "../../components/Footer";
 import ListeningStats from "../../components/ListeningStats";
-// import { createClient } from "../../lib/supabase";
+import PageHeader from "../../components/layout/PageHeader";
+import PageShell from "../../components/layout/PageShell";
+import SectionHeader from "../../components/layout/SectionHeader";
 import Image from "next/image";
 import { History, CurrentlyPlaying } from "../../types/types";
-import Link from "next/link";
 
 const Music: React.FC = () => {
   const [history, setHistory] = useState<History[]>([]);
   const [currentlyPlaying, setCurrentlyPlaying] =
     useState<CurrentlyPlaying | null>(null);
-  // const [albumReviews, setAlbumReviews] = useState<AlbumReview[]>([]);
   const [isHistoryLoading, setIsHistoryLoading] = useState<boolean>(true);
   const [isCurrentlyPlayingLoading, setIsCurrentlyPlayingLoading] =
     useState<boolean>(true);
-  // const [isAlbumReviewsLoading, setIsAlbumReviewsLoading] = useState<boolean>(true);
-  const [spotifyError, setSpotifyError] = useState<string | null>(null);
+  const [historyError, setHistoryError] = useState<string | null>(null);
+  const [currentlyPlayingError, setCurrentlyPlayingError] = useState<
+    string | null
+  >(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [viewMode, setViewMode] = useState<"tile" | "list">("tile");
-  // const supabase = createClient();
 
   // Trigger CSS animations on mount
   useEffect(() => {
@@ -51,51 +52,38 @@ const Music: React.FC = () => {
     }
   };
 
-  // Fetch Album Reviews
-  // const fetchAlbumReviews = async () => {
-  //   try {
-  //     setIsAlbumReviewsLoading(true);
-  //     const { data, error } = await supabase.from("album_reviews").select("*");
-
-  //     if (error) {
-  //       console.error("Error fetching album reviews:", error);
-  //     } else {
-  //       setAlbumReviews(data || []);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching album reviews:", error);
-  //   } finally {
-  //     setIsAlbumReviewsLoading(false);
-  //   }
-  // };
-
-  const fetchSpotifyData = useCallback(async () => {
+  const fetchHistory = useCallback(async () => {
     try {
       setIsHistoryLoading(true);
-      setIsCurrentlyPlayingLoading(true);
-      setSpotifyError(null);
-
-      const [historyData, currentlyPlayingData] = await Promise.all([
-        getMyRecentlyPlayed(20),
-        getMyCurrentlyPlaying(),
-      ]);
-
+      setHistoryError(null);
+      const historyData = await getMyRecentlyPlayed(50);
       setHistory(historyData);
-      setCurrentlyPlaying(currentlyPlayingData);
     } catch {
       setHistory([]);
-      setCurrentlyPlaying(null);
-      setSpotifyError("Spotify is temporarily unavailable.");
+      setHistoryError("Spotify is temporarily unavailable.");
     } finally {
       setIsHistoryLoading(false);
+    }
+  }, []);
+
+  const fetchCurrentlyPlaying = useCallback(async () => {
+    try {
+      setIsCurrentlyPlayingLoading(true);
+      setCurrentlyPlayingError(null);
+      const currentlyPlayingData = await getMyCurrentlyPlaying();
+      setCurrentlyPlaying(currentlyPlayingData);
+    } catch {
+      setCurrentlyPlaying(null);
+      setCurrentlyPlayingError("Spotify is temporarily unavailable.");
+    } finally {
       setIsCurrentlyPlayingLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    // fetchAlbumReviews();
-    void fetchSpotifyData();
-  }, [fetchSpotifyData]);
+    void fetchHistory();
+    void fetchCurrentlyPlaying();
+  }, [fetchCurrentlyPlaying, fetchHistory]);
 
   // Refresh shortly after the current track should finish.
   useEffect(() => {
@@ -108,37 +96,30 @@ const Music: React.FC = () => {
       1000
     );
     const refreshTimeout = window.setTimeout(() => {
-      void fetchSpotifyData();
+      void fetchCurrentlyPlaying();
+      void fetchHistory();
     }, timeUntilTrackEnds);
 
     return () => {
       window.clearTimeout(refreshTimeout);
     };
-  }, [currentlyPlaying, fetchSpotifyData]);
+  }, [currentlyPlaying, fetchCurrentlyPlaying, fetchHistory]);
+
+  const visibleHistory = history.slice(0, 20);
 
   return (
     <>
       {/* Landing Section */}
-      <div className={styles.landingContain}>
-        {/* Branding Section */}
-        <div
-          className={`${styles.brandingContain} ${
-            isLoaded ? styles.fadeInUp : ""
-          }`}
-        >
-          <div className={styles.brandingHeader}>
-            <div className={styles.introContain}>
-              <Link className={styles.name} href="/">
-                Music
-              </Link>
-              <p className={styles.intro}>
-                Music is a key part of my life. The rest is a quiet blur.
-              </p>
-            </div>
+      <PageShell>
+        <PageHeader
+          title="Music"
+          description="Music is a key part of my life. The rest is a quiet blur."
+          className={isLoaded ? styles.fadeInUp : ""}
+          actions={
             <>
               {currentlyPlaying &&
                 !isCurrentlyPlayingLoading &&
-                !spotifyError && (
+                !currentlyPlayingError && (
                 <div className={styles.currentlyPlayingContainer}>
                   <div
                     className={`${styles.currentlyPlayingContent} ${
@@ -151,6 +132,7 @@ const Music: React.FC = () => {
                       alt={currentlyPlaying.name}
                       width={50}
                       height={50}
+                      loading="eager"
                     />
                     <div className={styles.currentlyPlayingInfo}>
                       <span className={styles.currentlyPlayingSong}>
@@ -164,17 +146,17 @@ const Music: React.FC = () => {
                 </div>
               )}
               {isCurrentlyPlayingLoading && <p>Loading...</p>}
-              {spotifyError && !isCurrentlyPlayingLoading && (
-                <p className={styles.notPlaying}>{spotifyError}</p>
+              {currentlyPlayingError && !isCurrentlyPlayingLoading && (
+                <p className={styles.notPlaying}>{currentlyPlayingError}</p>
               )}
-              {!spotifyError &&
+              {!currentlyPlayingError &&
                 !currentlyPlaying &&
                 !isCurrentlyPlayingLoading && (
                 <p className={styles.notPlaying}>Nothing playing.</p>
               )}
             </>
-          </div>
-        </div>
+          }
+        />
 
         <div
           className={`${styles.musicContain} ${
@@ -184,49 +166,55 @@ const Music: React.FC = () => {
         >
           {/* Recently Played Section */}
           <section className={styles.recentlyPlayedContain}>
-            <div className={styles.sectionTitleContainer}>
-              <span className={styles.sectionTitle}>Recently Played</span>
-              <div className={styles.sectionActions}>
-                {history && history.length > 0 && (
-                  <span className={styles.sectionSubtitle}>
-                    last at{" "}
-                    {new Date(history[0].played_at).toLocaleTimeString([], {
-                      day: "numeric",
-                      month: "numeric",
-                      hour: "numeric",
-                      minute: "numeric",
-                    })}
-                  </span>
-                )}
-                <div
-                  className={styles.viewToggle}
-                  role="group"
-                  aria-label="Change recently played view"
-                >
-                  <button
-                    type="button"
-                    className={`${styles.viewToggleButton} ${
-                      viewMode === "list" ? styles.viewToggleButtonActive : ""
-                    }`}
-                    aria-pressed={viewMode === "list"}
-                    onClick={() => changeViewMode("list")}
+            <SectionHeader
+              title="Recently Played"
+              actions={
+                <>
+                  {history && history.length > 0 && (
+                    <span className={styles.sectionSubtitle}>
+                      last at{" "}
+                      {new Date(history[0].played_at).toLocaleTimeString([], {
+                        day: "numeric",
+                        month: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                      })}
+                    </span>
+                  )}
+                  <div
+                    className={styles.viewToggle}
+                    role="group"
+                    aria-label="Change recently played view"
                   >
-                    List
-                  </button>
-                  <button
-                    type="button"
-                    className={`${styles.viewToggleButton} ${
-                      viewMode === "tile" ? styles.viewToggleButtonActive : ""
-                    }`}
-                    aria-pressed={viewMode === "tile"}
-                    onClick={() => changeViewMode("tile")}
-                  >
-                    Tile
-                  </button>
-                </div>
-              </div>
-            </div>
-            {!spotifyError &&
+                    <button
+                      type="button"
+                      className={`${styles.viewToggleButton} ${
+                        viewMode === "list"
+                          ? styles.viewToggleButtonActive
+                          : ""
+                      }`}
+                      aria-pressed={viewMode === "list"}
+                      onClick={() => changeViewMode("list")}
+                    >
+                      List
+                    </button>
+                    <button
+                      type="button"
+                      className={`${styles.viewToggleButton} ${
+                        viewMode === "tile"
+                          ? styles.viewToggleButtonActive
+                          : ""
+                      }`}
+                      aria-pressed={viewMode === "tile"}
+                      onClick={() => changeViewMode("tile")}
+                    >
+                      Tile
+                    </button>
+                  </div>
+                </>
+              }
+            />
+            {!historyError &&
               !isHistoryLoading &&
               history &&
               history.length > 0 && (
@@ -235,7 +223,7 @@ const Music: React.FC = () => {
                   viewMode === "list" ? styles.historyGridList : ""
                 }`}
               >
-                {history.map((item: History, index: number) => (
+                {visibleHistory.map((item: History, index: number) => (
                   <div className={styles.historyItem} key={index}>
                     <div className={styles.imageContainer}>
                       <Image
@@ -244,6 +232,7 @@ const Music: React.FC = () => {
                         alt={item.name}
                         width={100}
                         height={100}
+                        loading={index < 6 ? "eager" : "lazy"}
                         style={{ objectFit: "cover" }}
                       />
                     </div>
@@ -261,66 +250,31 @@ const Music: React.FC = () => {
                 ))}
               </div>
             )}
-            {!spotifyError &&
+            {!historyError &&
               !isHistoryLoading &&
               (!history || history.length === 0) && (
               <div className={styles.historyPlaceholder}>
                 <p>No history found.</p>
               </div>
             )}
-            {spotifyError && !isHistoryLoading && (
+            {historyError && !isHistoryLoading && (
               <div className={styles.historyPlaceholder}>
-                <p>{spotifyError}</p>
+                <p>{historyError}</p>
               </div>
             )}
             {isHistoryLoading && <p>Loading...</p>}
           </section>
 
           {/* Listening Stats Section */}
-          <ListeningStats />
-
-          {/* Album Reviews Section */}
-          {/* <section className={styles.albumReviewsContain}>
-            <span className={styles.sectionTitle}>Album Reviews</span>
-            {!isAlbumReviewsLoading &&
-              albumReviews &&
-              albumReviews.map((item) => (
-                <div className={styles.albumReviewItem} key={item.id}>
-                  <div className={styles.albumReviewItemInformation}>
-                    <Image
-                      src={item.cover}
-                      className={styles.albumReviewLogo}
-                      alt={item.name}
-                      width={60}
-                      height={60}
-                    />
-                    <div className={styles.albumReviewItemContent}>
-                      <div className={styles.albumReviewItemHeader}>
-                        <span className={styles.albumReviewItemCompany}>
-                          {item.name}
-                        </span>
-                      </div>
-                      <span className={styles.albumReviewItemPosition}>
-                        {item.artist}
-                      </span>
-                    </div>
-                  </div>
-                  <div>
-                    <span className={styles.albumReviewItemRating}>
-                      {item.rating}/10
-                    </span>
-                  </div>
-                </div>
-              ))}
-            {isAlbumReviewsLoading && <p>Loading...</p>}
-            {!albumReviews && !isAlbumReviewsLoading && (
-              <p>Unable to load album reviews!</p>
-            )}
-          </section> */}
+          <ListeningStats
+            recentPlays={history}
+            isRecentPlaysLoading={isHistoryLoading}
+            recentPlaysError={historyError}
+          />
         </div>
 
         <Footer />
-      </div>
+      </PageShell>
     </>
   );
 };

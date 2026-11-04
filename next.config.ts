@@ -4,18 +4,11 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
   images: {
-    unoptimized: true, // Required for static export
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "xzjjgvjhjoyjjkjdguza.supabase.co",
-        port: "",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
         hostname: "i.scdn.co",
-        port: "",
+
         pathname: "/**",
       },
     ],

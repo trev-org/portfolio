@@ -2,24 +2,19 @@
 
 import React, { useState } from "react";
 import styles from "../../styles/arena.module.css";
-import Link from "next/link";
+import PageHeader from "../../components/layout/PageHeader";
+import PageShell from "../../components/layout/PageShell";
 
 const Arena: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState(0);
   return (
-    <div className={styles.scheduleContain}>
-      <div className={`${styles.brandingContain} ${styles.fadeInUp}`}>
-        <div className={styles.brandingHeader}>
-          <Link className={styles.name} href="/">
-            Arena
-          </Link>
-        </div>
-        <div className={styles.introContain}>
-          <p className={styles.intro}>
-            This is where I put models side by side to see what stands out.
-          </p>
-        </div>
-
+    <PageShell>
+      <PageHeader
+        title="Arena"
+        description="This is where I put models side by side to see what stands out."
+        className={styles.fadeInUp}
+      />
+      <div className={styles.arenaContent}>
         <div className={`${styles.arenaTabContain} ${styles.fadeInUp}`}>
           <div
             className={styles.projectsItem}
@@ -78,7 +73,7 @@ const Arena: React.FC = () => {
           )}
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 };
 

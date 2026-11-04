@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useEffect } from "react";
-import styles from "../../styles/schedule.module.css";
 import Cal, { getCalApi } from "@calcom/embed-react";
-import Link from "next/link";
+import PageHeader from "../../components/layout/PageHeader";
+import PageShell from "../../components/layout/PageShell";
 
 function CalEmbed() {
   useEffect(() => {
@@ -33,22 +33,13 @@ function CalEmbed() {
 
 const Schedule: React.FC = () => {
   return (
-    <div className={styles.scheduleContain}>
-      <div className={styles.brandingContain}>
-        <div className={styles.brandingHeader}>
-          <Link className={styles.name} href="/">
-            Schedule
-          </Link>
-        </div>
-        <div className={styles.introContain}>
-          <p className={styles.intro}>
-            Always looking to connect with others. Feel free to grab some time
-            with me below!
-          </p>
-        </div>
-      </div>
+    <PageShell>
+      <PageHeader
+        title="Schedule"
+        description="Always looking to connect with others. Feel free to grab some time with me below!"
+      />
       <CalEmbed />
-    </div>
+    </PageShell>
   );
 };
 

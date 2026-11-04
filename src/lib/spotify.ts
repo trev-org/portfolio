@@ -23,6 +23,57 @@ let tokenCache: TokenCache | null = null;
 let tokenRequest: Promise<string> | null = null;
 let refreshToken = process.env.NEXT_PUBLIC_SPOTIFY_REFRESH_TOKEN;
 
+type ResponseCacheEntry = {
+  value: unknown;
+  expiresAt: number;
+};
+
+const inFlightRequests = new Map<string, Promise<unknown>>();
+const responseCache = new Map<string, ResponseCacheEntry>();
+const MAX_RECENT_PLAYS = 50;
+const TOP_ITEMS_CACHE_TTL = 5 * 60 * 1000;
+const ARTIST_DETAILS_CACHE_TTL = 30 * 60 * 1000;
+
+/**
+ * Shares identical in-flight requests. Stable Spotify data can also receive a
+ * short memory TTL; errors are never cached.
+ */
+async function cachedSpotifyRequest<T>(
+  key: string,
+  ttlMs: number,
+  request: () => Promise<T>
+): Promise<T> {
+  const cached = responseCache.get(key);
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.value as T;
+  }
+  if (cached) {
+    responseCache.delete(key);
+  }
+
+  const pending = inFlightRequests.get(key) as Promise<T> | undefined;
+  if (pending) {
+    return pending;
+  }
+
+  const promise = request()
+    .then((value) => {
+      if (ttlMs > 0) {
+        responseCache.set(key, {
+          value,
+          expiresAt: Date.now() + ttlMs,
+        });
+      }
+      return value;
+    })
+    .finally(() => {
+      inFlightRequests.delete(key);
+    });
+
+  inFlightRequests.set(key, promise);
+  return promise;
+}
+
 /**
  * Gets a valid Spotify access token using the refresh token flow
  * @returns A valid access token
@@ -99,38 +150,52 @@ async function getSpotifyError(response: Response, action: string) {
 }
 
 export async function getMyRecentlyPlayed(limit = 20): Promise<History[]> {
-  const token = await getSpotifyToken();
+  const normalizedLimit = Math.min(
+    Math.max(Math.floor(limit), 1),
+    MAX_RECENT_PLAYS
+  );
+  const plays = await cachedSpotifyRequest(
+    `recently-played:${MAX_RECENT_PLAYS}`,
+    0,
+    async () => {
+      const token = await getSpotifyToken();
+      const response = await fetch(
+        `https://api.spotify.com/v1/me/player/recently-played?limit=${MAX_RECENT_PLAYS}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          cache: "no-store",
+        }
+      );
 
-  const response = await fetch(
-    `https://api.spotify.com/v1/me/player/recently-played?limit=${limit}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      cache: "no-store",
+      if (!response.ok) {
+        throw await getSpotifyError(
+          response,
+          "Failed to fetch recently played"
+        );
+      }
+
+      const data = (await response.json()) as {
+        items: SpotifyRecentlyPlayedItem[];
+      };
+
+      return data.items.map(
+        (item: SpotifyRecentlyPlayedItem): History => ({
+          name: item.track.name,
+          artist: item.track.artists[0].name,
+          album: item.track.album.name,
+          image: item.track.album.images[0]?.url,
+          url: item.track.external_urls.spotify,
+          played_at: item.played_at,
+          trackId: item.track.id,
+          artistId: item.track.artists[0]?.id,
+        })
+      );
     }
   );
 
-  if (!response.ok) {
-    throw await getSpotifyError(response, "Failed to fetch recently played");
-  }
-
-  const data = (await response.json()) as {
-    items: SpotifyRecentlyPlayedItem[];
-  };
-
-  return data.items.map(
-    (item: SpotifyRecentlyPlayedItem): History => ({
-      name: item.track.name,
-      artist: item.track.artists[0].name,
-      album: item.track.album.name,
-      image: item.track.album.images[0]?.url,
-      url: item.track.external_urls.spotify,
-      played_at: item.played_at,
-      trackId: item.track.id,
-      artistId: item.track.artists[0]?.id,
-    })
-  );
+  return plays.slice(0, normalizedLimit);
 }
 
 /**
@@ -141,39 +206,46 @@ export async function getMyTopArtists(
   timeRange: SpotifyTopTimeRange = "short_term",
   limit = 50
 ): Promise<SpotifyTopArtist[]> {
-  const token = await getSpotifyToken();
+  return cachedSpotifyRequest(
+    `top-artists:${timeRange}:${limit}`,
+    TOP_ITEMS_CACHE_TTL,
+    async () => {
+      const token = await getSpotifyToken();
+      const response = await fetch(
+        `https://api.spotify.com/v1/me/top/artists?time_range=${timeRange}&limit=${limit}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          cache: "no-store",
+        }
+      );
 
-  const response = await fetch(
-    `https://api.spotify.com/v1/me/top/artists?time_range=${timeRange}&limit=${limit}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      cache: "no-store",
+      if (!response.ok) {
+        throw await getSpotifyError(response, "Failed to fetch top artists");
+      }
+
+      const data = (await response.json()) as {
+        items: Array<{
+          id: string;
+          name: string;
+          images: Array<{ url: string }>;
+          genres: string[];
+          followers: { total: number };
+          external_urls: { spotify: string };
+        }>;
+      };
+
+      return data.items.map((item) => ({
+        id: item.id,
+        name: item.name,
+        image: item.images[0]?.url ?? "",
+        genres: item.genres ?? [],
+        followers: item.followers.total,
+        url: item.external_urls.spotify,
+      }));
     }
   );
-
-  if (!response.ok) {
-    throw await getSpotifyError(response, "Failed to fetch top artists");
-  }
-
-  const data = (await response.json()) as {
-    items: Array<{
-      id: string;
-      name: string;
-      images: Array<{ url: string }>;
-      genres: string[];
-      external_urls: { spotify: string };
-    }>;
-  };
-
-  return data.items.map((item) => ({
-    id: item.id,
-    name: item.name,
-    image: item.images[0]?.url ?? "",
-    genres: item.genres ?? [],
-    url: item.external_urls.spotify,
-  }));
 }
 
 /**
@@ -184,40 +256,45 @@ export async function getMyTopTracks(
   timeRange: SpotifyTopTimeRange = "short_term",
   limit = 50
 ): Promise<SpotifyTopTrack[]> {
-  const token = await getSpotifyToken();
+  return cachedSpotifyRequest(
+    `top-tracks:${timeRange}:${limit}`,
+    TOP_ITEMS_CACHE_TTL,
+    async () => {
+      const token = await getSpotifyToken();
+      const response = await fetch(
+        `https://api.spotify.com/v1/me/top/tracks?time_range=${timeRange}&limit=${limit}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          cache: "no-store",
+        }
+      );
 
-  const response = await fetch(
-    `https://api.spotify.com/v1/me/top/tracks?time_range=${timeRange}&limit=${limit}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      cache: "no-store",
+      if (!response.ok) {
+        throw await getSpotifyError(response, "Failed to fetch top tracks");
+      }
+
+      const data = (await response.json()) as {
+        items: Array<{
+          id: string;
+          name: string;
+          artists: Array<{ id: string; name: string }>;
+          album: { images: Array<{ url: string }> };
+          external_urls: { spotify: string };
+        }>;
+      };
+
+      return data.items.map((item) => ({
+        id: item.id,
+        name: item.name,
+        artistId: item.artists[0]?.id ?? "",
+        artist: item.artists[0]?.name ?? "",
+        image: item.album.images[0]?.url ?? "",
+        url: item.external_urls.spotify,
+      }));
     }
   );
-
-  if (!response.ok) {
-    throw await getSpotifyError(response, "Failed to fetch top tracks");
-  }
-
-  const data = (await response.json()) as {
-    items: Array<{
-      id: string;
-      name: string;
-      artists: Array<{ id: string; name: string }>;
-      album: { images: Array<{ url: string }> };
-      external_urls: { spotify: string };
-    }>;
-  };
-
-  return data.items.map((item) => ({
-    id: item.id,
-    name: item.name,
-    artistId: item.artists[0]?.id ?? "",
-    artist: item.artists[0]?.name ?? "",
-    image: item.album.images[0]?.url ?? "",
-    url: item.external_urls.spotify,
-  }));
 }
 
 /**
@@ -227,14 +304,65 @@ export async function getMyTopTracks(
 export async function getArtistDetailsByIds(
   ids: string[]
 ): Promise<Map<string, SpotifyArtistDetails>> {
-  const token = await getSpotifyToken();
-  const details = new Map<string, SpotifyArtistDetails>();
-  const uniqueIds = [...new Set(ids)].filter(Boolean);
+  const uniqueIds = [...new Set(ids)].filter(Boolean).sort();
+  if (uniqueIds.length === 0) {
+    return new Map();
+  }
 
-  for (let i = 0; i < uniqueIds.length; i += 50) {
-    const chunk = uniqueIds.slice(i, i + 50);
+  return cachedSpotifyRequest(
+    `artist-details:${uniqueIds.join(",")}`,
+    ARTIST_DETAILS_CACHE_TTL,
+    async () => {
+      const token = await getSpotifyToken();
+      const details = new Map<string, SpotifyArtistDetails>();
+
+      for (let i = 0; i < uniqueIds.length; i += 50) {
+        const chunk = uniqueIds.slice(i, i + 50);
+        const response = await fetch(
+          `https://api.spotify.com/v1/artists?ids=${chunk.join(",")}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            cache: "no-store",
+          }
+        );
+
+        if (!response.ok) {
+          throw await getSpotifyError(
+            response,
+            "Failed to fetch artist details"
+          );
+        }
+
+        const data = (await response.json()) as {
+          artists: Array<{
+            id: string;
+            genres: string[];
+            images: Array<{ url: string }>;
+          }>;
+        };
+
+        for (const artist of data.artists) {
+          if (!artist) continue;
+          details.set(artist.id, {
+            id: artist.id,
+            genres: artist.genres ?? [],
+            image: artist.images[0]?.url ?? "",
+          });
+        }
+      }
+
+      return details;
+    }
+  );
+}
+
+export async function getMyCurrentlyPlaying() {
+  return cachedSpotifyRequest("currently-playing", 0, async () => {
+    const token = await getSpotifyToken();
     const response = await fetch(
-      `https://api.spotify.com/v1/artists?ids=${chunk.join(",")}`,
+      "https://api.spotify.com/v1/me/player/currently-playing",
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -243,66 +371,32 @@ export async function getArtistDetailsByIds(
       }
     );
 
+    if (response.status === 204) {
+      return null;
+    }
+
     if (!response.ok) {
-      throw await getSpotifyError(response, "Failed to fetch artist details");
+      throw await getSpotifyError(
+        response,
+        "Failed to fetch currently playing"
+      );
     }
 
-    const data = (await response.json()) as {
-      artists: Array<{
-        id: string;
-        genres: string[];
-        images: Array<{ url: string }>;
-      }>;
+    const data = await response.json();
+
+    if (!data.item?.album || !data.item?.artists?.length) {
+      return null;
+    }
+
+    return {
+      name: data.item.name,
+      artist: data.item.artists[0].name,
+      album: data.item.album.name,
+      image: data.item.album.images[0].url,
+      url: data.item.external_urls.spotify,
+      progress_ms: data.progress_ms,
+      duration_ms: data.item.duration_ms,
+      is_playing: data.is_playing,
     };
-
-    for (const artist of data.artists) {
-      if (!artist) continue;
-      details.set(artist.id, {
-        id: artist.id,
-        genres: artist.genres ?? [],
-        image: artist.images[0]?.url ?? "",
-      });
-    }
-  }
-
-  return details;
-}
-
-export async function getMyCurrentlyPlaying() {
-  const token = await getSpotifyToken();
-
-  const response = await fetch(
-    "https://api.spotify.com/v1/me/player/currently-playing",
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      cache: "no-store",
-    }
-  );
-
-  if (response.status === 204) {
-    return null;
-  }
-
-  if (!response.ok) {
-    throw await getSpotifyError(response, "Failed to fetch currently playing");
-  }
-
-  const data = await response.json();
-
-  if (!data.item?.album || !data.item?.artists?.length) {
-    return null;
-  }
-
-  return {
-    name: data.item.name,
-    artist: data.item.artists[0].name,
-    album: data.item.album.name,
-    image: data.item.album.images[0].url,
-    url: data.item.external_urls.spotify,
-    progress_ms: data.progress_ms,
-    duration_ms: data.item.duration_ms,
-    is_playing: data.is_playing,
-  };
+  });
 }
