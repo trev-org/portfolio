@@ -414,8 +414,7 @@ const Home: React.FC = () => {
                 <div className={styles.projectsItemContentContain}>
                   <span className={styles.projectsItemTitle}>Music</span>
                   <span className={styles.projectsItemDesc}>
-                    A glimpse into my current listening habits and recent audio
-                    discoveries.
+                    A glimpse into my current listening habits.
                   </span>
                 </div>
               </div>
@@ -429,7 +428,7 @@ const Home: React.FC = () => {
                 <div className={styles.projectsItemContentContain}>
                   <span className={styles.projectsItemTitle}>Photography</span>
                   <span className={styles.projectsItemDesc}>
-                    A collection of photos I&apos;ve taken.
+                    A repository of photos I&apos;ve taken.
                   </span>
                 </div>
               </div>
@@ -443,8 +442,7 @@ const Home: React.FC = () => {
                 <div className={styles.projectsItemContentContain}>
                   <span className={styles.projectsItemTitle}>Pocket</span>
                   <span className={styles.projectsItemDesc}>
-                    A handpicked collection of knowledge I&apos;m drawn to and
-                    eager to explore
+                    A collection of knowledge I&apos;m drawn to.
                   </span>
                 </div>
               </div>

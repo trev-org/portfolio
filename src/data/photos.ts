@@ -6,12 +6,13 @@
  * Run the add-photo script with the original image file:
  *
  *   npm run photo:add -- ~/Downloads/my-photo.jpg --title "My Photo" \
- *     --location "Somewhere, CA" --alt "What the photo shows"
+ *     --location "Somewhere, CA" --camera "Camera Model" \
+ *     --alt "What the photo shows"
  *
  * It resizes the image to at most 2048px on the long edge, saves it into
  * `public/photos/` under a lowercase, hyphenated name derived from the
  * title, reads the date taken from the photo's EXIF data (override with
- * --date YYYY-MM), and adds the entry to the `photos` array below.
+ * --date MM-DD-YYYY), and adds the entry to the `photos` array below.
  * Re-running it for the same title updates the entry instead of
  * duplicating it. See `scripts/add-photo.mjs` for all the options.
  *
@@ -27,7 +28,9 @@
  * - `alt` (required): short description of the photo, used for
  *   accessibility and if the image fails to load.
  * - `title` (optional): shown as the caption.
- * - `location` / `takenAt` (optional): shown under the title.
+ * - `location` (optional): shown under the title.
+ * - `takenAt` (required): date taken in MM-DD-YYYY format.
+ * - `camera` (required): camera model used to take the photo.
  *
  * Example entry:
  *   {
@@ -35,7 +38,8 @@
  *     alt: "Sunset over the Golden Gate Bridge",
  *     title: "Golden Gate Sunset",
  *     location: "San Francisco, CA",
- *     takenAt: "2026-10",
+ *     takenAt: "10-15-2026",
+ *     camera: "Kodak PIXPRO FZ55",
  *   },
  */
 
@@ -44,7 +48,8 @@ export interface Photo {
   alt: string;
   title?: string;
   location?: string;
-  takenAt?: string;
+  takenAt: string;
+  camera: string;
 }
 
 export const photos: Photo[] = [
@@ -53,33 +58,39 @@ export const photos: Photo[] = [
     alt: "Canal houses and the Zuiderkerk tower along a canal in Amsterdam",
     title: "Amsterdam Canal",
     location: "Amsterdam, Netherlands",
-    takenAt: "2026-09",
+    takenAt: "09-09-2026",
+    camera: "Kodak PIXPRO FZ55",
   },
   {
     src: "/photos/nobu-malibu.jpg",
     alt: "The oceanfront patio at Nobu in Malibu overlooking the Pacific Ocean",
     title: "Nobu Malibu",
     location: "Malibu, CA",
-    takenAt: "2026-11",
+    takenAt: "11-02-2026",
+    camera: "Kodak PIXPRO FZ55",
   },
   {
     src: "/photos/lands-end.jpg",
     alt: "The Sutro Baths ruins and Seal Rocks at Lands End in San Francisco",
     title: "Lands End",
     location: "San Francisco, CA",
-    takenAt: "2026-06",
+    takenAt: "06-08-2026",
+    camera: "Kodak PIXPRO FZ55",
   },
   {
     src: "/photos/pacifica-sunset.jpg",
     alt: "Sunset over the Pacific Ocean in Pacifica, with a camper van parked along the coast road",
     title: "Pacifica Sunset",
     location: "Pacifica, CA",
+    takenAt: "01-08-2026",
+    camera: "iPhone 14",
   },
   {
     src: "/photos/lake-tahoe.jpg",
     alt: "A pink bicycle parked by a bench on a sandy Lake Tahoe beach, with mountains across the water",
     title: "Lake Tahoe",
     location: "Lake Tahoe, CA",
-    takenAt: "2026-07",
+    takenAt: "07-19-2026",
+    camera: "Kodak PIXPRO FZ55",
   },
 ];

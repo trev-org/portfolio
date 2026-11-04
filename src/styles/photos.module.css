@@ -95,18 +95,50 @@
   break-inside: avoid;
   margin-bottom: 15px;
   position: relative;
+  border: 0;
   border-radius: 7.5px;
+  background: transparent;
+  box-shadow: none;
   overflow: hidden;
+}
+.photoButton {
+  appearance: none;
+  -webkit-appearance: none;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 7.5px;
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
+  font: inherit;
+  line-height: 0;
+  cursor: pointer;
+  overflow: hidden;
+}
+.photoButton:hover,
+.photoButton:active {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+}
+.photoButton:focus-visible {
+  outline: 2px solid #fff5ea;
+  outline-offset: -2px;
 }
 .photoImage {
   width: 100%;
   height: auto;
   display: block;
   border-radius: 7.5px;
-  transition: transform 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+  transform: none;
+  transition: none;
 }
-.photoItem:hover .photoImage {
-  transform: scale(1.03);
+.photoButton:hover .photoImage,
+.photoButton:active .photoImage {
+  transform: none;
 }
 .photoCaption {
   position: absolute;
@@ -122,6 +154,9 @@
   pointer-events: none;
 }
 .photoItem:hover .photoCaption {
+  opacity: 1;
+}
+.photoItem:focus-within .photoCaption {
   opacity: 1;
 }
 .photoTitle {
@@ -144,6 +179,79 @@
   user-select: none;
 }
 
+.photoModal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.78);
+}
+.photoModalContent {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(760px, 100%);
+  max-height: calc(100vh - 48px);
+  padding: 16px;
+  border: 1px solid #3b3b3b;
+  border-radius: 12px;
+  background: #1a1a1a;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+.photoModalImageWrap {
+  position: relative;
+  width: 100%;
+  height: min(60vh, 570px);
+  border-radius: 8px;
+  background: #0d0d0d;
+  overflow: hidden;
+}
+.photoModalImage {
+  object-fit: contain;
+}
+.photoModalClose {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 1;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.65);
+  color: #fff5ea;
+  font-family: "MarketSans-Regular";
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+}
+.photoModalClose:focus-visible {
+  outline: 2px solid #fff5ea;
+  outline-offset: 2px;
+}
+.photoModalCaption {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 4px 0;
+}
+.photoModalTitle {
+  color: #fff5ea;
+  font-family: "MarketSans-Medium";
+  font-size: 14px;
+}
+.photoModalMeta {
+  margin-top: 2px;
+  color: #807b75;
+  font-family: "MarketSans-Regular";
+  font-size: 12px;
+}
+
 /* List view (mobile): one full-width photo per row, caption always visible
    below the image instead of on hover. */
 @media (max-width: 768px) {
@@ -154,9 +262,6 @@
     margin-bottom: 28px;
     overflow: visible;
   }
-  .photoItem:hover .photoImage {
-    transform: none;
-  }
   .photoCaption {
     position: static;
     opacity: 1;
@@ -165,5 +270,19 @@
   }
   .photoMeta {
     margin-top: 2px;
+  }
+  .photoModal {
+    padding: 16px;
+  }
+  .photoModalContent {
+    max-height: calc(100vh - 32px);
+    padding: 12px;
+  }
+  .photoModalImageWrap {
+    height: min(55vh, 440px);
+  }
+  .photoModalClose {
+    top: 20px;
+    right: 20px;
   }
 }

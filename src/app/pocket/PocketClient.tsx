@@ -51,15 +51,15 @@ export default function PocketClient({
         }`}
       >
         <div className={styles.brandingHeader}>
-          <Link className={styles.name} href="/">
-            Pocket
-          </Link>
-        </div>
-        <div className={styles.introContain}>
-          <p className={styles.intro}>
-            This is where I write about the sparks of thought that I find
-            interesting.
-          </p>
+          <div className={styles.introContain}>
+            <Link className={styles.name} href="/">
+              Pocket
+            </Link>
+            <p className={styles.intro}>
+              Sparks of thought that I find
+              interesting. Sometimes original, sometimes not.
+            </p>
+          </div>
         </div>
       </div>
 
@@ -71,7 +71,7 @@ export default function PocketClient({
       >
         <section className={styles.articlesContain}>
           <div className={styles.sectionTitleContainer}>
-            <h2 className={styles.sectionTitle}>My Writing</h2>
+            <span className={styles.sectionTitle}>My Writing</span>
           </div>
 
           {writtenArticles.length > 0 ? (
