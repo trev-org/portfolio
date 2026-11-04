@@ -94,6 +94,7 @@ function ArticleSection({
                       alt=""
                       width={72}
                       height={72}
+                      unoptimized
                     />
                   )}
                   <div className={styles.articlesItemContent}>

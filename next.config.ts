@@ -4,30 +4,11 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
   images: {
-    unoptimized: true, // Required for static export
     remotePatterns: [
       {
         protocol: "https",
         hostname: "i.scdn.co",
-        port: "",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "www.howtoeval.com",
-        port: "",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "cdn.sanity.io",
-        port: "",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "devin.ai",
-        port: "",
+
         pathname: "/**",
       },
     ],
