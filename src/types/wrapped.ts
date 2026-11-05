@@ -8,14 +8,17 @@ export interface WrappedCity {
   regionCountry: string;
   lat: number;
   lng: number;
+  source: "curated" | "timeline";
   firstVisited?: string;
   dates?: WrappedVisit[];
 }
 
 export interface WrappedFlight {
   date: string;
+  endDate: string;
   from: string;
   to: string;
+  miles: number;
 }
 
 export interface WrappedDrivingMonth {
@@ -31,7 +34,7 @@ export interface WrappedStepsMonth {
 
 export interface WrappedData {
   $schema: string;
-  schemaVersion: 1;
+  schemaVersion: 2;
   year: number;
   example: boolean;
   updatedThrough: string;
@@ -48,5 +51,12 @@ export interface WrappedData {
     example: boolean;
     monthly: WrappedStepsMonth[];
     yearlyTotal: number;
+    updatedThrough: string;
+    daysTracked: number;
+    dailyAverage: number;
+    bestDay: {
+      date: string;
+      steps: number;
+    };
   };
 }

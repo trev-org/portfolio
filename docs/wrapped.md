@@ -8,29 +8,27 @@ The raw Health and Timeline exports are private inputs and must stay in
 
 Provide these two complete, year-to-date files each month:
 
-1. `.wrapped-inputs/steps-2026.csv` (or `.json`) — daily step totals, split by
-   source.
+1. `.wrapped-inputs/steps-2026.csv` (or `.json`) — Apple Health's merged daily
+   step totals.
 2. `.wrapped-inputs/timeline-2026.json` — a fresh Google Maps on-device
    Timeline export from the iPhone.
 
 The importers replace all 12 monthly totals for the selected year, so each
 input must be a complete year-to-date snapshot rather than only the newest
-days. Cities and flights are maintained directly in `data/wrapped-2026.json`;
-they do not require a private raw-data file.
+days. The Timeline importer also derives qualifying cities and flights while
+preserving existing manually named cities. Matching visit clusters extend
+their date ranges without replacing their curated names or map coordinates.
 
 Run:
 
 ```bash
 npm run wrapped:steps -- --input .wrapped-inputs/steps-2026.csv --year 2026
 npm run wrapped:driving -- --input .wrapped-inputs/timeline-2026.json --year 2026
-npm run wrapped:validate -- --write
+npm run wrapped:validate
 ```
 
-The first two commands update only derived totals in the committed JSON. The
-last command validates the whole file and recomputes
-`flights.totalMiles` from airport coordinates. If a flight uses an airport that
-is not in the small lookup, add its public coordinates to
-`scripts/wrapped/airports.mjs`.
+The first two commands update only derived aggregates in the committed JSON.
+The last command validates the whole file and verifies its computed totals.
 
 `driving.example` and `steps.example` keep sample messaging scoped to those
 sections. Each importer clears its own flag, and the root `example` flag remains
@@ -43,82 +41,69 @@ CSV is the simplest Shortcut output. It must use this exact header:
 
 ```csv
 date,source,steps
-2026-01-01,iphone,1234
-2026-04-22,google,5678
-2026-04-22,iphone,5432
+2026-01-01,health,1234
+2026-01-02,health,5678
 ```
 
 JSON may be either the array below or `{ "rows": [...] }`:
 
 ```json
 [
-  { "date": "2026-01-01", "source": "iphone", "steps": 1234 },
-  { "date": "2026-04-22", "source": "google", "steps": 5678 },
-  { "date": "2026-04-22", "source": "iphone", "steps": 5432 }
+  { "date": "2026-01-01", "source": "health", "steps": 1234 },
+  { "date": "2026-01-02", "source": "health", "steps": 5678 }
 ]
 ```
 
 Rules:
 
 - `date` is local calendar date in `YYYY-MM-DD` format.
-- `source` is the literal value `google` or `iphone`.
+- `source` is the literal value `health`.
 - `steps` is a non-negative whole-number daily total.
-- Include at most one row for each date/source pair.
-- It is valid to include both sources for the same day.
-- For each day, the importer uses Google's row when one exists, even if its
-  value is zero. It uses the iPhone row only when Google has no row. It never
-  adds the two sources together.
+- Include exactly one row for every day from January 1 through the export's
+  latest date. The importer rejects gaps and duplicate dates.
+- Apple Health has already applied its source priority, so the importer does
+  not add or deduplicate source totals.
 
-This gives iPhone-only backfill before Google starts reporting (April 22, 2026
-for the intended real dataset) and fills isolated Google gaps later in the
-year.
+Legacy source-specific exports using `google` and `iphone` remain supported.
+Those modes may include both sources for a date; Google wins when present.
+Merged `health` rows cannot be mixed with either legacy source.
 
 ## Build the iPhone Shortcut
 
-Create a Shortcut named **Export Wrapped Steps**. The important part is to run
-two source-specific Health queries so the sources are never aggregated
-together.
+Create a Shortcut named **Export Wrapped Steps**. Query Health without a
+source filter so Apple Health applies the same source priority used in the
+Health app.
 
 1. Add a `Date` action for January 1, 2026 and save it as `Year Start`.
 2. Add `Current Date` and save it as `Year End`.
 3. Add `Find Health Samples` with:
    - Type: `Steps`
    - Start Date: between `Year Start` and `Year End`
-   - Source: the source shown by Health for Google Fit/Google Health
+   - Source: no filter
    - Group by: `Day`
    - Sort by: `Start Date`, oldest first
 4. Repeat through those daily groups. For each group:
    - Format its start date with custom format `yyyy-MM-dd`.
    - Read the group's summed step value and round to the ones place.
-   - Create Text as `Formatted Date,google,Rounded Value`.
-   - Add that Text to a `Google Rows` variable.
-5. Add a second `Find Health Samples` with the same date range, grouping, and
-   sort, but set Source to the iPhone (the label may be the phone's name).
-6. Repeat through those groups and create
-   `Formatted Date,iphone,Rounded Value`, adding each line to `iPhone Rows`.
-7. Combine `Google Rows` with new lines. Do the same for `iPhone Rows`.
-8. Add a final Text action containing the header and both combined blocks:
+   - Create Text as `Formatted Date,health,Rounded Value`.
+   - Add that Text to a `Health Rows` variable.
+5. Combine `Health Rows` with new lines.
+6. Add a final Text action containing the header and combined block:
 
    ```text
    date,source,steps
-   [Google Rows]
-   [iPhone Rows]
+   [Health Rows]
    ```
 
-9. Set the file name to `steps-2026.csv`, then use `Save File` or the Share
+7. Set the file name to `steps-2026.csv`, then use `Save File` or the Share
    Sheet. Transfer the result to `.wrapped-inputs/steps-2026.csv` in this repo.
-
-Health's displayed Google source name varies by app/version. The exported
-`source` column must still be normalized to the literal `google`; the iPhone
-query must emit the literal `iphone`. Inspect a Health step sample's **Data
-Source & Access** screen if the correct source is unclear.
 
 ## Google Maps Timeline input
 
 In Google Maps on the iPhone, open **Your Timeline**, use Timeline's
 on-device export option, and transfer the JSON file to
 `.wrapped-inputs/timeline-2026.json`. The importer accepts the current
-`semanticSegments` format and the older `timelineObjects` wrapper.
+semantic-segment list or a `semanticSegments` wrapper.
 
 A current driving segment is expected to resemble:
 
@@ -133,9 +118,30 @@ A current driving segment is expected to resemble:
 ```
 
 `DRIVING`, `IN_PASSENGER_VEHICLE`, `IN_VEHICLE`, and `PASSENGER_VEHICLE`
-segments are included. Distances are grouped by the segment's local start
-month, converted with 1 mile = 1,609.344 meters, and written as monthly miles
-only. The raw Timeline export is never copied into committed data.
+segments count as driving, including taxis and rideshares that Timeline labels
+as passenger vehicles. Explicit bus, subway, and train records are excluded.
+
+Before driving totals are calculated, any activity explicitly labeled as
+flying, longer than 400 km, or faster than 300 km/h on average is classified
+as a flight. This catches long records mislabeled as train or passenger
+vehicle and prevents them from also counting as driving. Flight mileage is the
+great-circle distance between the activity's start and end coordinates.
+Single-day activities get one date; multi-day records keep their full date
+range rather than claiming an exact departure date the export does not provide.
+
+City visits use only top-level visit records lasting at least 30 minutes.
+Locations within 5 km are clustered before reverse geocoding, and a cluster
+must contain at least two hours of visits. The San Francisco home region
+(100 km radius) and non-city geocoder results are excluded. Existing named
+cities within 25 km of a qualifying cluster keep their curated names; other
+cluster centroids are sent to the free OpenStreetMap Nominatim reverse
+geocoder at no more than one request every 1.1 seconds. The committed map
+coordinates are the geocoder's public city centers, not raw visit centroids.
+Flight endpoints without a nearby qualifying city use the same rate-limited
+geocoder as a fallback.
+
+Only monthly driving totals, city-level visit ranges, and flight summaries are
+written. The raw Timeline export is never copied into committed data.
 
 ## Committed schema
 
@@ -144,11 +150,12 @@ only. The raw Timeline export is never copied into committed data.
 
 ```text
 year, example, updatedThrough
-cities[]: city, regionCountry, lat, lng, and either firstVisited or
-          dates[] ({ start, end } per visit)
-flights: segments[] (date/from/to) and computed totalMiles
+cities[]: city, regionCountry, lat, lng, source, and either firstVisited
+          or dates[] ({ start, end } per visit)
+flights: segments[] (date/endDate/from/to/miles) and computed totalMiles
 driving: example and monthlyMiles[] (month/miles)
-steps: example, monthly[] (month/total/sourceMix), and yearlyTotal
+steps: example, updatedThrough, monthly[] (month/total/sourceMix),
+       yearlyTotal, daysTracked, dailyAverage, and bestDay
 ```
 
 There must be exactly one ordered monthly row for every month of the file's

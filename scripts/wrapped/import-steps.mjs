@@ -12,13 +12,15 @@ import {
 } from "./utils.mjs";
 
 function usage() {
-  console.log(`Import daily step totals from an iPhone Shortcut export.
+  console.log(`Import daily step totals from an Apple Health export.
 
 Usage:
   node scripts/wrapped/import-steps.mjs --input <file.json|file.csv> [--year 2026] [--output <wrapped.json>]
 
 The input must contain complete year-to-date daily rows with:
-  date, source ("google" or "iphone"), steps`);
+  date, source ("health"), steps
+
+Legacy source-specific exports using "google" or "iphone" are also supported.`);
 }
 
 function parseCsv(contents) {
@@ -113,6 +115,9 @@ function normalizeSource(value, rowNumber) {
     .trim()
     .toLowerCase();
 
+  if (["health", "apple health merged"].includes(source)) {
+    return "health";
+  }
   if (["google", "google health", "google fit"].includes(source)) {
     return "google";
   }
@@ -121,7 +126,7 @@ function normalizeSource(value, rowNumber) {
   }
 
   throw new Error(
-    `Row ${rowNumber} has source "${value}". Use "google" or "iphone".`
+    `Row ${rowNumber} has source "${value}". Use "health", "google", or "iphone".`
   );
 }
 
@@ -163,10 +168,17 @@ function normalizeRows(rows, year) {
     normalized.push({ date, source, steps });
   }
 
+  const sources = new Set(normalized.map((row) => row.source));
+  if (sources.has("health") && sources.size > 1) {
+    throw new Error(
+      'The merged "health" source cannot be mixed with "google" or "iphone" rows.'
+    );
+  }
+
   return normalized;
 }
 
-function buildStepSummary(rows, year) {
+function selectDailyTotals(rows, year) {
   const days = new Map();
 
   for (const row of rows) {
@@ -175,42 +187,88 @@ function buildStepSummary(rows, year) {
     days.set(row.date, day);
   }
 
+  const dates = [...days.keys()].sort();
+  const firstDate = `${year}-01-01`;
+  const finalDate = dates.at(-1);
+  const missingDates = [];
+
+  for (
+    let cursor = new Date(`${firstDate}T00:00:00Z`);
+    cursor <= new Date(`${finalDate}T00:00:00Z`);
+    cursor.setUTCDate(cursor.getUTCDate() + 1)
+  ) {
+    const date = cursor.toISOString().slice(0, 10);
+    if (!days.has(date)) {
+      missingDates.push(date);
+    }
+  }
+
+  if (missingDates.length > 0) {
+    const preview = missingDates.slice(0, 5).join(", ");
+    throw new Error(
+      `Step input must cover every day from ${firstDate} through ${finalDate}. Missing ${preview}${
+        missingDates.length > 5 ? ` and ${missingDates.length - 5} more` : ""
+      }.`
+    );
+  }
+
+  return dates.map((date) => {
+    const sources = days.get(date);
+    if (Object.hasOwn(sources, "health")) {
+      return { date, source: "health", steps: sources.health };
+    }
+    if (Object.hasOwn(sources, "google")) {
+      return { date, source: "google", steps: sources.google };
+    }
+    return { date, source: "iphone", steps: sources.iphone };
+  });
+}
+
+function buildStepSummary(rows, year) {
+  const daily = selectDailyTotals(rows, year);
   const monthTotals = new Map(
     monthKeys(year).map((month) => [
       month,
-      { total: 0, googleDays: 0, iphoneDays: 0 },
+      { total: 0, healthDays: 0, googleDays: 0, iphoneDays: 0 },
     ])
   );
 
-  for (const [date, sources] of days.entries()) {
-    const month = date.slice(0, 7);
+  for (const day of daily) {
+    const month = day.date.slice(0, 7);
     const summary = monthTotals.get(month);
-
-    if (Object.hasOwn(sources, "google")) {
-      summary.total += sources.google;
-      summary.googleDays += 1;
-    } else if (Object.hasOwn(sources, "iphone")) {
-      summary.total += sources.iphone;
-      summary.iphoneDays += 1;
-    }
+    summary.total += day.steps;
+    summary[`${day.source}Days`] += 1;
   }
 
   const monthly = [...monthTotals.entries()].map(([month, summary]) => ({
     month,
     total: summary.total,
-    sourceMix:
-      summary.googleDays + summary.iphoneDays === 0
-        ? "No step data imported"
-        : `Google Health: ${summary.googleDays} day${
-            summary.googleDays === 1 ? "" : "s"
-          } · iPhone: ${summary.iphoneDays} day${
-            summary.iphoneDays === 1 ? "" : "s"
-          }`,
+    sourceMix: [
+      ["Apple Health", summary.healthDays],
+      ["Google Health", summary.googleDays],
+      ["iPhone", summary.iphoneDays],
+    ]
+      .filter(([, count]) => count > 0)
+      .map(
+        ([label, count]) =>
+          `${label}: ${count} day${count === 1 ? "" : "s"}`
+      )
+      .join(" · ") || "No step data imported",
   }));
+  const yearlyTotal = daily.reduce((total, day) => total + day.steps, 0);
+  const bestDay = daily.reduce((best, day) =>
+    day.steps > best.steps ? day : best
+  );
 
   return {
     monthly,
-    yearlyTotal: monthly.reduce((total, month) => total + month.total, 0),
+    yearlyTotal,
+    daysTracked: daily.length,
+    dailyAverage: Math.round(yearlyTotal / daily.length),
+    bestDay: {
+      date: bestDay.date,
+      steps: bestDay.steps,
+    },
   };
 }
 
@@ -245,6 +303,7 @@ async function main() {
 
   data.steps = {
     example: false,
+    updatedThrough: latestInputDate,
     ...buildStepSummary(rows, year),
   };
   data.example = Boolean(data.driving.example);
