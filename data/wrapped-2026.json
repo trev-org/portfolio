@@ -1,0 +1,410 @@
+{
+  "$schema": "./wrapped.schema.json",
+  "schemaVersion": 2,
+  "year": 2026,
+  "example": false,
+  "updatedThrough": "2026-11-04",
+  "cities": [
+    {
+      "city": "Corona",
+      "regionCountry": "California, US",
+      "lat": 33.8753,
+      "lng": -117.5664,
+      "dates": [
+        {
+          "start": "2026-04-11",
+          "end": "2026-04-11"
+        }
+      ],
+      "source": "timeline"
+    },
+    {
+      "city": "Laguna Beach",
+      "regionCountry": "California, US",
+      "lat": 33.5427,
+      "lng": -117.7854,
+      "dates": [
+        {
+          "start": "2026-04-11",
+          "end": "2026-04-12"
+        }
+      ],
+      "source": "timeline"
+    },
+    {
+      "city": "Columbus",
+      "regionCountry": "Ohio, US",
+      "lat": 39.9612,
+      "lng": -82.9988,
+      "dates": [
+        {
+          "start": "2026-05-07",
+          "end": "2026-05-11"
+        }
+      ],
+      "source": "curated"
+    },
+    {
+      "city": "Tahoe City",
+      "regionCountry": "California, US",
+      "lat": 39.1677,
+      "lng": -120.1452,
+      "dates": [
+        {
+          "start": "2026-07-02",
+          "end": "2026-07-03"
+        }
+      ],
+      "source": "curated"
+    },
+    {
+      "city": "New York City",
+      "regionCountry": "New York, US",
+      "lat": 40.7128,
+      "lng": -74.006,
+      "dates": [
+        {
+          "start": "2026-08-16",
+          "end": "2026-08-21"
+        },
+        {
+          "start": "2026-10-22",
+          "end": "2026-10-24"
+        }
+      ],
+      "source": "curated"
+    },
+    {
+      "city": "Amsterdam",
+      "regionCountry": "North Holland, Netherlands",
+      "lat": 52.3676,
+      "lng": 4.9041,
+      "dates": [
+        {
+          "start": "2026-09-09",
+          "end": "2026-09-13"
+        }
+      ],
+      "source": "curated"
+    },
+    {
+      "city": "Gothenburg",
+      "regionCountry": "Västra Götaland, Sweden",
+      "lat": 57.7089,
+      "lng": 11.9746,
+      "dates": [
+        {
+          "start": "2026-09-13",
+          "end": "2026-09-15"
+        }
+      ],
+      "source": "curated"
+    },
+    {
+      "city": "Stockholm",
+      "regionCountry": "Stockholm County, Sweden",
+      "lat": 59.3293,
+      "lng": 18.0686,
+      "dates": [
+        {
+          "start": "2026-09-15",
+          "end": "2026-09-16"
+        }
+      ],
+      "source": "curated"
+    },
+    {
+      "city": "Munich",
+      "regionCountry": "Bavaria, Germany",
+      "lat": 48.1351,
+      "lng": 11.582,
+      "dates": [
+        {
+          "start": "2026-09-16",
+          "end": "2026-09-16"
+        }
+      ],
+      "source": "curated"
+    },
+    {
+      "city": "Jackson",
+      "regionCountry": "Wyoming, US",
+      "lat": 43.4799,
+      "lng": -110.7624,
+      "dates": [
+        {
+          "start": "2026-10-05",
+          "end": "2026-10-09"
+        }
+      ],
+      "source": "curated"
+    },
+    {
+      "city": "El Segundo",
+      "regionCountry": "California, US",
+      "lat": 33.917,
+      "lng": -118.4156,
+      "dates": [
+        {
+          "start": "2026-10-30",
+          "end": "2026-11-01"
+        }
+      ],
+      "source": "timeline"
+    },
+    {
+      "city": "Los Angeles",
+      "regionCountry": "California, US",
+      "lat": 34.0537,
+      "lng": -118.2428,
+      "dates": [
+        {
+          "start": "2026-10-30",
+          "end": "2026-10-31"
+        }
+      ],
+      "source": "timeline"
+    },
+    {
+      "city": "Malibu",
+      "regionCountry": "California, US",
+      "lat": 34.0356,
+      "lng": -118.6894,
+      "dates": [
+        {
+          "start": "2026-11-01",
+          "end": "2026-11-01"
+        }
+      ],
+      "source": "timeline"
+    },
+    {
+      "city": "Seattle",
+      "regionCountry": "Washington, US",
+      "lat": 47.6038,
+      "lng": -122.3301,
+      "dates": [
+        {
+          "start": "2026-11-02",
+          "end": "2026-11-03"
+        }
+      ],
+      "source": "timeline"
+    }
+  ],
+  "flights": {
+    "segments": [
+      {
+        "date": "2026-08-16",
+        "endDate": "2026-08-16",
+        "from": "San Francisco",
+        "to": "New York City",
+        "miles": 2520
+      },
+      {
+        "date": "2026-09-08",
+        "endDate": "2026-09-09",
+        "from": "San Francisco",
+        "to": "Amsterdam",
+        "miles": 5461
+      },
+      {
+        "date": "2026-09-12",
+        "endDate": "2026-09-13",
+        "from": "Amsterdam",
+        "to": "Gothenburg",
+        "miles": 469
+      },
+      {
+        "date": "2026-09-16",
+        "endDate": "2026-09-16",
+        "from": "Stockholm",
+        "to": "Munich",
+        "miles": 819
+      },
+      {
+        "date": "2026-09-16",
+        "endDate": "2026-09-16",
+        "from": "Munich",
+        "to": "San Francisco",
+        "miles": 5864
+      },
+      {
+        "date": "2026-10-04",
+        "endDate": "2026-10-06",
+        "from": "San Francisco",
+        "to": "Jackson",
+        "miles": 704
+      },
+      {
+        "date": "2026-10-09",
+        "endDate": "2026-10-09",
+        "from": "Jackson",
+        "to": "Los Angeles",
+        "miles": 785
+      },
+      {
+        "date": "2026-10-09",
+        "endDate": "2026-10-09",
+        "from": "Los Angeles",
+        "to": "San Francisco",
+        "miles": 338
+      },
+      {
+        "date": "2026-10-19",
+        "endDate": "2026-10-22",
+        "from": "San Francisco",
+        "to": "New York City",
+        "miles": 2519
+      },
+      {
+        "date": "2026-10-24",
+        "endDate": "2026-10-24",
+        "from": "New York City",
+        "to": "San Francisco",
+        "miles": 2566
+      },
+      {
+        "date": "2026-11-02",
+        "endDate": "2026-11-02",
+        "from": "San Francisco",
+        "to": "Seattle",
+        "miles": 679
+      },
+      {
+        "date": "2026-11-03",
+        "endDate": "2026-11-03",
+        "from": "Seattle",
+        "to": "San Francisco",
+        "miles": 679
+      }
+    ],
+    "totalMiles": 23403
+  },
+  "driving": {
+    "example": false,
+    "monthlyMiles": [
+      {
+        "month": "2026-01",
+        "miles": 712.6
+      },
+      {
+        "month": "2026-02",
+        "miles": 353.4
+      },
+      {
+        "month": "2026-03",
+        "miles": 308
+      },
+      {
+        "month": "2026-04",
+        "miles": 431.2
+      },
+      {
+        "month": "2026-05",
+        "miles": 491.9
+      },
+      {
+        "month": "2026-06",
+        "miles": 564.3
+      },
+      {
+        "month": "2026-07",
+        "miles": 783.1
+      },
+      {
+        "month": "2026-08",
+        "miles": 431.9
+      },
+      {
+        "month": "2026-09",
+        "miles": 458.7
+      },
+      {
+        "month": "2026-10",
+        "miles": 490.5
+      },
+      {
+        "month": "2026-11",
+        "miles": 192.2
+      },
+      {
+        "month": "2026-12",
+        "miles": 0
+      }
+    ]
+  },
+  "steps": {
+    "example": false,
+    "updatedThrough": "2026-11-03",
+    "monthly": [
+      {
+        "month": "2026-01",
+        "total": 168720,
+        "sourceMix": "Apple Health: 31 days"
+      },
+      {
+        "month": "2026-02",
+        "total": 129258,
+        "sourceMix": "Apple Health: 28 days"
+      },
+      {
+        "month": "2026-03",
+        "total": 181098,
+        "sourceMix": "Apple Health: 31 days"
+      },
+      {
+        "month": "2026-04",
+        "total": 173410,
+        "sourceMix": "Apple Health: 30 days"
+      },
+      {
+        "month": "2026-05",
+        "total": 183828,
+        "sourceMix": "Apple Health: 31 days"
+      },
+      {
+        "month": "2026-06",
+        "total": 235861,
+        "sourceMix": "Apple Health: 30 days"
+      },
+      {
+        "month": "2026-07",
+        "total": 417623,
+        "sourceMix": "Apple Health: 31 days"
+      },
+      {
+        "month": "2026-08",
+        "total": 523767,
+        "sourceMix": "Apple Health: 31 days"
+      },
+      {
+        "month": "2026-09",
+        "total": 537064,
+        "sourceMix": "Apple Health: 30 days"
+      },
+      {
+        "month": "2026-10",
+        "total": 486642,
+        "sourceMix": "Apple Health: 31 days"
+      },
+      {
+        "month": "2026-11",
+        "total": 18520,
+        "sourceMix": "Apple Health: 3 days"
+      },
+      {
+        "month": "2026-12",
+        "total": 0,
+        "sourceMix": "No step data imported"
+      }
+    ],
+    "yearlyTotal": 3055791,
+    "daysTracked": 307,
+    "dailyAverage": 9954,
+    "bestDay": {
+      "date": "2026-09-11",
+      "steps": 49743
+    }
+  }
+}

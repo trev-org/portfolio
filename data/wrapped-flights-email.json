@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "year": 2026,
+  "flights": [
+    {
+      "date": "2026-09-16",
+      "airline": "Lufthansa",
+      "flightNumber": null,
+      "bookingCode": "BHO63Z",
+      "confirmationCode": "O3K6WT",
+      "bookedVia": "Navan",
+      "from": "ARN",
+      "to": "MUC",
+      "source": "email"
+    },
+    {
+      "date": "2026-09-16",
+      "airline": "Lufthansa",
+      "flightNumber": "LH458",
+      "bookingCode": "BHO63Z",
+      "confirmationCode": null,
+      "bookedVia": "Navan",
+      "from": "MUC",
+      "to": "SFO",
+      "source": "email"
+    },
+    {
+      "date": "2026-10-09",
+      "airline": "United",
+      "flightNumber": "UA1431",
+      "bookingCode": null,
+      "confirmationCode": "O3J25Z",
+      "bookedVia": null,
+      "from": "JAC",
+      "to": "LAX",
+      "source": "email"
+    },
+    {
+      "date": "2026-10-09",
+      "airline": "United",
+      "flightNumber": null,
+      "bookingCode": null,
+      "confirmationCode": "O3J25Z",
+      "bookedVia": null,
+      "from": "LAX",
+      "to": "SFO",
+      "source": "email"
+    }
+  ]
+}

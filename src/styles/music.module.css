@@ -35,7 +35,7 @@
 .viewToggle {
   display: none;
   border: 1px solid rgba(255, 245, 234, 0.2);
-  border-radius: 999px;
+  border-radius: var(--radius-md);
   padding: 2px;
   gap: 2px;
 }
@@ -47,7 +47,7 @@
   font-family: "MarketSans-Medium";
   font-size: 12px;
   padding: 4px 12px;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 0.2s ease;
   user-select: none;
@@ -302,7 +302,7 @@
 .statsTabs {
   display: inline-flex;
   border: 1px solid rgba(255, 245, 234, 0.2);
-  border-radius: 999px;
+  border-radius: var(--radius-md);
   padding: 2px;
   gap: 2px;
 }
@@ -310,7 +310,7 @@
   display: none;
   position: relative;
   border: 1px solid rgba(255, 245, 234, 0.2);
-  border-radius: 999px;
+  border-radius: var(--radius-md);
   padding: 2px;
 }
 .statsSelectWrapper::after {
@@ -328,7 +328,7 @@
 .statsSelect {
   appearance: none;
   border: none;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: rgba(255, 245, 234, 0.15);
   color: #fff5ea;
   font-family: "MarketSans-Medium";
@@ -657,11 +657,13 @@
 .genreBarTrack {
   width: 100%;
   height: 11px;
+  border-radius: var(--radius-xs);
   background-color: rgba(255, 245, 234, 0.1);
   overflow: hidden;
 }
 .genreBarFill {
   height: 100%;
+  border-radius: var(--radius-xs);
   background-color: #b931ff;
   transition: width 0.5s ease;
 }

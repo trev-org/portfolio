@@ -1,0 +1,163 @@
+.metricCardBody {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.metricValue {
+  min-width: 84px;
+  color: #fff5ea;
+  font-family: "MarketSans-Bold";
+  font-size: 28px;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.sampleNotice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  color: #807b75;
+  font-family: "MarketSans-Regular";
+  font-size: 11px;
+  line-height: 1.5;
+  padding: 0 5px;
+}
+
+.sampleNotice p {
+  margin: 0;
+}
+
+.mapSectionHeader.mapSectionHeader {
+  margin-bottom: 20px;
+}
+
+.map {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 220px;
+  overflow: hidden;
+}
+
+.mapSphere {
+  fill: #111;
+}
+
+.mapGraticule {
+  fill: none;
+  stroke: rgba(255, 245, 234, 0.045);
+  stroke-width: 0.75;
+  vector-effect: non-scaling-stroke;
+}
+
+.mapLand {
+  fill: #242424;
+  stroke: rgba(255, 245, 234, 0.16);
+  stroke-linejoin: round;
+  stroke-width: 0.8;
+  vector-effect: non-scaling-stroke;
+}
+
+.mapBorders {
+  fill: none;
+  stroke: rgba(255, 245, 234, 0.09);
+  stroke-linejoin: round;
+  stroke-width: 0.55;
+  vector-effect: non-scaling-stroke;
+}
+
+.mapLeaders line {
+  stroke: rgba(185, 49, 255, 0.72);
+  stroke-linecap: round;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.mapAnchors circle {
+  fill: var(--color-accent);
+}
+
+.mapPin {
+  cursor: pointer;
+  outline: none;
+}
+
+.mapPinHalo {
+  fill: rgba(185, 49, 255, 0.2);
+  transition: fill 0.2s ease;
+}
+
+.mapPinDot {
+  fill: var(--main-color);
+  transition: fill 0.2s ease;
+}
+
+.mapPin:hover .mapPinHalo,
+.mapPin:focus .mapPinHalo {
+  fill: rgba(185, 49, 255, 0.38);
+}
+
+.mapPin:hover .mapPinDot,
+.mapPin:focus .mapPinDot {
+  fill: #d890ff;
+}
+
+@keyframes mapTooltipIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.mapTooltip {
+  animation: mapTooltipIn 0.15s ease-out;
+  pointer-events: none;
+}
+
+.mapTooltip rect {
+  fill: var(--color-surface);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.45));
+}
+
+.mapTooltip text {
+  pointer-events: none;
+  user-select: none;
+}
+
+.mapTooltipTitle {
+  fill: var(--color-text-strong);
+  font-family: var(--font-sans-medium);
+  font-size: 12px;
+}
+
+.emptyMap {
+  fill: var(--color-text-muted);
+  font-family: var(--font-sans-regular);
+  font-size: 12px;
+  user-select: none;
+}
+
+@media (max-width: 768px) {
+  .metricValue {
+    min-width: 76px;
+    font-size: 25px;
+  }
+}
+
+@media (max-width: 550px) {
+  .sampleNotice {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .map {
+    min-height: auto;
+  }
+}
