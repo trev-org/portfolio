@@ -29,6 +29,8 @@ npm run wrapped:validate
 
 The first two commands update only derived aggregates in the committed JSON.
 The last command validates the whole file and verifies its computed totals.
+The Timeline importer automatically merges `data/wrapped-flights-email.json`;
+pass `--email-flights <path>` only when testing a different email export.
 
 `driving.example` and `steps.example` keep sample messaging scoped to those
 sections. Each importer clears its own flag, and the root `example` flag remains
@@ -142,6 +144,40 @@ geocoder as a fallback.
 
 Only monthly driving totals, city-level visit ranges, and flight summaries are
 written. The raw Timeline export is never copied into committed data.
+
+## Email-confirmed flights
+
+The user's assistant regenerates `data/wrapped-flights-email.json` monthly from
+Gmail flight confirmations. Each record retains the airline, flight number
+when known, booking and confirmation codes, booking channel when known, travel
+date, IATA route, and `source: "email"`:
+
+```json
+{
+  "schemaVersion": 1,
+  "year": 2026,
+  "flights": [
+    {
+      "date": "2026-09-16",
+      "airline": "Lufthansa",
+      "flightNumber": null,
+      "bookingCode": "BHO63Z",
+      "confirmationCode": "O3K6WT",
+      "bookedVia": "Navan",
+      "from": "ARN",
+      "to": "MUC",
+      "source": "email"
+    }
+  ]
+}
+```
+
+The importer merges these records with Timeline-detected flights and
+deduplicates by date and displayed route; email wins when both sources contain
+the same flight. It computes great-circle mileage and display cities from
+`scripts/wrapped/airports.mjs`. Add public coordinates and a city name there
+before using a new IATA code. Curated city-level entries, including Munich,
+remain in the main Wrapped data and survive later Timeline imports.
 
 ## Committed schema
 

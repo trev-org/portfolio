@@ -114,6 +114,19 @@
       "source": "curated"
     },
     {
+      "city": "Munich",
+      "regionCountry": "Bavaria, Germany",
+      "lat": 48.1351,
+      "lng": 11.582,
+      "dates": [
+        {
+          "start": "2026-09-16",
+          "end": "2026-09-16"
+        }
+      ],
+      "source": "curated"
+    },
+    {
       "city": "Jackson",
       "regionCountry": "Wyoming, US",
       "lat": 43.4799,
@@ -203,11 +216,39 @@
         "miles": 469
       },
       {
+        "date": "2026-09-16",
+        "endDate": "2026-09-16",
+        "from": "Stockholm",
+        "to": "Munich",
+        "miles": 819
+      },
+      {
+        "date": "2026-09-16",
+        "endDate": "2026-09-16",
+        "from": "Munich",
+        "to": "San Francisco",
+        "miles": 5864
+      },
+      {
         "date": "2026-10-04",
         "endDate": "2026-10-06",
         "from": "San Francisco",
         "to": "Jackson",
         "miles": 704
+      },
+      {
+        "date": "2026-10-09",
+        "endDate": "2026-10-09",
+        "from": "Jackson",
+        "to": "Los Angeles",
+        "miles": 785
+      },
+      {
+        "date": "2026-10-09",
+        "endDate": "2026-10-09",
+        "from": "Los Angeles",
+        "to": "San Francisco",
+        "miles": 338
       },
       {
         "date": "2026-10-19",
@@ -238,7 +279,7 @@
         "miles": 679
       }
     ],
-    "totalMiles": 15597
+    "totalMiles": 23403
   },
   "driving": {
     "example": false,
