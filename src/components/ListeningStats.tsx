@@ -378,7 +378,7 @@ function ListeningStatsSkeleton() {
 
       <div className={styles.genreChart} aria-hidden="true">
         <div className={styles.genreGrid}>
-          {SKELETON_AXIS_POSITIONS.map((position) => (
+          {SKELETON_AXIS_POSITIONS.slice(1, -1).map((position) => (
             <span
               className={styles.genreGridLine}
               style={{ left: `${position}%` }}
@@ -702,7 +702,7 @@ const ListeningStats: React.FC<ListeningStatsProps> = ({
           {stats.genres.length > 0 && (
             <div className={styles.genreChart}>
               <div className={styles.genreGrid} aria-hidden="true">
-                {axisScale.ticks.map((tick) => (
+                {axisScale.ticks.slice(1, -1).map((tick) => (
                   <span
                     className={styles.genreGridLine}
                     style={{ left: `${(tick / axisScale.max) * 100}%` }}

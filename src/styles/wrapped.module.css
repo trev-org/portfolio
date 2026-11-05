@@ -1,13 +1,3 @@
-.updated {
-  margin: 0;
-  color: var(--color-text-muted);
-  font-family: var(--font-sans-regular);
-  font-size: 11px;
-  line-height: 1.4;
-  opacity: 0.75;
-  text-align: right;
-}
-
 .metricCardBody {
   display: flex;
   align-items: center;
@@ -40,146 +30,118 @@
   margin: 0;
 }
 
-.mapCard {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  border: 1px solid rgba(255, 245, 234, 0.08);
-  border-radius: 7.5px;
-  background: #151515;
-  margin-bottom: 14px;
-  padding: 8px;
+.mapSectionHeader.mapSectionHeader {
+  margin-bottom: 20px;
 }
 
 .map {
+  position: relative;
   display: block;
   width: 100%;
   height: auto;
   min-height: 220px;
+  overflow: hidden;
 }
 
-.mapGrid line {
-  stroke: rgba(255, 245, 234, 0.035);
-  stroke-width: 1;
+.mapSphere {
+  fill: #111;
 }
 
-.land path {
+.mapGraticule {
+  fill: none;
+  stroke: rgba(255, 245, 234, 0.045);
+  stroke-width: 0.75;
+  vector-effect: non-scaling-stroke;
+}
+
+.mapLand {
   fill: #242424;
-  stroke: rgba(255, 245, 234, 0.1);
+  stroke: rgba(255, 245, 234, 0.16);
   stroke-linejoin: round;
-  stroke-width: 1.25;
+  stroke-width: 0.8;
+  vector-effect: non-scaling-stroke;
 }
 
-.mapPin text {
-  fill: #121212;
-  font-family: "MarketSans-Bold";
-  font-size: 8px;
-  pointer-events: none;
+.mapBorders {
+  fill: none;
+  stroke: rgba(255, 245, 234, 0.09);
+  stroke-linejoin: round;
+  stroke-width: 0.55;
+  vector-effect: non-scaling-stroke;
+}
+
+.mapLeaders line {
+  stroke: rgba(185, 49, 255, 0.72);
+  stroke-linecap: round;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.mapAnchors circle {
+  fill: var(--color-accent);
+}
+
+.mapPin {
+  cursor: pointer;
+  outline: none;
 }
 
 .mapPinHalo {
-  fill: rgba(185, 49, 255, 0.24);
+  fill: rgba(185, 49, 255, 0.2);
+  transition: fill 0.2s ease;
 }
 
 .mapPinDot {
   fill: var(--main-color);
-  stroke: #fff5ea;
-  stroke-width: 1.2;
+  transition: fill 0.2s ease;
+}
+
+.mapPin:hover .mapPinHalo,
+.mapPin:focus .mapPinHalo {
+  fill: rgba(185, 49, 255, 0.38);
+}
+
+.mapPin:hover .mapPinDot,
+.mapPin:focus .mapPinDot {
+  fill: #d890ff;
+}
+
+@keyframes mapTooltipIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.mapTooltip {
+  animation: mapTooltipIn 0.15s ease-out;
+  pointer-events: none;
+}
+
+.mapTooltip rect {
+  fill: var(--color-surface);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.45));
+}
+
+.mapTooltip text {
+  pointer-events: none;
+  user-select: none;
+}
+
+.mapTooltipTitle {
+  fill: var(--color-text-strong);
+  font-family: var(--font-sans-medium);
+  font-size: 12px;
 }
 
 .emptyMap {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  color: #807b75;
-  font-family: "MarketSans-Regular";
+  fill: var(--color-text-muted);
+  font-family: var(--font-sans-regular);
   font-size: 12px;
-  transform: translate(-50%, -50%);
-}
-
-.cityList,
-.flightList {
-  width: 100%;
-  list-style: none;
-}
-
-.cityList li {
-  display: grid;
-  grid-template-columns: 24px minmax(0, 1fr) auto;
-  gap: 12px;
-  align-items: center;
-  min-height: 62px;
-  border-bottom: 1px solid rgba(255, 245, 234, 0.08);
-  padding: 10px 5px;
-}
-
-.cityIndex {
-  color: var(--main-color);
-  font-family: "MarketSans-Medium";
-  font-size: 10px;
-}
-
-.cityInfo {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.cityDate {
-  justify-self: end;
-}
-
-.sourceNote {
-  max-width: 100%;
-  margin-top: 20px;
-  color: #807b75;
-  font-family: "MarketSans-Regular";
-  font-size: 10px;
-  line-height: 1.6;
-  opacity: 0.8;
-  user-select: text;
-}
-
-.sourceNote sup {
-  margin-right: 4px;
-  color: var(--main-color);
-}
-
-.flightList li {
-  display: grid;
-  grid-template-columns: minmax(150px, 1fr) minmax(170px, 1fr);
-  gap: 20px;
-  align-items: center;
-  min-height: 56px;
-  border-bottom: 1px solid rgba(255, 245, 234, 0.08);
-  padding: 8px 5px;
-}
-
-.flightMeta {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 3px;
-}
-
-.flightMiles {
-  color: #807b75;
-  font-family: "MarketSans-Regular";
-  font-size: 10px;
-}
-
-.flightRoute {
-  display: grid;
-  grid-template-columns: auto minmax(24px, 1fr) auto;
-  gap: 10px;
-  align-items: center;
-}
-
-.flightLine {
-  width: 100%;
-  height: 1px;
-  background: rgba(185, 49, 255, 0.55);
+  user-select: none;
 }
 
 @media (max-width: 768px) {
@@ -197,22 +159,5 @@
 
   .map {
     min-height: auto;
-  }
-
-  .cityList li {
-    grid-template-columns: 24px minmax(0, 1fr);
-    gap: 8px 10px;
-  }
-
-  .cityDate {
-    grid-column: 2;
-    justify-self: start;
-    white-space: normal;
-  }
-
-  .flightList li {
-    grid-template-columns: 1fr;
-    gap: 4px;
-    padding: 11px 5px;
   }
 }

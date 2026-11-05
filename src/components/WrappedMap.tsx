@@ -1,76 +1,325 @@
+"use client";
+
+import { useLayoutEffect, useRef, useState } from "react";
+import { geoGraticule10, geoNaturalEarth1, geoPath } from "d3-geo";
+import { feature, mesh } from "topojson-client";
+import type { GeometryObject, Topology } from "topojson-specification";
+import worldTopology from "world-atlas/countries-110m.json";
 import styles from "../styles/wrapped.module.css";
 import type { WrappedCity } from "../types/wrapped";
 
 const MAP_WIDTH = 1000;
-const MAP_HEIGHT = 500;
-const PIN_MARGIN = 12;
+const MAP_HEIGHT = 520;
+const MAP_PADDING = 24;
+const PIN_RADIUS = 6;
+const PIN_MARGIN = PIN_RADIUS + 4;
+const MIN_PIN_DISTANCE = PIN_RADIUS * 2 + 4;
+const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
+const SEARCH_RADII = [0, 18, 28, 40, 54, 70];
+const TOOLTIP_HEIGHT = 32;
+const TOOLTIP_MARGIN = 6;
+const TOOLTIP_GAP = 10;
+const TOOLTIP_HORIZONTAL_PADDING = 8;
 
-function projectCity(city: WrappedCity) {
-  const x = ((city.lng + 180) / 360) * MAP_WIDTH;
-  const y = ((90 - city.lat) / 180) * MAP_HEIGHT;
+const sphere = { type: "Sphere" } as const;
+const topology = worldTopology as unknown as Topology;
+const countries = topology.objects.countries;
+const land = feature(topology, topology.objects.land);
+const countryBorders = mesh(
+  topology,
+  countries as GeometryObject,
+  (countryA, countryB) => countryA !== countryB,
+);
+const graticule = geoGraticule10();
+const projection = geoNaturalEarth1().fitExtent(
+  [
+    [MAP_PADDING, MAP_PADDING],
+    [MAP_WIDTH - MAP_PADDING, MAP_HEIGHT - MAP_PADDING],
+  ],
+  sphere,
+);
+const path = geoPath(projection);
+
+type MapPin = {
+  city: WrappedCity;
+  index: number;
+  anchorX: number;
+  anchorY: number;
+  x: number;
+  y: number;
+};
+
+function distanceBetween(
+  first: { x: number; y: number },
+  second: { x: number; y: number },
+) {
+  return Math.hypot(first.x - second.x, first.y - second.y);
+}
+
+function isValidPinPosition(
+  candidate: { x: number; y: number },
+  placedPins: MapPin[],
+) {
+  const insideMap =
+    candidate.x >= PIN_MARGIN &&
+    candidate.x <= MAP_WIDTH - PIN_MARGIN &&
+    candidate.y >= PIN_MARGIN &&
+    candidate.y <= MAP_HEIGHT - PIN_MARGIN;
+
+  return (
+    insideMap &&
+    placedPins.every(
+      (placedPin) =>
+        distanceBetween(candidate, placedPin) >= MIN_PIN_DISTANCE,
+    )
+  );
+}
+
+function layoutPins(cities: WrappedCity[]) {
+  return cities.reduce<MapPin[]>((placedPins, city, index) => {
+    const projected = projection([city.lng, city.lat]);
+
+    if (!projected) {
+      return placedPins;
+    }
+
+    const [anchorX, anchorY] = projected;
+    const candidates = SEARCH_RADII.flatMap((radius) => {
+      if (radius === 0) {
+        return [{ x: anchorX, y: anchorY }];
+      }
+
+      return Array.from({ length: 24 }, (_, step) => {
+        const angle = index * GOLDEN_ANGLE + (step / 24) * Math.PI * 2;
+
+        return {
+          x: anchorX + Math.cos(angle) * radius,
+          y: anchorY + Math.sin(angle) * radius,
+        };
+      });
+    });
+    const position =
+      candidates.find((candidate) =>
+        isValidPinPosition(candidate, placedPins),
+      ) ?? { x: anchorX, y: anchorY };
+
+    placedPins.push({
+      city,
+      index,
+      anchorX,
+      anchorY,
+      ...position,
+    });
+
+    return placedPins;
+  }, []);
+}
+
+function getLeaderEnd(pin: MapPin) {
+  const deltaX = pin.x - pin.anchorX;
+  const deltaY = pin.y - pin.anchorY;
+  const distance = Math.hypot(deltaX, deltaY);
+
+  if (distance <= PIN_RADIUS) {
+    return null;
+  }
+
+  const pinEdgeOffset = PIN_RADIUS + 1;
 
   return {
-    x: Math.min(Math.max(x, PIN_MARGIN), MAP_WIDTH - PIN_MARGIN),
-    y: Math.min(Math.max(y, PIN_MARGIN), MAP_HEIGHT - PIN_MARGIN),
+    x: pin.x - (deltaX / distance) * pinEdgeOffset,
+    y: pin.y - (deltaY / distance) * pinEdgeOffset,
   };
 }
 
+function getTooltipLayout(pin: MapPin, width: number) {
+  const preferredLeft = pin.x - width / 2;
+  const left = Math.min(
+    Math.max(preferredLeft, TOOLTIP_MARGIN),
+    MAP_WIDTH - width - TOOLTIP_MARGIN,
+  );
+  const preferredTop =
+    pin.y - TOOLTIP_HEIGHT - PIN_RADIUS - TOOLTIP_GAP;
+  const top =
+    preferredTop >= TOOLTIP_MARGIN
+      ? preferredTop
+      : pin.y + PIN_RADIUS + TOOLTIP_GAP;
+
+  return {
+    x: left,
+    y: top,
+    width,
+  };
+}
+
+function getLocationLabel(city: WrappedCity) {
+  const regionParts = city.regionCountry
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
+  const country = regionParts.at(-1);
+
+  if (country === "US" || country === "USA" || country === "United States") {
+    const state = regionParts.at(-2);
+    return state ? `${city.city}, ${state}` : city.city;
+  }
+
+  return country ? `${city.city}, ${country}` : city.city;
+}
+
 export default function WrappedMap({ cities }: { cities: WrappedCity[] }) {
+  const [hoveredPinIndex, setHoveredPinIndex] = useState<number | null>(null);
+  const [focusedPinIndex, setFocusedPinIndex] = useState<number | null>(null);
+  const [tooltipTextWidth, setTooltipTextWidth] = useState<number | null>(null);
+  const tooltipTextRef = useRef<SVGTextElement>(null);
+  const pins = layoutPins(cities);
+  const activePinIndex = hoveredPinIndex ?? focusedPinIndex;
+  const activePin = pins.find((pin) => pin.index === activePinIndex);
+  const activeLabel = activePin ? getLocationLabel(activePin.city) : "";
+  const estimatedTextWidth = activeLabel.length * 6;
+  const tooltipWidth =
+    (tooltipTextWidth ?? estimatedTextWidth) +
+    TOOLTIP_HORIZONTAL_PADDING * 2;
+  const activeTooltip = activePin
+    ? getTooltipLayout(activePin, tooltipWidth)
+    : null;
+
+  useLayoutEffect(() => {
+    let cancelled = false;
+
+    const measureTooltip = () => {
+      if (!cancelled && tooltipTextRef.current) {
+        setTooltipTextWidth(tooltipTextRef.current.getComputedTextLength());
+      }
+    };
+
+    measureTooltip();
+    void document.fonts.ready.then(measureTooltip);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeLabel]);
+
   return (
     <svg
       className={styles.map}
       viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
-      role="img"
-      aria-labelledby="wrapped-map-title wrapped-map-description"
+      role="group"
+      aria-label="Cities visited"
+      aria-describedby="wrapped-map-description"
     >
-      <title id="wrapped-map-title">Cities visited</title>
       <desc id="wrapped-map-description">
-        A world map with one numbered pin for every city in the city list.
+        A world map with one pin for every city visited. Hover or focus a pin
+        to see its location.
       </desc>
 
-      <g className={styles.mapGrid} aria-hidden="true">
-        {[125, 250, 375, 500, 625, 750, 875].map((x) => (
-          <line key={`longitude-${x}`} x1={x} x2={x} y1="0" y2={MAP_HEIGHT} />
-        ))}
-        {[125, 250, 375].map((y) => (
-          <line key={`latitude-${y}`} x1="0" x2={MAP_WIDTH} y1={y} y2={y} />
-        ))}
+      <path
+        className={styles.mapSphere}
+        d={path(sphere) ?? undefined}
+        aria-hidden="true"
+      />
+      <path
+        className={styles.mapGraticule}
+        d={path(graticule) ?? undefined}
+        aria-hidden="true"
+      />
+      <path
+        className={styles.mapLand}
+        d={path(land) ?? undefined}
+        aria-hidden="true"
+      />
+      <path
+        className={styles.mapBorders}
+        d={path(countryBorders) ?? undefined}
+        aria-hidden="true"
+      />
+      {cities.length === 0 && (
+        <text
+          className={styles.emptyMap}
+          x={MAP_WIDTH / 2}
+          y={MAP_HEIGHT / 2}
+          textAnchor="middle"
+        >
+          No cities added yet.
+        </text>
+      )}
+
+      <g className={styles.mapLeaders} aria-hidden="true">
+        {pins.map((pin) => {
+          const leaderEnd = getLeaderEnd(pin);
+
+          return (
+            leaderEnd && (
+              <line
+                key={`leader-${pin.city.city}-${pin.index}`}
+                x1={pin.anchorX}
+                y1={pin.anchorY}
+                x2={leaderEnd.x}
+                y2={leaderEnd.y}
+              />
+            )
+          );
+        })}
       </g>
 
-      <g className={styles.land} aria-hidden="true">
-        <path d="M53 111 91 73l69-28 83 15 54 46-19 42-46 4-19 35-36 13-8 38-29 7-17-37-40-24-28-32Z" />
-        <path d="m208 226 45 26 31 51-11 52-27 66-28 40-19-35 5-64-22-56 8-52Z" />
-        <path d="m121 55 27-31 61 4 18 25-35 24-51 1Z" />
-        <path d="m443 111 27-29 44-4 31 20-15 30-40 6-21 28-32-9Z" />
-        <path d="m459 160 58-25 63 36 12 70-27 92-42 61-34-30-9-78-35-52Z" />
-        <path d="m526 80 91-35 116 14 88 44 114 21-11 55-75 12-55 50-63-18-55 14-45-48-53-5-34-43Z" />
-        <path d="m760 278 42-30 69 7 46 42-17 63-72 20-59-39Z" />
-        <path d="m914 391 23-19 26 8-8 24-31 12Z" />
-        <path d="m0 477 132-18 144 13 135-16 150 20 154-18 151 15 134-10v37H0Z" />
+      <g className={styles.mapAnchors} aria-hidden="true">
+        {pins.map((pin) => (
+          <circle
+            key={`anchor-${pin.city.city}-${pin.index}`}
+            cx={pin.anchorX}
+            cy={pin.anchorY}
+            r="2.5"
+          />
+        ))}
       </g>
 
       <g className={styles.mapPins}>
-        {cities.map((city, index) => {
-          const { x, y } = projectCity(city);
-          const label = `${index + 1}. ${city.city}, ${city.regionCountry}`;
+        {pins.map((pin) => {
+          const label = getLocationLabel(pin.city);
 
           return (
             <g
-              key={`${city.city}-${city.regionCountry}-${index}`}
+              key={`${pin.city.city}-${pin.city.regionCountry}-${pin.index}`}
               className={styles.mapPin}
-              transform={`translate(${x} ${y})`}
+              transform={`translate(${pin.x} ${pin.y})`}
               aria-label={label}
+              role="img"
+              tabIndex={0}
+              onMouseEnter={() => setHoveredPinIndex(pin.index)}
+              onMouseLeave={() => setHoveredPinIndex(null)}
+              onFocus={() => setFocusedPinIndex(pin.index)}
+              onBlur={() => setFocusedPinIndex(null)}
             >
-              <title>{label}</title>
-              <circle className={styles.mapPinHalo} r="13" />
-              <circle className={styles.mapPinDot} r="8" />
-              <text x="0" y="3.25" textAnchor="middle">
-                {index + 1}
-              </text>
+              <circle className={styles.mapPinHalo} r="10" />
+              <circle className={styles.mapPinDot} r={PIN_RADIUS} />
             </g>
           );
         })}
       </g>
+
+      {activePin && activeTooltip && (
+        <g
+          key={activePin.index}
+          className={styles.mapTooltip}
+          transform={`translate(${activeTooltip.x} ${activeTooltip.y})`}
+          aria-hidden="true"
+        >
+          <rect
+            width={activeTooltip.width}
+            height={TOOLTIP_HEIGHT}
+            rx="7"
+          />
+          <text
+            ref={tooltipTextRef}
+            className={styles.mapTooltipTitle}
+            x={TOOLTIP_HORIZONTAL_PADDING}
+            y="21"
+          >
+            {activeLabel}
+          </text>
+        </g>
+      )}
     </svg>
   );
 }

@@ -8,16 +8,10 @@ import wrappedJson from "../../../data/wrapped-2026.json";
 import musicStyles from "../../styles/music.module.css";
 import pocketStyles from "../../styles/pocket.module.css";
 import styles from "../../styles/wrapped.module.css";
-import type {
-  WrappedCity,
-  WrappedData,
-  WrappedFlight,
-  WrappedStepsMonth,
-  WrappedVisit,
-} from "../../types/wrapped";
+import type { WrappedData } from "../../types/wrapped";
 
 export const metadata: Metadata = {
-  title: "2026 Wrapped | Trevor Gerald",
+  title: "Wrapped | Trevor Gerald",
   description: "Trevor's year in cities, miles, and steps.",
 };
 
@@ -25,6 +19,10 @@ const data = wrappedJson as WrappedData;
 const numberFormatter = new Intl.NumberFormat("en-US");
 const milesFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 0,
+});
+const compactNumberFormatter = new Intl.NumberFormat("en-US", {
+  notation: "compact",
+  maximumFractionDigits: 1,
 });
 
 function formatDate(date: string) {
@@ -43,43 +41,28 @@ function formatMonth(month: string, length: "long" | "short" = "short") {
   }).format(new Date(`${month}-01T00:00:00Z`));
 }
 
-function formatVisitRange(visit: WrappedVisit) {
-  const startMonth = formatMonth(visit.start.slice(0, 7));
-  const endMonth = formatMonth(visit.end.slice(0, 7));
-  const startDay = Number(visit.start.slice(8, 10));
-  const endDay = Number(visit.end.slice(8, 10));
+function getAxisScale(maxValue: number) {
+  if (maxValue <= 0) return { max: 1, ticks: [0, 1] };
 
-  if (visit.start === visit.end) {
-    return `${startMonth} ${startDay}`;
-  }
+  const roughStep = maxValue / 4;
+  const magnitude = 10 ** Math.floor(Math.log10(roughStep));
+  const normalizedStep = roughStep / magnitude;
+  const multiplier =
+    normalizedStep <= 1
+      ? 1
+      : normalizedStep <= 2
+        ? 2
+        : normalizedStep <= 5
+          ? 5
+          : 10;
+  const step = multiplier * magnitude;
+  const max = Math.ceil(maxValue / step) * step;
+  const ticks = Array.from(
+    { length: Math.round(max / step) + 1 },
+    (_, index) => index * step
+  );
 
-  return startMonth === endMonth
-    ? `${startMonth} ${startDay}–${endDay}`
-    : `${startMonth} ${startDay}–${endMonth} ${endDay}`;
-}
-
-function formatFlightDate(flight: WrappedFlight) {
-  return flight.date === flight.endDate
-    ? formatDate(flight.date)
-    : `${formatVisitRange({
-        start: flight.date,
-        end: flight.endDate,
-      })}, ${data.year}`;
-}
-
-function cityVisitLabel(city: WrappedCity) {
-  if (city.firstVisited) {
-    return `First visited ${formatDate(city.firstVisited)}`;
-  }
-
-  return (city.dates ?? []).map(formatVisitRange).join(" · ");
-}
-
-function sourceMixSummary(months: WrappedStepsMonth[]) {
-  return months
-    .filter((month) => month.total > 0)
-    .map((month) => `${formatMonth(month.month)}: ${month.sourceMix}`)
-    .join("; ");
+  return { max, ticks };
 }
 
 function sampleMessage() {
@@ -136,23 +119,19 @@ export default function WrappedPage() {
     (total, month) => total + month.miles,
     0
   );
-  const largestStepMonth = Math.max(
-    1,
-    ...data.steps.monthly.map((month) => month.total)
+  const trackedStepMonths = data.steps.monthly.filter(
+    (month) => month.total > 0
   );
-  const sourceSummary = sourceMixSummary(data.steps.monthly);
+  const stepAxisScale = getAxisScale(
+    Math.max(0, ...trackedStepMonths.map((month) => month.total))
+  );
 
   return (
     <PageShell>
       <PageHeader
-        title="2026 Wrapped"
-        description="Trevor's year in cities, miles, and everyday steps."
+        title="Wrapped"
+        description="My year in cities, miles, and steps."
         className={musicStyles.fadeInUp}
-        actions={
-          <time className={styles.updated} dateTime={data.updatedThrough}>
-            Updated through {formatDate(data.updatedThrough)}
-          </time>
-        }
       />
 
       <div
@@ -161,44 +140,29 @@ export default function WrappedPage() {
       >
         <section className={musicStyles.recentlyPlayedContain}>
           <SectionHeader
-            title="Year in numbers"
-            actions={
-              <span className={musicStyles.sectionSubtitle}>
-                through {formatDate(data.updatedThrough)}
-              </span>
-            }
+            title="Numbers"
           />
 
           <div className={musicStyles.statsCards}>
             <MetricCard
-              label="Cities visited"
+              label="Cities Visited"
               value={numberFormatter.format(data.cities.length)}
-              meta="City-level locations only"
+              meta="from timeline data"
             />
             <MetricCard
-              label="Miles flown"
+              label="Miles Flown"
               value={milesFormatter.format(data.flights.totalMiles)}
-              meta={`${data.flights.segments.length} flights · great-circle`}
+              meta={`from ${data.flights.segments.length} flights`}
             />
             <MetricCard
-              label="Miles driven"
+              label="Miles Driven"
               value={milesFormatter.format(totalMilesDriven)}
-              meta={
-                data.driving.example
-                  ? "Sample · waiting for Timeline export"
-                  : "Summed from monthly Timeline totals"
-              }
+              meta="from timeline data"
             />
             <MetricCard
-              label="Steps YTD"
+              label="Steps"
               value={numberFormatter.format(data.steps.yearlyTotal)}
-              meta={
-                data.steps.example
-                  ? "Sample · waiting for Health export"
-                  : `${data.steps.daysTracked} days through ${formatDate(
-                      data.steps.updatedThrough
-                    )}`
-              }
+              meta="from health data"
             />
           </div>
 
@@ -212,145 +176,86 @@ export default function WrappedPage() {
 
         <section className={musicStyles.statsContain}>
           <SectionHeader
-            title="Cities visited"
-            actions={
-              <span className={musicStyles.sectionSubtitle}>
-                {data.cities.length} city-level places
-              </span>
-            }
+            title="Cities"
+            className={styles.mapSectionHeader}
           />
 
-          <div className={styles.mapCard}>
-            <WrappedMap cities={data.cities} />
-            {data.cities.length === 0 && (
-              <p className={styles.emptyMap}>No cities added yet.</p>
-            )}
-          </div>
-
-          <ol className={styles.cityList}>
-            {data.cities.map((city, index) => (
-              <li key={`${city.city}-${city.regionCountry}-${index}`}>
-                <span className={styles.cityIndex}>
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <span className={styles.cityInfo}>
-                  <span className={pocketStyles.articleTitle}>{city.city}</span>
-                  <span className={pocketStyles.articleDescription}>
-                    {city.regionCountry}
-                  </span>
-                </span>
-                <span
-                  className={`${pocketStyles.writtenArticleMeta} ${styles.cityDate}`}
-                >
-                  {cityVisitLabel(city)}
-                </span>
-              </li>
-            ))}
-          </ol>
+          <WrappedMap cities={data.cities} />
         </section>
 
         <section className={musicStyles.statsContain}>
           <SectionHeader
-            title="Steps by month"
-            actions={
-              <span className={musicStyles.sectionSubtitle}>
-                {numberFormatter.format(data.steps.yearlyTotal)} through{" "}
-                {formatDate(data.steps.updatedThrough)}
-              </span>
-            }
+            title="Steps"
           />
 
           <div className={musicStyles.statsCards}>
             <MetricCard
-              label="Daily average"
+              label="Daily Average"
               value={numberFormatter.format(data.steps.dailyAverage)}
-              meta={`Across ${data.steps.daysTracked} tracked days`}
+              meta={`across ${data.steps.daysTracked} days`}
             />
             <MetricCard
-              label="Best day"
+              label="Best Day"
               value={numberFormatter.format(data.steps.bestDay.steps)}
               meta={formatDate(data.steps.bestDay.date)}
             />
           </div>
 
           <div className={musicStyles.genreChart}>
-            {data.steps.monthly.map((month) => (
-              <div className={musicStyles.genreRow} key={month.month}>
-                <span className={musicStyles.genreName}>
-                  {formatMonth(month.month)}
-                </span>
-                <div
-                  className={musicStyles.genreBarTrack}
-                  title={`${formatMonth(month.month, "long")}: ${numberFormatter.format(
-                    month.total
-                  )} steps. ${month.sourceMix}`}
-                >
+            <div className={musicStyles.genreGrid} aria-hidden="true">
+              {stepAxisScale.ticks.slice(1, -1).map((tick) => (
+                <span
+                  className={musicStyles.genreGridLine}
+                  style={{ left: `${(tick / stepAxisScale.max) * 100}%` }}
+                  key={tick}
+                />
+              ))}
+            </div>
+            <div className={musicStyles.genreRows}>
+              {trackedStepMonths.map((month) => (
+                <div className={musicStyles.genreRow} key={month.month}>
+                  <div className={musicStyles.genreLabels}>
+                    <span className={musicStyles.genreName}>
+                      {formatMonth(month.month)}
+                    </span>
+                    <span className={musicStyles.genreValue}>
+                      {numberFormatter.format(month.total)}
+                    </span>
+                  </div>
                   <div
-                    className={musicStyles.genreBarFill}
-                    style={{
-                      width: `${
-                        month.total === 0
-                          ? 0
-                          : Math.max(
-                              (month.total / largestStepMonth) * 100,
-                              4
-                            )
-                      }%`,
-                    }}
-                  />
+                    className={musicStyles.genreBarTrack}
+                    title={`${formatMonth(month.month, "long")}: ${numberFormatter.format(
+                      month.total
+                    )} steps. ${month.sourceMix}`}
+                  >
+                    <div
+                      className={musicStyles.genreBarFill}
+                      style={{
+                        width: `${(month.total / stepAxisScale.max) * 100}%`,
+                      }}
+                    />
+                  </div>
                 </div>
-                <span className={musicStyles.genreValue}>
-                  {numberFormatter.format(month.total)}
+              ))}
+            </div>
+            <div className={musicStyles.genreAxis} aria-hidden="true">
+              {stepAxisScale.ticks.map((tick) => (
+                <span
+                  className={`${musicStyles.genreAxisLabel} ${
+                    tick === stepAxisScale.max
+                      ? musicStyles.genreAxisLabelEnd
+                      : ""
+                  }`}
+                  style={{ left: `${(tick / stepAxisScale.max) * 100}%` }}
+                  key={tick}
+                >
+                  {tick === 0 ? "0" : compactNumberFormatter.format(tick)}
                 </span>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-
-          <p className={styles.sourceNote}>
-            <sup>*</sup> Daily totals come from Apple Health after it applies
-            its source priority. The export is already merged, so no source
-            totals are added or deduplicated.
-            {sourceSummary && ` Coverage — ${sourceSummary}.`}
-          </p>
         </section>
 
-        <section className={musicStyles.statsContain}>
-          <SectionHeader
-            title="Flight log"
-            actions={
-              <span className={musicStyles.sectionSubtitle}>
-                {data.flights.segments.length} flown ·{" "}
-                {milesFormatter.format(data.flights.totalMiles)} miles
-              </span>
-            }
-          />
-
-          <ol className={styles.flightList}>
-            {data.flights.segments.map((flight, index) => (
-              <li
-                key={`${flight.date}-${flight.endDate}-${flight.from}-${flight.to}-${index}`}
-              >
-                <span className={styles.flightMeta}>
-                  <span className={pocketStyles.writtenArticleMeta}>
-                    {formatFlightDate(flight)}
-                  </span>
-                  <span className={styles.flightMiles}>
-                    {milesFormatter.format(flight.miles)} mi
-                  </span>
-                </span>
-                <span className={styles.flightRoute}>
-                  <span className={musicStyles.albumReviewItemCompany}>
-                    {flight.from}
-                  </span>
-                  <span className={styles.flightLine} aria-hidden="true" />
-                  <span className={musicStyles.albumReviewItemCompany}>
-                    {flight.to}
-                  </span>
-                </span>
-              </li>
-            ))}
-          </ol>
-        </section>
       </div>
 
       <Footer />
