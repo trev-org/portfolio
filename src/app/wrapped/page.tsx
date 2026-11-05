@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import Footer from "../../components/Footer";
+import PageHeader from "../../components/layout/PageHeader";
+import PageShell from "../../components/layout/PageShell";
+import SectionHeader from "../../components/layout/SectionHeader";
 import WrappedMap from "../../components/WrappedMap";
 import wrappedJson from "../../../data/wrapped-2026.json";
 import musicStyles from "../../styles/music.module.css";
@@ -131,39 +133,31 @@ export default function WrappedPage() {
   const sourceSummary = sourceMixSummary(data.steps.monthly);
 
   return (
-    <div className={pocketStyles.landingContain}>
-      <div
-        className={`${pocketStyles.brandingContain} ${pocketStyles.fadeInUp}`}
-      >
-        <div className={pocketStyles.brandingHeader}>
-          <Link className={pocketStyles.name} href="/">
-            2026 Wrapped
-          </Link>
-        </div>
-        <div className={styles.introBlock}>
-          <p className={pocketStyles.intro}>
-            Trevor&apos;s year in cities, miles, and everyday steps.
-          </p>
-          <p className={styles.updated}>
-            Updated through{" "}
-            <time dateTime={data.updatedThrough}>
-              {formatDate(data.updatedThrough)}
-            </time>
-          </p>
-        </div>
-      </div>
+    <PageShell>
+      <PageHeader
+        title="2026 Wrapped"
+        description="Trevor's year in cities, miles, and everyday steps."
+        className={musicStyles.fadeInUp}
+        actions={
+          <time className={styles.updated} dateTime={data.updatedThrough}>
+            Updated through {formatDate(data.updatedThrough)}
+          </time>
+        }
+      />
 
       <div
-        className={`${pocketStyles.musicContain} ${pocketStyles.fadeInUp}`}
+        className={`${musicStyles.musicContain} ${musicStyles.fadeInUp}`}
         style={{ animationDelay: "0.05s" }}
       >
         <section className={musicStyles.recentlyPlayedContain}>
-          <div className={musicStyles.sectionTitleContainer}>
-            <span className={musicStyles.sectionTitle}>Year in numbers</span>
-            <span className={musicStyles.sectionSubtitle}>
-              through {formatDate(data.updatedThrough)}
-            </span>
-          </div>
+          <SectionHeader
+            title="Year in numbers"
+            actions={
+              <span className={musicStyles.sectionSubtitle}>
+                through {formatDate(data.updatedThrough)}
+              </span>
+            }
+          />
 
           <div className={musicStyles.statsCards}>
             <MetricCard
@@ -205,12 +199,14 @@ export default function WrappedPage() {
         </section>
 
         <section className={musicStyles.statsContain}>
-          <div className={musicStyles.sectionTitleContainer}>
-            <span className={musicStyles.sectionTitle}>Cities visited</span>
-            <span className={musicStyles.sectionSubtitle}>
-              {data.cities.length} city-level places
-            </span>
-          </div>
+          <SectionHeader
+            title="Cities visited"
+            actions={
+              <span className={musicStyles.sectionSubtitle}>
+                {data.cities.length} city-level places
+              </span>
+            }
+          />
 
           <div className={styles.mapCard}>
             <WrappedMap cities={data.cities} />
@@ -242,12 +238,14 @@ export default function WrappedPage() {
         </section>
 
         <section className={musicStyles.statsContain}>
-          <div className={musicStyles.sectionTitleContainer}>
-            <span className={musicStyles.sectionTitle}>Steps by month</span>
-            <span className={musicStyles.sectionSubtitle}>
-              {numberFormatter.format(data.steps.yearlyTotal)} total
-            </span>
-          </div>
+          <SectionHeader
+            title="Steps by month"
+            actions={
+              <span className={musicStyles.sectionSubtitle}>
+                {numberFormatter.format(data.steps.yearlyTotal)} total
+              </span>
+            }
+          />
 
           <div className={musicStyles.genreChart}>
             {data.steps.monthly.map((month) => (
@@ -291,13 +289,15 @@ export default function WrappedPage() {
         </section>
 
         <section className={musicStyles.statsContain}>
-          <div className={musicStyles.sectionTitleContainer}>
-            <span className={musicStyles.sectionTitle}>Flight log</span>
-            <span className={musicStyles.sectionSubtitle}>
-              {data.flights.segments.length} flown ·{" "}
-              {milesFormatter.format(data.flights.totalMiles)} miles
-            </span>
-          </div>
+          <SectionHeader
+            title="Flight log"
+            actions={
+              <span className={musicStyles.sectionSubtitle}>
+                {data.flights.segments.length} flown ·{" "}
+                {milesFormatter.format(data.flights.totalMiles)} miles
+              </span>
+            }
+          />
 
           <ol className={styles.flightList}>
             {data.flights.segments.map((flight, index) => (
@@ -324,6 +324,6 @@ export default function WrappedPage() {
       </div>
 
       <Footer />
-    </div>
+    </PageShell>
   );
 }
