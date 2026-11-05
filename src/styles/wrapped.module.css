@@ -158,6 +158,19 @@
   padding: 8px 5px;
 }
 
+.flightMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+}
+
+.flightMiles {
+  color: #807b75;
+  font-family: "MarketSans-Regular";
+  font-size: 10px;
+}
+
 .flightRoute {
   display: grid;
   grid-template-columns: auto minmax(24px, 1fr) auto;

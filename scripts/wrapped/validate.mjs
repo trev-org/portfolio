@@ -2,29 +2,39 @@ import path from "node:path";
 import Ajv from "ajv";
 import {
   REPO_ROOT,
-  calculateFlightMiles,
   isCalendarDate,
   monthKeys,
   parseArgs,
   parseYear,
   readJson,
-  writeJson,
 } from "./utils.mjs";
 
 function usage() {
   console.log(`Validate one wrapped data file and verify its computed totals.
 
 Usage:
-  node scripts/wrapped/validate.mjs [data/wrapped-2026.json] [--year 2026] [--write]
+  node scripts/wrapped/validate.mjs [data/wrapped-2026.json] [--year 2026]
 
 Options:
   --year   Select data/wrapped-<year>.json when no file is provided.
-  --write  Persist a newly computed flights.totalMiles value.
   --help   Show this message.`);
 }
 
 function dateYear(date) {
   return Number(date.slice(0, 4));
+}
+
+function containsExamplePlaceholder(value) {
+  if (typeof value === "string") {
+    return value.toUpperCase().includes("EXAMPLE");
+  }
+  if (Array.isArray(value)) {
+    return value.some(containsExamplePlaceholder);
+  }
+  if (value && typeof value === "object") {
+    return Object.values(value).some(containsExamplePlaceholder);
+  }
+  return false;
 }
 
 function validateSemanticRules(data) {
@@ -71,17 +81,38 @@ function validateSemanticRules(data) {
   }
 
   for (const [index, flight] of data.flights.segments.entries()) {
-    if (!isCalendarDate(flight.date)) {
-      errors.push(`flights.segments[${index}] has an invalid date: ${flight.date}`);
-    } else if (dateYear(flight.date) !== data.year) {
-      errors.push(`flights.segments[${index}] date is outside ${data.year}.`);
-    } else if (flight.date > data.updatedThrough) {
-      errors.push(`flights.segments[${index}] date is after updatedThrough.`);
+    for (const boundary of ["date", "endDate"]) {
+      const date = flight[boundary];
+      if (!isCalendarDate(date)) {
+        errors.push(
+          `flights.segments[${index}].${boundary} is invalid: ${date}`
+        );
+      } else if (dateYear(date) !== data.year) {
+        errors.push(
+          `flights.segments[${index}].${boundary} is outside ${data.year}.`
+        );
+      } else if (date > data.updatedThrough) {
+        errors.push(
+          `flights.segments[${index}].${boundary} is after updatedThrough.`
+        );
+      }
+    }
+    if (flight.endDate < flight.date) {
+      errors.push(`flights.segments[${index}] ends before it starts.`);
     }
 
     if (flight.from === flight.to) {
       errors.push(`flights.segments[${index}] has the same origin and destination.`);
     }
+  }
+  const summedFlightMiles = data.flights.segments.reduce(
+    (total, flight) => total + flight.miles,
+    0
+  );
+  if (summedFlightMiles !== data.flights.totalMiles) {
+    errors.push(
+      `flights.totalMiles is ${data.flights.totalMiles}, but flight segments sum to ${summedFlightMiles}.`
+    );
   }
 
   const drivingMonths = data.driving.monthlyMiles.map((item) => item.month);
@@ -105,6 +136,36 @@ function validateSemanticRules(data) {
       `steps.yearlyTotal is ${data.steps.yearlyTotal}, but monthly totals sum to ${summedSteps}.`
     );
   }
+  if (!isCalendarDate(data.steps.updatedThrough)) {
+    errors.push(
+      `steps.updatedThrough is not a real calendar date: ${data.steps.updatedThrough}`
+    );
+  } else if (dateYear(data.steps.updatedThrough) !== data.year) {
+    errors.push("steps.updatedThrough must fall within the wrapped year.");
+  } else if (data.steps.updatedThrough > data.updatedThrough) {
+    errors.push("steps.updatedThrough cannot be after updatedThrough.");
+  }
+
+  const expectedDailyAverage = Math.round(
+    data.steps.yearlyTotal / data.steps.daysTracked
+  );
+  if (data.steps.dailyAverage !== expectedDailyAverage) {
+    errors.push(
+      `steps.dailyAverage is ${data.steps.dailyAverage}, but the total across ${data.steps.daysTracked} days averages ${expectedDailyAverage}.`
+    );
+  }
+  if (!isCalendarDate(data.steps.bestDay.date)) {
+    errors.push(
+      `steps.bestDay.date is not a real calendar date: ${data.steps.bestDay.date}`
+    );
+  } else if (dateYear(data.steps.bestDay.date) !== data.year) {
+    errors.push("steps.bestDay.date must fall within the wrapped year.");
+  } else if (data.steps.bestDay.date > data.steps.updatedThrough) {
+    errors.push("steps.bestDay.date cannot be after steps.updatedThrough.");
+  }
+  if (data.steps.bestDay.steps > data.steps.yearlyTotal) {
+    errors.push("steps.bestDay.steps cannot exceed steps.yearlyTotal.");
+  }
 
   const containsSampleData = data.driving.example || data.steps.example;
   if (data.example !== containsSampleData) {
@@ -113,10 +174,7 @@ function validateSemanticRules(data) {
     );
   }
 
-  if (
-    !data.example &&
-    JSON.stringify(data).toUpperCase().includes("EXAMPLE")
-  ) {
+  if (!data.example && containsExamplePlaceholder(data)) {
     errors.push(
       'example is false, but the data still contains an "EXAMPLE" placeholder.'
     );
@@ -159,21 +217,6 @@ async function main() {
         .map((error) => `  - ${error}`)
         .join("\n")}`
     );
-  }
-
-  const computedFlightMiles = calculateFlightMiles(data.flights.segments);
-  const flightMilesChanged = data.flights.totalMiles !== computedFlightMiles;
-
-  if (flightMilesChanged && !options.write) {
-    throw new Error(
-      `flights.totalMiles is ${data.flights.totalMiles}, but the flight list computes to ${computedFlightMiles}. Re-run with --write.`
-    );
-  }
-
-  if (flightMilesChanged) {
-    data.flights.totalMiles = computedFlightMiles;
-    await writeJson(dataPath, data);
-    console.log(`Updated flights.totalMiles to ${computedFlightMiles}.`);
   }
 
   console.log(

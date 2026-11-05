@@ -9,6 +9,7 @@ import styles from "../../styles/wrapped.module.css";
 import type {
   WrappedCity,
   WrappedData,
+  WrappedFlight,
   WrappedStepsMonth,
   WrappedVisit,
 } from "../../types/wrapped";
@@ -53,6 +54,15 @@ function formatVisitRange(visit: WrappedVisit) {
   return startMonth === endMonth
     ? `${startMonth} ${startDay}–${endDay}`
     : `${startMonth} ${startDay}–${endMonth} ${endDay}`;
+}
+
+function formatFlightDate(flight: WrappedFlight) {
+  return flight.date === flight.endDate
+    ? formatDate(flight.date)
+    : `${formatVisitRange({
+        start: flight.date,
+        end: flight.endDate,
+      })}, ${data.year}`;
 }
 
 function cityVisitLabel(city: WrappedCity) {
@@ -186,12 +196,14 @@ export default function WrappedPage() {
               }
             />
             <MetricCard
-              label="Steps"
+              label="Steps YTD"
               value={numberFormatter.format(data.steps.yearlyTotal)}
               meta={
                 data.steps.example
                   ? "Sample · waiting for Health export"
-                  : "One preferred source per day"
+                  : `${data.steps.daysTracked} days through ${formatDate(
+                      data.steps.updatedThrough
+                    )}`
               }
             />
           </div>
@@ -245,8 +257,22 @@ export default function WrappedPage() {
           <div className={musicStyles.sectionTitleContainer}>
             <span className={musicStyles.sectionTitle}>Steps by month</span>
             <span className={musicStyles.sectionSubtitle}>
-              {numberFormatter.format(data.steps.yearlyTotal)} total
+              {numberFormatter.format(data.steps.yearlyTotal)} through{" "}
+              {formatDate(data.steps.updatedThrough)}
             </span>
+          </div>
+
+          <div className={musicStyles.statsCards}>
+            <MetricCard
+              label="Daily average"
+              value={numberFormatter.format(data.steps.dailyAverage)}
+              meta={`Across ${data.steps.daysTracked} tracked days`}
+            />
+            <MetricCard
+              label="Best day"
+              value={numberFormatter.format(data.steps.bestDay.steps)}
+              meta={formatDate(data.steps.bestDay.date)}
+            />
           </div>
 
           <div className={musicStyles.genreChart}>
@@ -283,10 +309,10 @@ export default function WrappedPage() {
           </div>
 
           <p className={styles.sourceNote}>
-            <sup>*</sup> Daily totals use Google Health when it has data for
-            that day; otherwise iPhone fills the gap. The sources are never
-            added together.
-            {sourceSummary && ` Source mix — ${sourceSummary}.`}
+            <sup>*</sup> Daily totals come from Apple Health after it applies
+            its source priority. The export is already merged, so no source
+            totals are added or deduplicated.
+            {sourceSummary && ` Coverage — ${sourceSummary}.`}
           </p>
         </section>
 
@@ -301,13 +327,17 @@ export default function WrappedPage() {
 
           <ol className={styles.flightList}>
             {data.flights.segments.map((flight, index) => (
-              <li key={`${flight.date}-${flight.from}-${flight.to}-${index}`}>
-                <time
-                  className={pocketStyles.writtenArticleMeta}
-                  dateTime={flight.date}
-                >
-                  {formatDate(flight.date)}
-                </time>
+              <li
+                key={`${flight.date}-${flight.endDate}-${flight.from}-${flight.to}-${index}`}
+              >
+                <span className={styles.flightMeta}>
+                  <span className={pocketStyles.writtenArticleMeta}>
+                    {formatFlightDate(flight)}
+                  </span>
+                  <span className={styles.flightMiles}>
+                    {milesFormatter.format(flight.miles)} mi
+                  </span>
+                </span>
                 <span className={styles.flightRoute}>
                   <span className={musicStyles.albumReviewItemCompany}>
                     {flight.from}
