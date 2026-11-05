@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { geoGraticule10, geoNaturalEarth1, geoPath } from "d3-geo";
 import { feature, mesh } from "topojson-client";
 import type { GeometryObject, Topology } from "topojson-specification";
@@ -14,6 +14,12 @@ const MAP_PADDING = 24;
 const PIN_RADIUS = 6;
 const PIN_MARGIN = PIN_RADIUS + 4;
 const MIN_PIN_DISTANCE = PIN_RADIUS * 2 + 4;
+const MOBILE_PIN_RADIUS = 8;
+const MOBILE_PIN_DISTANCE = 36;
+const MOBILE_PIN_HIT_RADIUS = 18;
+const MOBILE_VIEW_ASPECT_RATIO = 1.45;
+const MOBILE_VIEW_PADDING = 50;
+const MOBILE_VIEW_MIN_WIDTH = 420;
 const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
 const SEARCH_RADII = [0, 18, 28, 40, 54, 70];
 const TOOLTIP_HEIGHT = 32;
@@ -49,6 +55,20 @@ type MapPin = {
   y: number;
 };
 
+type MapViewport = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+const desktopViewport: MapViewport = {
+  x: 0,
+  y: 0,
+  width: MAP_WIDTH,
+  height: MAP_HEIGHT,
+};
+
 function distanceBetween(
   first: { x: number; y: number },
   second: { x: number; y: number },
@@ -59,6 +79,7 @@ function distanceBetween(
 function isValidPinPosition(
   candidate: { x: number; y: number },
   placedPins: MapPin[],
+  minimumDistance: number,
 ) {
   const insideMap =
     candidate.x >= PIN_MARGIN &&
@@ -70,12 +91,12 @@ function isValidPinPosition(
     insideMap &&
     placedPins.every(
       (placedPin) =>
-        distanceBetween(candidate, placedPin) >= MIN_PIN_DISTANCE,
+        distanceBetween(candidate, placedPin) >= minimumDistance,
     )
   );
 }
 
-function layoutPins(cities: WrappedCity[]) {
+function layoutPins(cities: WrappedCity[], minimumDistance: number) {
   return cities.reduce<MapPin[]>((placedPins, city, index) => {
     const projected = projection([city.lng, city.lat]);
 
@@ -100,7 +121,7 @@ function layoutPins(cities: WrappedCity[]) {
     });
     const position =
       candidates.find((candidate) =>
-        isValidPinPosition(candidate, placedPins),
+        isValidPinPosition(candidate, placedPins, minimumDistance),
       ) ?? { x: anchorX, y: anchorY };
 
     placedPins.push({
@@ -115,16 +136,38 @@ function layoutPins(cities: WrappedCity[]) {
   }, []);
 }
 
-function getLeaderEnd(pin: MapPin) {
+function getFocusedViewport(pins: MapPin[]): MapViewport {
+  if (pins.length === 0) {
+    return desktopViewport;
+  }
+
+  const minX = Math.min(...pins.map((pin) => Math.min(pin.x, pin.anchorX)));
+  const maxX = Math.max(...pins.map((pin) => Math.max(pin.x, pin.anchorX)));
+  const minY = Math.min(...pins.map((pin) => Math.min(pin.y, pin.anchorY)));
+  const maxY = Math.max(...pins.map((pin) => Math.max(pin.y, pin.anchorY)));
+  const centerX = (minX + maxX) / 2;
+  const centerY = (minY + maxY) / 2;
+  const width = Math.min(
+    Math.max(maxX - minX + MOBILE_VIEW_PADDING * 2, MOBILE_VIEW_MIN_WIDTH),
+    MAP_WIDTH,
+  );
+  const height = Math.min(width / MOBILE_VIEW_ASPECT_RATIO, MAP_HEIGHT);
+  const x = Math.min(Math.max(centerX - width / 2, 0), MAP_WIDTH - width);
+  const y = Math.min(Math.max(centerY - height / 2, 0), MAP_HEIGHT - height);
+
+  return { x, y, width, height };
+}
+
+function getLeaderEnd(pin: MapPin, pinRadius: number) {
   const deltaX = pin.x - pin.anchorX;
   const deltaY = pin.y - pin.anchorY;
   const distance = Math.hypot(deltaX, deltaY);
 
-  if (distance <= PIN_RADIUS) {
+  if (distance <= pinRadius) {
     return null;
   }
 
-  const pinEdgeOffset = PIN_RADIUS + 1;
+  const pinEdgeOffset = pinRadius + 1;
 
   return {
     x: pin.x - (deltaX / distance) * pinEdgeOffset,
@@ -132,18 +175,28 @@ function getLeaderEnd(pin: MapPin) {
   };
 }
 
-function getTooltipLayout(pin: MapPin, width: number) {
+function getTooltipLayout(
+  pin: MapPin,
+  width: number,
+  viewport: MapViewport,
+  pinRadius: number,
+) {
+  const viewportRight = viewport.x + viewport.width;
+  const viewportBottom = viewport.y + viewport.height;
   const preferredLeft = pin.x - width / 2;
   const left = Math.min(
-    Math.max(preferredLeft, TOOLTIP_MARGIN),
-    MAP_WIDTH - width - TOOLTIP_MARGIN,
+    Math.max(preferredLeft, viewport.x + TOOLTIP_MARGIN),
+    viewportRight - width - TOOLTIP_MARGIN,
   );
   const preferredTop =
-    pin.y - TOOLTIP_HEIGHT - PIN_RADIUS - TOOLTIP_GAP;
+    pin.y - TOOLTIP_HEIGHT - pinRadius - TOOLTIP_GAP;
   const top =
-    preferredTop >= TOOLTIP_MARGIN
+    preferredTop >= viewport.y + TOOLTIP_MARGIN
       ? preferredTop
-      : pin.y + PIN_RADIUS + TOOLTIP_GAP;
+      : Math.min(
+          pin.y + pinRadius + TOOLTIP_GAP,
+          viewportBottom - TOOLTIP_HEIGHT - TOOLTIP_MARGIN,
+        );
 
   return {
     x: left,
@@ -168,12 +221,20 @@ function getLocationLabel(city: WrappedCity) {
 }
 
 export default function WrappedMap({ cities }: { cities: WrappedCity[] }) {
+  const [isMobile, setIsMobile] = useState(false);
   const [hoveredPinIndex, setHoveredPinIndex] = useState<number | null>(null);
   const [focusedPinIndex, setFocusedPinIndex] = useState<number | null>(null);
+  const [selectedPinIndex, setSelectedPinIndex] = useState<number | null>(null);
   const [tooltipTextWidth, setTooltipTextWidth] = useState<number | null>(null);
   const tooltipTextRef = useRef<SVGTextElement>(null);
-  const pins = layoutPins(cities);
-  const activePinIndex = hoveredPinIndex ?? focusedPinIndex;
+  const pinRadius = isMobile ? MOBILE_PIN_RADIUS : PIN_RADIUS;
+  const pins = layoutPins(
+    cities,
+    isMobile ? MOBILE_PIN_DISTANCE : MIN_PIN_DISTANCE,
+  );
+  const viewport = isMobile ? getFocusedViewport(pins) : desktopViewport;
+  const activePinIndex =
+    hoveredPinIndex ?? focusedPinIndex ?? selectedPinIndex;
   const activePin = pins.find((pin) => pin.index === activePinIndex);
   const activeLabel = activePin ? getLocationLabel(activePin.city) : "";
   const estimatedTextWidth = activeLabel.length * 6;
@@ -181,8 +242,20 @@ export default function WrappedMap({ cities }: { cities: WrappedCity[] }) {
     (tooltipTextWidth ?? estimatedTextWidth) +
     TOOLTIP_HORIZONTAL_PADDING * 2;
   const activeTooltip = activePin
-    ? getTooltipLayout(activePin, tooltipWidth)
+    ? getTooltipLayout(activePin, tooltipWidth, viewport, pinRadius)
     : null;
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 550px)");
+    const updateMobileState = () => setIsMobile(mediaQuery.matches);
+
+    updateMobileState();
+    mediaQuery.addEventListener("change", updateMobileState);
+
+    return () => {
+      mediaQuery.removeEventListener("change", updateMobileState);
+    };
+  }, []);
 
   useLayoutEffect(() => {
     let cancelled = false;
@@ -204,10 +277,14 @@ export default function WrappedMap({ cities }: { cities: WrappedCity[] }) {
   return (
     <svg
       className={styles.map}
-      viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
+      viewBox={`${viewport.x} ${viewport.y} ${viewport.width} ${viewport.height}`}
       role="group"
       aria-label="Cities visited"
       aria-describedby="wrapped-map-description"
+      onClick={() => {
+        setSelectedPinIndex(null);
+        setFocusedPinIndex(null);
+      }}
     >
       <desc id="wrapped-map-description">
         A world map with one pin for every city visited. Hover or focus a pin
@@ -247,7 +324,7 @@ export default function WrappedMap({ cities }: { cities: WrappedCity[] }) {
 
       <g className={styles.mapLeaders} aria-hidden="true">
         {pins.map((pin) => {
-          const leaderEnd = getLeaderEnd(pin);
+          const leaderEnd = getLeaderEnd(pin, pinRadius);
 
           return (
             leaderEnd && (
@@ -284,15 +361,35 @@ export default function WrappedMap({ cities }: { cities: WrappedCity[] }) {
               className={styles.mapPin}
               transform={`translate(${pin.x} ${pin.y})`}
               aria-label={label}
-              role="img"
+              aria-expanded={activePinIndex === pin.index}
+              role="button"
               tabIndex={0}
-              onMouseEnter={() => setHoveredPinIndex(pin.index)}
-              onMouseLeave={() => setHoveredPinIndex(null)}
+              onPointerEnter={(event) => {
+                if (event.pointerType === "mouse") {
+                  setHoveredPinIndex(pin.index);
+                }
+              }}
+              onPointerLeave={(event) => {
+                if (event.pointerType === "mouse") {
+                  setHoveredPinIndex(null);
+                }
+              }}
               onFocus={() => setFocusedPinIndex(pin.index)}
               onBlur={() => setFocusedPinIndex(null)}
+              onClick={(event) => {
+                event.stopPropagation();
+                setSelectedPinIndex(pin.index);
+              }}
             >
-              <circle className={styles.mapPinHalo} r="10" />
-              <circle className={styles.mapPinDot} r={PIN_RADIUS} />
+              <circle
+                className={styles.mapPinHitArea}
+                r={isMobile ? MOBILE_PIN_HIT_RADIUS : 12}
+              />
+              <circle
+                className={styles.mapPinHalo}
+                r={isMobile ? 13 : 10}
+              />
+              <circle className={styles.mapPinDot} r={pinRadius} />
             </g>
           );
         })}
