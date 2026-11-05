@@ -387,35 +387,6 @@ const Home: React.FC = () => {
         >
           <SectionHeader title="Extras" spacing="compact" />
           <div className={styles.extrasGrid}>
-            <Link href="/wrapped">
-              <div className={styles.projectsItem}>
-                <div className={styles.projectItemHoverTopLeft}></div>
-                <div className={styles.projectItemHoverBottomRight}></div>
-                <div className={styles.projectItemHoverLeft}></div>
-                <div className={styles.projectItemHoverBottom}></div>
-                <div className={styles.projectsItemContentContain}>
-                  <span className={styles.projectsItemTitle}>2026 Wrapped</span>
-                  <span className={styles.projectsItemDesc}>
-                    A year in cities, miles, and everyday steps.
-                  </span>
-                </div>
-              </div>
-            </Link>
-            {/* <Link href="/arena">
-              <div className={styles.projectsItem}>
-                <div className={styles.projectItemHoverTopLeft}></div>
-                <div className={styles.projectItemHoverBottomRight}></div>
-                <div className={styles.projectItemHoverLeft}></div>
-                <div className={styles.projectItemHoverBottom}></div>
-                <div className={styles.projectsItemContentContain}>
-                  <span className={styles.projectsItemTitle}>Arena</span>
-                  <span className={styles.projectsItemDesc}>
-                    A space where I experiment with and compare AI models in
-                    competitive scenarios
-                  </span>
-                </div>
-              </div>
-            </Link> */}
             <Link href="/music">
               <div className={styles.projectsItem}>
                 <div className={styles.projectItemHoverTopLeft}></div>
@@ -454,6 +425,20 @@ const Home: React.FC = () => {
                   <span className={styles.projectsItemTitle}>Pocket</span>
                   <span className={styles.projectsItemDesc}>
                     A collection of knowledge I&apos;m drawn to.
+                  </span>
+                </div>
+              </div>
+            </Link>
+            <Link href="/wrapped">
+              <div className={styles.projectsItem}>
+                <div className={styles.projectItemHoverTopLeft}></div>
+                <div className={styles.projectItemHoverBottomRight}></div>
+                <div className={styles.projectItemHoverLeft}></div>
+                <div className={styles.projectItemHoverBottom}></div>
+                <div className={styles.projectsItemContentContain}>
+                  <span className={styles.projectsItemTitle}>Wrapped</span>
+                  <span className={styles.projectsItemDesc}>
+                    A year in cities, miles, and everyday steps.
                   </span>
                 </div>
               </div>
