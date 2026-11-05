@@ -1,8 +1,8 @@
-// Approximate airport reference coordinates used only for great-circle mileage.
-// Add another IATA code here when a flight uses an airport not yet listed.
+// Approximate airport coordinates for great-circle mileage. Email-sourced
+// routes also need a city name for their display labels.
 export const AIRPORTS = {
   AMS: { lat: 52.3105, lng: 4.7683 },
-  ARN: { lat: 59.6519, lng: 17.9186 },
+  ARN: { city: "Stockholm", lat: 59.6519, lng: 17.9186 },
   ATL: { lat: 33.6407, lng: -84.4277 },
   AUS: { lat: 30.1975, lng: -97.6664 },
   BOS: { lat: 42.3656, lng: -71.0096 },
@@ -23,17 +23,17 @@ export const AIRPORTS = {
   IAD: { lat: 38.9531, lng: -77.4565 },
   IAH: { lat: 29.9902, lng: -95.3368 },
   ICN: { lat: 37.4602, lng: 126.4407 },
-  JAC: { lat: 43.6073, lng: -110.7377 },
+  JAC: { city: "Jackson", lat: 43.6073, lng: -110.7377 },
   JFK: { lat: 40.6413, lng: -73.7781 },
   LAS: { lat: 36.084, lng: -115.1537 },
-  LAX: { lat: 33.9416, lng: -118.4085 },
+  LAX: { city: "Los Angeles", lat: 33.9416, lng: -118.4085 },
   LGA: { lat: 40.7769, lng: -73.874 },
   LHR: { lat: 51.47, lng: -0.4543 },
   MCO: { lat: 28.4312, lng: -81.3081 },
   MEX: { lat: 19.4361, lng: -99.0719 },
   MIA: { lat: 25.7959, lng: -80.287 },
   MSP: { lat: 44.8848, lng: -93.2223 },
-  MUC: { lat: 48.3538, lng: 11.7861 },
+  MUC: { city: "Munich", lat: 48.3538, lng: 11.7861 },
   NRT: { lat: 35.772, lng: 140.3929 },
   OAK: { lat: 37.7126, lng: -122.2197 },
   ORD: { lat: 41.9742, lng: -87.9073 },
@@ -42,7 +42,7 @@ export const AIRPORTS = {
   PHX: { lat: 33.4373, lng: -112.0078 },
   SAN: { lat: 32.7338, lng: -117.1933 },
   SEA: { lat: 47.4502, lng: -122.3088 },
-  SFO: { lat: 37.6213, lng: -122.379 },
+  SFO: { city: "San Francisco", lat: 37.6213, lng: -122.379 },
   SJC: { lat: 37.3639, lng: -121.9289 },
   SLC: { lat: 40.7899, lng: -111.9791 },
   STL: { lat: 38.7499, lng: -90.3748 },

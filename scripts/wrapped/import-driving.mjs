@@ -1,5 +1,8 @@
 import path from "node:path";
+import { AIRPORTS } from "./airports.mjs";
 import {
+  REPO_ROOT,
+  calculateFlightMiles,
   getWrappedPath,
   isCalendarDate,
   latestDate,
@@ -44,10 +47,11 @@ function usage() {
   console.log(`Import travel aggregates from an iPhone Google Maps Timeline export.
 
 Usage:
-  node scripts/wrapped/import-driving.mjs --input <timeline.json> [--year 2026] [--output <wrapped.json>]
+  node scripts/wrapped/import-driving.mjs --input <timeline.json> [--year 2026] [--output <wrapped.json>] [--email-flights <flights.json>]
 
 The input must be the on-device Timeline JSON containing semanticSegments.
-Only derived cities, flights, and monthly driving totals are written.`);
+Confirmed flights default to data/wrapped-flights-email.json.
+Only derived and email-confirmed aggregates are written.`);
 }
 
 function activityFor(segment) {
@@ -508,6 +512,76 @@ async function buildCities(segments, year, existingCities) {
   );
 }
 
+function validateEmailFlightDate(date, year, label) {
+  if (!isCalendarDate(date) || !date.startsWith(`${year}-`)) {
+    throw new Error(`${label} must be a valid date in ${year}; got "${date}".`);
+  }
+}
+
+function mergeEmailFlights(flights, emailFlights, year) {
+  if (!Array.isArray(emailFlights)) {
+    throw new Error("Email flight data must contain a flights array.");
+  }
+
+  const routeKey = (flight) =>
+    `${flight.date}|${flight.from.toLowerCase()}|${flight.to.toLowerCase()}`;
+  const keyed = new Map(
+    flights.segments.map((flight) => [routeKey(flight), flight])
+  );
+
+  for (const [index, flight] of emailFlights.entries()) {
+    validateEmailFlightDate(
+      flight?.date,
+      year,
+      `Email flight ${index + 1} date`
+    );
+    if (
+      flight.source !== "email" ||
+      typeof flight.airline !== "string" ||
+      flight.airline.trim() === "" ||
+      !/^[A-Z]{3}$/.test(flight.from ?? "") ||
+      !/^[A-Z]{3}$/.test(flight.to ?? "") ||
+      (flight.flightNumber !== null &&
+        typeof flight.flightNumber !== "string") ||
+      (flight.bookingCode !== null &&
+        typeof flight.bookingCode !== "string") ||
+      (flight.confirmationCode !== null &&
+        typeof flight.confirmationCode !== "string") ||
+      (flight.bookedVia !== null && typeof flight.bookedVia !== "string") ||
+      (!flight.bookingCode && !flight.confirmationCode)
+    ) {
+      throw new Error(`Email flight ${index + 1} has invalid metadata.`);
+    }
+
+    const origin = AIRPORTS[flight.from];
+    const destination = AIRPORTS[flight.to];
+    if (!origin?.city || !destination?.city) {
+      throw new Error(
+        `Email flight ${index + 1} needs city metadata for ${flight.from} and ${flight.to} in scripts/wrapped/airports.mjs.`
+      );
+    }
+
+    const normalized = {
+      date: flight.date,
+      endDate: flight.date,
+      from: origin.city,
+      to: destination.city,
+      miles: calculateFlightMiles([{ from: flight.from, to: flight.to }]),
+    };
+    keyed.set(routeKey(normalized), normalized);
+  }
+
+  const segments = [...keyed.values()].sort(
+    (first, second) =>
+      first.date.localeCompare(second.date) ||
+      first.endDate.localeCompare(second.endDate)
+  );
+  return {
+    segments,
+    totalMiles: segments.reduce((total, flight) => total + flight.miles, 0),
+  };
+}
+
 function buildMovementSummary(segments, year) {
   const metersByMonth = new Map(monthKeys(year).map((month) => [month, 0]));
   const flightSegments = [];
@@ -638,19 +712,33 @@ async function main() {
   const year = parseYear(options.year ?? 2026);
   const inputPath = path.resolve(process.cwd(), options.input);
   const outputPath = getWrappedPath(year, options.output);
-  const [timeline, data] = await Promise.all([
+  const emailFlightsPath =
+    typeof options["email-flights"] === "string"
+      ? path.resolve(process.cwd(), options["email-flights"])
+      : path.join(REPO_ROOT, "data", "wrapped-flights-email.json");
+  const [timeline, data, emailFlights] = await Promise.all([
     readJson(inputPath),
     readJson(outputPath),
+    readJson(emailFlightsPath),
   ]);
 
   if (data.year !== year) {
     throw new Error(`${outputPath} is for ${data.year}, not ${year}.`);
   }
+  if (emailFlights.schemaVersion !== 1 || emailFlights.year !== year) {
+    throw new Error(
+      `${emailFlightsPath} must use schemaVersion 1 and contain email flights for ${year}.`
+    );
+  }
 
   const segments = timelineSegments(timeline);
   const summary = buildMovementSummary(segments, year);
   const cities = await buildCities(segments, year, data.cities);
-  const flights = await buildFlights(summary.flightSegments, cities);
+  const flights = mergeEmailFlights(
+    await buildFlights(summary.flightSegments, cities),
+    emailFlights.flights,
+    year
+  );
   data.cities = cities;
   data.flights = flights;
   data.driving.example = false;
@@ -660,6 +748,14 @@ async function main() {
     data.updatedThrough,
     summary.latestTimelineDate
   );
+  for (const city of cities) {
+    for (const range of cityDateRanges(city)) {
+      data.updatedThrough = latestDate(data.updatedThrough, range.end);
+    }
+  }
+  for (const flight of flights.segments) {
+    data.updatedThrough = latestDate(data.updatedThrough, flight.endDate);
+  }
   await writeJson(outputPath, data);
 
   const totalMiles = summary.monthlyMiles.reduce(
